@@ -371,16 +371,38 @@
   2.git switch -c update v1.0.1 #创建一个分支来改代码
   ```
 
+  
+
+  **补充: 文件夹命令行模式下  code .可以快速打开vscode**
+
+  **typora `xxx` 可以变黑体**
+
+  
+
   ### gitignore
 
 - 默认情况下，git 会监视项目中所有内容，但是有些内容比如 node_modules 目录中的内容，我们不希望它被 git 所管理。我们可以在项目目录中添加一个`.gitignore`文件，来设置那些需要 git 忽略的文件。
 
+- ![image-20230327211208839](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230327211208839.png)
+
 ### 2.github 的静态页面
 
--   在 github 中，可以将自己的静态页面直接部署到 github 中，它会给我们提供一个地址使得我们的页面变成一个真正的网站，可以供用户访问。
+- 在 github 中，可以将自己的静态页面直接部署到 github 中，它会给我们提供一个地址使得我们的页面变成一个真正的网站，可以供用户访问。
+
 -   要求：
-    -   静态页面的分支必须叫做：gh-pages
-    -   如果希望页面可以通过 xxx.github.io 访问，则需要将库的名字配置为 xxx.github.io
+    - 静态页面的分支必须叫做：gh-pages
+    
+    - 如果希望页面可以通过 xxx.github.io 访问，则需要将库的名字配置为 xxx.github.io
+    
+    - 主页面必须要叫index.html
+    
+    - 老师说面试直接把简历写成一个页面发给面试官
+    
+      
+
+
+
+
 
 ### 3.docusaurus
 
@@ -400,46 +422,77 @@
 
         -   `npm start`或`yarn start`
 
-    -   构建项目
+    - 构建项目
 
-        -   `npm run build`或`yarn build`
-        -
+      -   `npm run build`或`yarn build`
+      -   打包以后的项目在build里 这个可以用来接私活给别人改一下官网什么的
+      -   注意:这种构建URL要设置对应的自己的服务器URL  要发布到github上就用github的
+      -   ![image-20230327221944799](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230327221944799.png)
 
     -   配置项目：
 
         -   docusaurus.config.js 项目的配置文件
 
-    -   添加页面：
+    - 添加页面：
 
-        -   在 docusaurus 框架中，页面分成三种：1.page，2.blog，3.doc
+      在 docusaurus 框架中，页面分成三种：
 
+      -   1.创建page页面(src下的pages)   访问 **url/js文件名**
+      -   创建js文件， react的写法  在layout(默认布局组件)里面直接写网页![uTools_1679927104694](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1679927104694.png)
+      -   创建md文件，在md文件下直接写![uTools_1679927319874](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1679927319874.png)
+      -   2.创建blog(blog文件夹下) 访问 直接点blog
+      -   直接以md文档写法![uTools_1679927475490](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1679927475490.png)
+      -   3.doc(docs文件夹) 新建文件夹 node官网就是这个布置的 访问直接点Tutorial![image-20230327223357867](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230327223357867.png)
+    
     -   案例地址：
-
+    
         -   https://github.com/lilichao/lilichao.github.io
+
+
+
+
+
+
 
 
 
 ## 第二部分 预备知识 —— 构建工具
 
--   当我们习惯了在 node 中编写代码的方式后，在回到前端编写 html、css、js 这些东西会感觉到各种的不便。比如：不能放心的使用模块化规范（浏览器兼容性问题）、即使可以使用模块化规范也会面临模块过多时的加载问题。
--   我们就迫切的希望有一款工具可以对代码进行打包，将多个模块打包成一个文件。这样一来即解决了兼容性问题，又解决了模块过多的问题。
--   构建工具就起到这样一个作用，通过构建工具可以将使用 ESM 规范编写的代码转换为旧的 JS 语法，这样可以使得所有的浏览器都可以支持代码。
+-   当我们习惯了在 node 中编写代码的方式后，在回到前端编写 html、css、js 这些东西会感觉到各种的不便。比如：不能放心的使用模块化规范（浏览器兼容性问题）、即使可以使用模块化规范也会面临模块过多时的加载问题(js引入的模块太多了，一个模块需要发一次请求，浪费的时间太多了)。
+-   我们就迫切的希望有一款工具可以对代码进行打包，将多个模块打包成一个文件。这样一来即解决了兼容性问题，又解决了模块过多的问题(打包以后发送的请求次数就减少了很多，加载速度就快了)。
+-   构建工具(相当于进行了编译)就起到这样一个作用，通过构建工具可以将使用 ESM 规范编写的代码转换为旧的 JS 语法，这样可以使得所有的浏览器都可以支持代码。
+-   ![uTools_1680095904382](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680095904382.png)
 
-### Webpack
 
--   使用步骤：
 
-    1. 初始化项目`yarn init -y`
-    2. 安装依赖`webpack`、`webpack-cli`
-    3. 在项目中创建`src`目录，然后编写代码（index.js）
-    4. 执行`yarn webpack`来对代码进行打包（打包后观察 dist 目录）
+### 1.Webpack(旧)
+
+**webpack是用node写的，只能打包node的项目**
+
+**webpack打包的时候会智能的识别哪些代码会执行哪些不会执行，没用到的不会打包进项目**
+
+**问题 : m1.js中引入了jQuery，但是没有使用jQuery的功能，此时主文件调用m1，jQuery也会被打包进去，这是因为jQuery中有自己必须要执行的函数(jQuery的内部调用)，所以weboack要把jQuery一起打包进项目，因为在webpack看来jQuery在项目中是有执行的，所以要打包**
+
+- 使用步骤：
+
+  1. 初始化项目`yarn init -y`
+  2. 安装依赖`webpack`(核心代码模块)、`webpack-cli`(cli表示能在命令行下使用webpack)
+  3. yarn add -D webpack webpack-cli  **-D表示的是开发依赖 不是项目必须的依赖 主要是方便我们开发人员进行区分**
+  4. 在项目中创建`src`目录，然后编写代码（index.js是主文件默认，可以创建其它文件）
+  5. 执行`yarn webpack`来对代码进行打包（打包后观察 dist 目录  默认所有文件会打包成main.js文件）
+
+- 问题：src和src文件夹以外使用的规范是不一样的，src要使用前端规范，src以外的是给node识别的，要使用node的规范
+
+- src下![uTools_1680101200033](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680101200033.png)
+
+- src外![uTools_1680101172461](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680101172461.png)
 
 -   配置文件（webpack.config.js）
 
     ```javascript
     const path = require("path")
     module.exports = {
-        mode: "production",
+        mode: "production",//生产模式   "development" //开发模式
         entry: "./src/index.js",
         output: {},
         module: {
@@ -522,9 +575,11 @@
         -   `yarn add  -D webpack-dev-server`
         -   启动：`yarn webpack serve --open`
 
--   `devtool:"inline-source-map"`配置源码的映射
+- `devtool:"inline-source-map"`配置源码的映射
 
-## Vite
+
+
+### 2.Vite(新
 
 -   Vite 也是前端的构建工具
 
@@ -574,9 +629,15 @@
     })
     ```
 
+
+
+
+
+
+
 ## 第三部分 Vue
 
-### vue
+### 1.vue
 
 -   vue 是一个前端的框架，主要负责帮助我们构建用户的界面
 -   MVVM：Model - View - View Model
@@ -587,7 +648,7 @@
     -   组件化开发
     -   声明式的编程
 
-### HelloWorld
+### 2.HelloWorld
 
 1. 直接在网页中使用（像 jQuery 一样）
 
@@ -613,6 +674,8 @@
 4. 自动创建项目
     - `npm init vue@latest`
     - `yarn create vue`
+
+
 
 ## 网页的渲染
 
