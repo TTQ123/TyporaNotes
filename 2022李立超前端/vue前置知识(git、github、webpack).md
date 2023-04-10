@@ -473,13 +473,13 @@
 
 **问题 : m1.js中引入了jQuery，但是没有使用jQuery的功能，此时主文件调用m1，jQuery也会被打包进去，这是因为jQuery中有自己必须要执行的函数(jQuery的内部调用)，所以weboack要把jQuery一起打包进项目，因为在webpack看来jQuery在项目中是有执行的，所以要打包**
 
-- 使用步骤：
+#### 1.使用步骤：
 
-  1. 初始化项目`yarn init -y`
-  2. 安装依赖`webpack`(核心代码模块)、`webpack-cli`(cli表示能在命令行下使用webpack)
-  3. yarn add -D webpack webpack-cli  **-D表示的是开发依赖 不是项目必须的依赖 主要是方便我们开发人员进行区分**
-  4. 在项目中创建`src`目录，然后编写代码（index.js是主文件默认，可以创建其它文件）
-  5. 执行`yarn webpack`来对代码进行打包（打包后观察 dist 目录  默认所有文件会打包成main.js文件）
+1. 初始化项目`yarn init -y`
+2. 安装依赖`webpack`(核心代码模块)、`webpack-cli`(cli表示能在命令行下使用webpack)
+3. yarn add -D webpack webpack-cli  **-D表示的是开发依赖 不是项目必须的依赖 主要是方便我们开发人员进行区分**
+4. 在项目中创建`src`目录，然后编写代码（index.js是主文件默认，可以创建其它文件）
+5. 执行`yarn webpack`来对代码进行打包（打包后观察 dist 目录  默认所有文件会打包成main.js文件）
 
 - 问题：src和src文件夹以外使用的规范是不一样的，src要使用前端规范，src以外的是给node识别的，要使用node的规范
 
@@ -487,149 +487,229 @@
 
 - src外![uTools_1680101172461](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680101172461.png)
 
--   配置文件（webpack.config.js）
 
-    ```javascript
-    const path = require("path")
-    module.exports = {
-        mode: "production",//生产模式   "development" //开发模式
-        entry: "./src/index.js",
-        output: {},
-        module: {
-            rules: [
-                {
-                    test: /\.css$/i,
-                    use: ["style-loader", "css-loader"]
-                }
-            ]
-        }
+
+#### 2.配置文件（webpack.config.js）
+
+```javascript
+const path = require("path")
+module.exports = {
+    mode: "production",//生产模式   "development" //开发模式
+    entry: "./src/index.js",
+    output: {},
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"]
+            }
+        ]
     }
-    ```
+}
+```
 
--   在编写 js 代码时，经常需要使用一些 js 中的新特性，而新特性在旧的浏览器中兼容性并不好。此时就导致我们无法使用一些新的特性。
-
--   但是我们现在希望能够使用新的特性，我们可以采用折中的方案。依然使用新特性编写代码，但是代码编写完成时我们可以通过一些工具将新代码转换为旧代码。
-
--   babel 就是这样一个工具，可以将新的 js 语法转换为旧的 js，以提高代码的兼容性。
-
--   我们如果希望在 webpack 支持 babel，则需要向 webpack 中引入 babel 的 loader
-
--   使用步骤
-
-    1. 安装 `npm install -D babel-loader @babel/core @babel/preset-env`
-
-    2. 配置：
-
-        ```javascript
-        module: {
-            rules: [
-                {
-                    test: /\.m?js$/,
-                    exclude: /(node_modules|bower_components)/,
-                    use: {
-                        loader: "babel-loader",
-                        options: {
-                            presets: ["@babel/preset-env"]
-                        }
-                    }
-                }
-            ]
-        }
-        ```
-
-    3. 在 package.json 中设置兼容列表
-
-        ```json
-        "browserslist": [
-                "defaults"
-         ]
-        ```
-
-        https://github.com/browserslist/browserslist
-
--   插件（plugin）
-
-    -   插件用来为 webpack 来扩展功能
-
-    -   html-webpack-plugin
-
-        -   这个插件可以在打包代码后，自动在打包目录生成 html 页面
-
-        -   使用步骤：
-
-            1. 安装依赖
-            2. 配置插件
-
-            ```javascript
-            plugins: [
-                new HTMLPlugin({
-                    // title: "Hello Webpack",
-                    template: "./src/index.html"
-                })
-            ]
-            ```
-
--   开发服务器（webpack-dev-server）
-
-    -   安装：
-        -   `yarn add  -D webpack-dev-server`
-        -   启动：`yarn webpack serve --open`
-
-- `devtool:"inline-source-map"`配置源码的映射
+- entry入口![image-20230401115630709](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230401115630709.png)
+- output![uTools_1680323335370](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680323335370.png)
+- **Loader加载器(webpack默认只能打包js文件)**  想要处理什么就安装什么loader就好了
+- ![uTools_1680326174600](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680326174600.png)
+- ![image-20230401131723263](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230401131723263.png)
 
 
 
-### 2.Vite(新
+
+
+- 在编写 js 代码时，经常需要使用一些 js 中的新特性，而新特性在旧的浏览器中兼容性并不好。此时就导致我们无法使用一些新的特性。
+
+- 但是我们现在希望能够使用新的特性，我们可以采用折中的方案。依然使用新特性编写代码，但是代码编写完成时我们可以通过一些工具将新代码转换为旧代码。
+
+- babel 就是这样一个工具，可以将新的 js 语法转换为旧的 js，以提高代码的兼容性。(在一些情况下，有些代码无法直接转化，babel会自己添加一个js脚本进浏览器，以使得我们代码可以运行)
+
+- 我们如果希望在 webpack 支持 babel，则需要向 webpack 中引入 babel 的 loader
+
+- 使用步骤
+
+  1. 安装 `npm install -D babel-loader @babel/core @babel/preset-env`
+
+  2. 配置：
+
+      ```javascript
+      module: {
+          rules: [
+              {
+                  test: /\.m?js$/,
+                  //exclude 不处理的文件
+                  exclude: /(node_modules|bower_components)/,
+                  use: {
+                      loader: "babel-loader",
+                      options: {
+                          //预设环境 提前帮我们安装一些插件(一种转换就是一种插件)
+                          presets: ["@babel/preset-env"]
+                      }
+                  }
+              }
+          ]
+      }
+      ```
+
+  3. 在 package.json 中设置兼容列表
+
+      ```json
+      "browserslist": [
+          	//设置兼容的浏览器
+              "defaults"//defaults默认
+       ]
+      ```
+      
+      https://github.com/browserslist/browserslist   **配置的参考**
+      
+      
+
+**loader会编译代码，插件只是一些辅助的功能**
+
+**code安装格式化插件后 全选 ctrl+s可以直接格式化**
+
+
+
+- 插件（plugin）
+
+  -   插件用来为 webpack 来扩展功能
+
+  -   html-webpack-plugin
+
+      -   这个插件可以在打包代码后，自动在打包目录生成 html 页面
+
+      -   使用步骤：
+
+          1. 安装依赖![uTools_1680342073670](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680342073670.png)
+          2. 引入![uTools_1680341731498](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680341731498.png)
+          3. 配置插件
+          
+          ```javascript
+          plugins: [
+              //调用构造函数创建一个对象
+              new HTMLPlugin({
+                  // title: "Hello Webpack", 网页标题
+                  //模板 以该网页为模块创建页面，但是会自己引入脚本等文件
+                  template: "./src/index.html"
+              })
+          ]
+          ```
+
+
+
+自动进行打包(实时刷新)
+
+1.传统方法![uTools_1680344063966](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680344063966.png)
+
+2.开发服务器（webpack-dev-server）
+
+-   安装：
+    -   `yarn add  -D webpack-dev-server`
+    -   启动：`yarn webpack server --open`
+    -   ![uTools_1680344635425](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680344635425.png)
+    -   用服务器模式开发完以后要自己手动yarn webpack一下，保证代码是最新的
+
+- `devtool:"inline-source-map"`配置源码的映射(devtool表示开发工具)
+- 运行是打包后的代码，但是会产生一个文件夹让我们进行调试
+- ![uTools_1680347282110](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680347282110.png)
+- 配置以后打开开发者工具  可以看见产生了一个新的demo_01文件夹 在里面可以调试![uTools_1680347331438](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680347331438.png)
+
+
+
+### 2.Vite（新）
 
 -   Vite 也是前端的构建工具
 
 -   相较于 webpack，vite 采用了不同的运行方式：
 
-    -   开发时，并不对代码打包，而是直接采用 ESM 的方式来运行项目
+    -   开发时，并不对代码打包，而是直接采用 ESM(ES模块化) 的方式来运行项目
     -   在项目部署时，在对项目进行打包
 
--   除了速度外，vite 使用起来也更加方便
+-   除了打包速度外，vite 使用起来也更加方便
 
--   基本使用：
+-   ![uTools_1680351755028](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680351755028.png)
 
-    1. 安装开发依赖 vite
+-   一定要打包，因为多个js脚本要发送多次请求，浏览器加载速度就很慢
 
-    2. vite 的源码目录就是项目根目录
+- 基本使用：
 
-    3. 开发命令：
+  1. 安装开发依赖 vite
 
-        vite 启动开发服务器
+  2. vite 的源码目录就是项目根目录(他会自动找到index.html 下引用的js文件)
 
-        vite build 打包代码
+  3. 开发命令：
 
-        vite preview 预览打包后代码
+      vite 启动开发服务器
 
--   使用命令构建
+      vite build 打包代码
 
-    ```bash
-    npm create vite@latest
-    yarn create vite
-    pnpm create vite
-    ```
+      vite preview 预览打包后代码
+      
+      ```bash
+      1.安装
+      yarn add -D vite
+      2.开发模式下运行(启动了一个内置服务器，代码随着修改而更新)，会给我们一个http://localhost:5174/)
+      yarn vite
+      3.打包(开发模式是以esm来打包的，不能直接运行)
+      [ESM必须通过url的形式来加载，此时我们通过静态页面访问(alt+b和live serve)是不行的，只能放在服务器运行或者yarn vite preview来预览]
+      yarn vite build
+      4.预览打包后代码(执行的是打包后的代码)
+      yarn vite preview 
+      
+      vite和vite preview的区别
+      1.vite是直接执行的，没有对代码进行打包
+      2.vite preview是预览打包后的代码
+      3.都是不能直接以静态页面运行的，要用它的服务器来查看，或者把打包后的代码放到我们的服务器上运行。
+      ```
+      
+      ![uTools_1680355003565](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680355003565.png)
+      
+      **vite --open**也可以启动
+
+  
+
+  
+
+- 使用命令构建
+
+  ```bash
+  会自动给我们构建一个vite项目
+  npm create vite@latest
+  yarn create vite
+  pnpm create vite
+  ```
+
+  
+
+  
 
 -   配置文件：`vite.config.js`
 
 -   格式：
 
     ```javascript
+    //要使用ESM  webpack用的是node默认的commonjs
     import { defineConfig } from "vite"
-    import legacy from "@vitejs/plugin-legacy"
+    //安装yarn add @vitejs/plugin-legacy
+    import legacy from "@vitejs/plugin-legacy"//兼容性插件，相当于webpack的babel(解决兼容性)
     
-    export default defineConfig({
+    //使用legacy要装一个terser(压缩代码的插件)
+    //yarn add -D terser
+    export default defineConfig({  //defineConfig加上有提示
         plugins: [
             legacy({
-                targets: ["defaults"]
+                targets: ["defaults","ie 11"]//配置支持的浏览器
             })
         ]
     })
+    
+    //打包以后会出现俩个js 带legac的js文件就是兼容性的文件,还有一个正常的js
+    //webpack是打包成一个文件，vite打包成俩个  在index.html中会引入支持moudle和不支持moudle的代码
     ```
 
+![uTools_1680357911146](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1680357911146.png)
 
+![image-20230401220532344](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230401220532344.png)
 
 
 
