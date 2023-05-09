@@ -2422,6 +2422,12 @@ app.listen(3000, () => {
 [{"id":2,"name":"黄宇","age":11,"gender":"男","address":"仙游"},{"id":3,"name":"1","age":1,"gender":"男","address":"1"},{"id":4,"name":"1","age":1,"gender":"男","address":"1"}]
 ```
 
+### 6.补充 bodyParser.json() 
+
+```css
+是一个中间件函数，用于解析 HTTP 请求体中的 JSON 数据。它会将请求体中的 JSON 数据解析成 JavaScript 对象，并将其作为 req.body 属性的值存储，以便后续的处理程序可以使用它。这个方法通常用于处理 POST、PUT 和 DELETE 请求中的 JSON 数据。
+```
+
 
 
 ## 13.Route

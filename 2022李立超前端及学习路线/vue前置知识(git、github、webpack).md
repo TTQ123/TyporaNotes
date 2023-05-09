@@ -325,6 +325,12 @@
     
     
     
+    **关联了github和gitee 向这个俩个分支分别进行提交**
+    
+    ![uTools_1682517765854](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1682517765854.png)
+    
+    
+    
     ### 日志
     
     ```bash
