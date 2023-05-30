@@ -3384,6 +3384,112 @@ import { ref } from 'vue';
 </template>
 ```
 
+#### 22.1v-model和v-bind
+
+##### 1.Vue3.3defindeModel取代defineProps和defineEmits
+
+`v-model`和`v-bind`都是Vue的指令，但它们有不同的作用。
+
+`v-bind`指令用于绑定一个值到指定的HTML属性上，语法为`:attribute="value"`。例如：
+
+```html
+<img :src="imgSrc">
+```
+
+在这里，`imgSrc`是一个Vue实例中的属性，我们将其通过`v-bind`指令绑定到`src`属性上，这样当`imgSrc`的值发生变化时，图片的URL也会被更新。
+
+而`v-model`指令用于在表单元素（如input、select、textarea等）上创建双向数据绑定，它相当于同时使用了`v-bind`和`v-on`指令。例如：
+
+```html
+<input v-model="message" />
+```
+
+这里，`message`是Vue实例中的一个属性，它会被绑定到输入框的值上，并且当输入框的值发生变化时，`message`的值也会随之更新。
+
+需要注意的是，只有`<input>`、`<select>`和`<textarea>`等表单元素才能使用`v-model`指令。对于其他元素，你需要使用自定义指令或手动绑定事件来实现类似的功能。
+
+总之，`v-bind`用于单向数据绑定，将Vue实例中的属性值绑定到DOM元素的属性上；`v-model`用于双向数据绑定，在表单元素上创建了一个值和输入框内容之间的双向绑定关系，可以同时监听用户的输入事件和修改属性的变化。
+
+##### 2.通过练习来看
+
+![uTools_1685082740558](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1685082740558.png)
+
+父组件
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import A from './components/A.vue';
+// 定义一个变量val传给子组件
+const val = ref('')
+</script>
+
+<template>
+变化的值:{{ val }}
+<hr>
+<!-- 设置v-model就是绑定了一个value属性和input事件 -->
+<A v-model="val"></A>
+</template>
+
+```
+
+子组件
+
+```vue
+<script setup>
+// 子组件需要接收props
+// 在Vue 3中，v-model指令默认绑定的属性是名为modelValue的属性。
+import { defineProps } from 'vue';
+import { defineEmits } from 'vue';
+const props = defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+function onInput(e) {
+  emit('update:modelValue', e.target.value)
+}
+</script>
+
+<template>
+  <!-- 通过:value和@input接收来自父组件的数据 -->
+  <input :value="modelValue" @input="onInput" />
+</template>
+```
+
+原理
+
+```css
+这是一个使用Vue 3的组件通信方式——v-model，父组件和子组件共同维护了一个变量val。
+
+在父组件中，定义了一个val变量，并将它传递给了子组件A，同时在模板中使用了v-model指令将val绑定到了A组件上。这个v-model指令实际上会自动展开为一个value属性和一个input事件的绑定，value属性的值会随着val的改变而改变，而input事件则会在用户输入时触发，从而更新val的值。
+也就是说用户输入时val值会更新，value值也会随着改变。
+
+在子组件中，使用defineProps定义了一个modelValue属性作为接收父组件传递进来的val变量的值，同时使用defineEmits定义了一个update:modelValue事件，用于向父组件发送更新val的请求。在模板中，使用:value="modelValue"将modelValue的值绑定到了input元素的value属性上，从而将父组件传递进来的val变量的值显示在了输入框中。当用户输入时，onInput方法会被调用，然后通过emit方法触发update:modelValue事件，最终将用户输入的值传递给父组件，从而完成了双向数据绑定的效果。
+```
+
+**在vue3.3中引入了defineModel来简化操作**
+
+```vue
+<script setup>
+//子组件只需要这样就可以实现和上面一样的功能
+import { defineModel } from 'vue';
+// 子组件需要接收props
+// 在Vue 3中，v-model指令默认绑定的属性是名为modelValue的属性。
+// const props = defineProps(['modelValue'])
+// const emit = defineEmits(['update:modelValue'])
+// function onInput(e) {
+//   emit('update:modelValue', e.target.value)
+// }
+
+
+const modelValue = defineModel()
+</script>
+
+<template>
+  <input v-model="modelValue" />
+</template>
+```
+
+![uTools_1685096966693](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1685096966693.png)
+
 
 
 #### 23.依赖注入(多层结构传递值 vue3)
@@ -4254,6 +4360,8 @@ import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 
 // 通过函数来创建store
+//defineStore("store的唯一id",配置对象{})
+//创建的是一个钩子函数(别人的数据被我钩子到这里，命名规范是usexxxx)
 // defineStore("store的id", 配置对象)
 // 配置对象：state，是一个函数，将需要由pinia维护的数据以对象的形式返回
 export const useCountStore = defineStore("count", {
@@ -4544,25 +4652,23 @@ stuStore.$onAction(({ name, store, args, after, onError }) => {
 
 
 
+###### 3.getter补充
 
+![uTools_1684405346729](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1684405346729.png)
 
+![uTools_1684405365775](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1684405365775.png)
 
+#### 26.Teleport
 
+```css
+<Teleport> 是一个内置组件，它可以将一个组件内部的一部分模板“传送”到该组件的 DOM 结构外层的位置去。
+```
 
+![uTools_1685203491692](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1685203491692.png)
 
+![uTools_1685203588728](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1685203588728.png)
 
-
-
-
-
-
-
-
-
-
-
-
-
+#### 27.Suspense
 
 
 
