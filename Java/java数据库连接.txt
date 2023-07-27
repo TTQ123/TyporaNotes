@@ -1,0 +1,27 @@
+//根据用户ID查询数据库中对应的用户信息
+public User findUserById(int userId) {
+    User user = null; // 定义User对象，初始值为null
+    Connection conn = null; // 定义数据库连接对象，初始值为null
+    PreparedStatement pstmt = null; // 定义预处理语句对象，初始值为null
+    ResultSet rs = null; // 定义结果集对象，初始值为null
+    try {
+        conn = DbUtil.getConnection(); // 获取数据库连接
+        String sql = "select * from tuser where user_id=?"; // 定义SQL语句，查询tuser表中user_id等于userId的记录
+        pstmt = conn.prepareStatement(sql); // 创建预处理语句对象
+        pstmt.setInt(1, userId); // 将要查询的参数设置为userId
+        rs = pstmt.executeQuery(); // 执行查询操作，将结果封装到结果集中
+        if (rs.next()) { // 判断结果集中是否有数据，如果有，则创建一个User对象
+            user = new User();
+            user.setUserId(rs.getInt("user_id")); // 将查询结果赋值给该对象的属性
+            user.setUserName(rs.getString("user_name"));
+            //......其它属性赋值省略
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // 处理异常
+    } catch (Exception e) {
+        e.printStackTrace(); // 处理异常
+    } finally {
+        DbUtil.freeConnection(rs, pstmt, conn); // 释放资源，包括结果集、预处理语句和数据库连接
+    }
+    return user; // 返回User对象
+}
