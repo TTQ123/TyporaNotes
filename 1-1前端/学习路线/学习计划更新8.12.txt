@@ -1,0 +1,34 @@
+近期计划(到年底之前)：
+1.vue3李立超学完后(以后更新了再看)
+2.vue3加ts的学完(已学完)
+3.学黑马的vue2加vue3课程(结合官网文档学习)
+4.TS(完整教程) Less Sass学一下 复习vue3知识(做一个完整的vue3新项目，到时候再找) 
+5.项目要基于主流框架(VUE3+TS+ELMUI+pinia)
+6.vue3项目做完黑马程序员uniapp-vue3的那个项目
+7.原生小程序开发学习
+8.掌握一门数据库技术(MogoDB、MySql) 
+9.React18
+
+开学后:
+上课无聊就看小林图解 这些在年底前要完成 因为要实习了
+数据结构要java写一下 然后研究一下js是怎么去写的
+可以的话开始学react
+
+临近面试:
+1.从头到尾复习一遍(我的文档优先，有时间的话看视频教程)
+2.准备面试题(文档复习一下再去找面试题)
+
+
+生涯技术栈:
+1.html css（sass、less） js（ts） 
+2.ajax ES6-ES11标准(尚硅谷教程)
+3.node.js node框架如express next.js 
+4.vue2和vue3 react18 angular
+5.小程序开发 uniapp跨平台框架(React Native、Flutter、Vue Native)
+6.git webpack等工具
+7.面向对象 uml建模 
+8.算法数据结构 计算机底层及网络基础 计算机操作系统基础 软件工程基础 leetcode刷题 (恋上数据结构和小林图解)
+9.掌握一门数据库技术(MogoDB、MySql) 
+10.后端java最好学到spring boot(工作以后得学) 
+11.之前学习的项目重做、笔记复习 
+12.实战项目做几个 实习的最好
