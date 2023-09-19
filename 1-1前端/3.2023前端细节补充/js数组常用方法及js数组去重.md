@@ -192,6 +192,10 @@ let result = _.uniq(list);//_.uniq(list)会返回一个新的数组，其中只�
         console.log(result);
 ```
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb3bbb85059c743ff32ea23e1cf19bf7b7c0a9a7
 ------------------------------------------------------------------------------------------------
 concat() 方法用于合并两个或多个数组。
 every()。该方法测试输入数组中的所有元素是否都通过了实现的条件。它返回一个布尔值。
@@ -208,4 +212,10 @@ filter() 方法的行为类似于 map() 并返回一个数组作为结果。但�
 findIndex() 方法返回输入数组中满足 find 方法 callbackFn 中给定条件的第一个元素的索引。否则返回-1，表示没有数组项通过条件检查。语法将与 find() 方法保持相同，只是返回结果会有所不同。
 pop() 方法从数组中删除最后一项并返回该项。输入数组的长度减1。
 
+<<<<<<< HEAD
 <https://mp.weixin.qq.com/s?__biz=MjM5MDA2MTI1MA==&mid=2649118986&idx=1&sn=a20751891391d24879e145357ac205a0&chksm=be587ea7892ff7b10d3f169b6032bfdb79a7186570489943083fdd033d2ec133a70d4f64d5aa&scene=27>
+=======
+
+<https://mp.weixin.qq.com/s?__biz=MjM5MDA2MTI1MA==&mid=2649118986&idx=1&sn=a20751891391d24879e145357ac205a0&chksm=be587ea7892ff7b10d3f169b6032bfdb79a7186570489943083fdd033d2ec133a70d4f64d5aa&scene=27>
+
+>>>>>>> cb3bbb85059c743ff32ea23e1cf19bf7b7c0a9a7

@@ -3932,6 +3932,8 @@ result = **filter**(personArr, a => a.age < 18)
     </script>
 ```
 
+
+
 ## 13.闭包的简介
 
 ```html
@@ -3979,19 +3981,19 @@ result = **filter**(personArr, a => a.age < 18)
         let a = "全局变量a"
 
         /* 
-            函数在作用域，在函数创建时就已经确定的（词法作用域）
+            函数的作用域，在函数创建时就已经确定了（词法作用域）
                 和调用的位置无关
                 
             闭包利用的就是词法作用域
         */
-        function fn() { //fn在全局作用域中定义的 --> 会去全局作用域中找a 创建及固定
+        
+        function fn() { //fn在全局作用域中定义的 --> 会去全局作用域中找 a 创建及固定
             console.log(a)
         }
 
 
         function fn2() {
             let a = "fn2中的a"
-
             fn()
         }
 
@@ -4008,9 +4010,9 @@ result = **filter**(personArr, a => a.age < 18)
             return fn4
         }
         
-        let fn4 = fn3() //输出fn3中的a
+        let fn4 = fn3() //fn3函数的返回值是fn4函数
 
-        fn4()
+        fn4() //所以fn4这个变量就是fn4函数  fn4()等于在调用fn4函数 最终还是打印fn3中的a 和怎么调用无关 生成来就确定了
 
     </script>
 ```
@@ -4018,6 +4020,8 @@ result = **filter**(personArr, a => a.age < 18)
 ![](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1671538443673.png)
 
 fn4存储的就是一个函数，也就是fn4函数,加()进行函数的调用
+
+
 
 ## 15.闭包的注意事项(生命周期)
 
