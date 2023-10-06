@@ -44,7 +44,7 @@
 
 ![image-20230814225440172](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814225440172.png)
 
-### 
+
 
 ### 2.v-show和v-if
 
@@ -2534,7 +2534,21 @@ new Vue({
 
 `传统js代码跳转使用location.href,但是在vue中不适合，因为vue是单页应用程序,不能跳转网页`
 
+
+
 ##### 1.基本使用
+
+###### route和router、query和params
+
+```js
+1.route是用来获取路由信息的，router是用来操作路由的。
+2.route对象是一个路由信息对象，里面主要包含路由的一些基本信息，包含当前的路径，参数，query对象等。而router对象则是用来定义路由表，实现页面跳转等功能。
+3.query和params属性都是用来传递参数的。其中，params(动态路由传参)是在路由路径上直接绑定的，形式是 /path/:paramName，而query(查询参数传参)则是通过 ?key=value 的形式添加在路由地址后面 。
+```
+
+
+
+分为俩种编程式导航: 通过路径跳转、通过名字跳转
 
 ![image-20230906215022021](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906215022021.png)
 
@@ -2544,17 +2558,33 @@ new Vue({
 
 ##### 2.编程式导航路由传参
 
-###### 1.path的路径跳转传参:查询参数传参
+###### 1.path的路径跳转传参 --> 查询参数传参
 
 ![image-20230906215209797](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906215209797.png)
+
+
+
+
 
 ###### 2.path的路径跳转传参:动态路由传参
 
 ![image-20230906215235414](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906215235414.png)
 
-总结
+配置的路由例子
+
+![image-20231006185204264](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006185204264.png)
+
+
+
+实际操作
+
+查询参数传参query
 
 ![image-20230906215545185](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906215545185.png)
+
+动态路由传参params
+
+![image-20231006185439924](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006185439924.png)
 
 
 
@@ -2562,7 +2592,11 @@ new Vue({
 
 ![image-20230906220202157](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906220202157.png)
 
-###### 4.name命名路由跳转传参动态路由传参(特殊:通过parms传和接收,path是直接在路径中传参的)
+
+
+###### 4.name命名路由跳转传参动态路由传参
+
+特殊:因为动态路由传参是直接在路径中传参，而name跳转的方式没有书写路径，所以我们通过params来同时接收和发送
 
 ![image-20230906220235685](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906220235685.png)
 
@@ -4082,3 +4116,167 @@ module.exports = {
 ##### 16.home页面 首页
 
 ![image-20230918221605389](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230918221605389.png)
+
+
+
+##### 17.搜索页面历史记录
+
+![image-20230920201444734](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230920201444734.png)
+
+一般不用往数据库存，如果要考虑多端同步才需要存数据库(一般是浏览器记录、视频音频才需要)
+
+
+
+##### 18.搜索列表页
+
+![image-20230920221126335](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230920221126335.png)
+
+
+
+##### 19.商品详情
+
+![image-20230921200037792](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230921200037792.png)
+
+
+
+##### 20加入购物车 立即购买弹窗
+
+![image-20230921205204275](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230921205204275.png)
+
+
+
+##### 21.数字框组件
+
+![image-20230921205315899](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230921205315899.png)
+
+
+
+##### 22.加入购物车
+
+![image-20230921214628767](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230921214628767.png)
+
+![image-20230921214643838](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230921214643838.png)
+
+
+
+##### 23.购物车页面模块
+
+![image-20230924104251400](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230924104251400.png)
+
+
+
+##### 24.订单结算页面
+
+![image-20230924195158794](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230924195158794.png)
+
+
+
+##### 25.确认订单信息--购物车结算
+
+![image-20230924213941689](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230924213941689.png)
+
+
+
+##### 26.立即购买结算
+
+![image-20231006174551950](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006174551950.png)
+
+
+
+混入mixins
+
+```js
+// 混入的原理就相当于展开运算符  (obj1,...obj2) 把obj2展开塞到obj1中
+// 混入的使用场景为 提取页面的公共业务逻辑(多组件跨组件使用) 比如弹出登录提示
+export default {
+  // 此处编写的就是 Vue组件实例的 配置项，通过一定语法，可以直接混入到组件内部
+  // data methods computed 生命周期函数 ...
+  // 注意点：
+  // 1. 如果此处 和 组件内，提供了同名的 data 或 methods， 则组件内优先级更高
+  // 2. 如果编写了生命周期函数，则mixins中的生命周期函数 和 页面的生命周期函数，会用数组管理，统一执行
+  // created () {
+  //   // console.log('嘎嘎')
+  // },
+  // data () {
+  //   return {
+  //     title: '标题'
+  //   }
+  // },
+  methods: {
+    // 该方法根据登录状态，判断是否需要显示登录确认框
+    // 如果是未登录 返回true
+    // 如果已经登录 放回false
+    loginConfirm () {
+      // 判断token是否存在
+      // 1.token存在  继续操作
+      // 2.token不存在  弹出确认框
+      if (!this.$store.getters.token) {
+        // 利用vant的弹出框
+        this.$dialog.confirm({
+          title: '温馨提示',
+          message: '请先登录才能继续操作哦',
+          confirmButtonText: '去登录',
+          cancelButtonText: '在逛逛'
+          // then表示确认
+          // 如果希望跳转到登录以后能回跳回当前页面(这样用户体验好)
+          // 需要在跳转前携带当前的路径地址
+          // fullPath存在this.$route  他会携带查询参数 整个路径的内容
+        }).then(() => {
+          // 路由跳转 $router对象 要用replace 不留历史记录 这样以后回退是去商品列表页
+          this.$router.replace({
+            path: '/login', // 跳转到登录页
+            query: {
+              backUrl: this.$route.fullPath
+            }
+          })
+        }
+        ).catch(() => {})
+        // catch表示取消 什么也不干
+        return true
+      }
+      return false
+    }
+  }
+}
+
+```
+
+
+
+##### 27.支付订单
+
+![image-20231006194006942](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006194006942.png)
+
+
+
+##### 28.订单管理--个人中心
+
+![image-20231006204938364](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006204938364.png)
+
+
+
+跨模块访问
+
+![1696594977039](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/1696594977039.png)
+
+
+
+##### 29.项目打包发布
+
+![image-20231006205142427](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006205142427.png)
+
+
+
+配置：如果不配置项目无法访问到对的路径
+
+如果没有配置,这个项目必须放在服务器根目录下才可以进行访问，也不能本地双击打开，配置以后可以放在服务器的任意位置，因为使用的是相对路径
+
+![image-20231006205736592](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006205736592.png)
+
+
+
+打包优化 通过路由访问原则来分模块 按需加载进行优化
+
+![image-20231006210331281](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006210331281.png)
+
+此时打包以后会生成更多的js和css 在我们访问到新路由时在按需加载

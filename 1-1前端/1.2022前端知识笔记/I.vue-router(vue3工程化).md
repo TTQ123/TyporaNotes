@@ -899,3 +899,11 @@ app.listen(9999, () => {
 **大部分情况下我们要用history模式，但是他部署容易出错，可以去官网看一下怎么调整部署**
 
 ![image-20230715231234130](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230715231234130.png)
+
+## 9.$router和￥route
+
+$router push replace 这些跳转方法
+
+$route获取 params参数 query对象....
+
+![image-20230924225037626](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230924225037626.png)

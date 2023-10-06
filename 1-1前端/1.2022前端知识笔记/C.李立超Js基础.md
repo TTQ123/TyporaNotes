@@ -5373,6 +5373,8 @@ class MyClass{
 
 ## 14.正则表达式的量词
 
+![image-20230921165412292](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230921165412292.png)
+
 ```html
         <script>
             /* 
@@ -5384,6 +5386,8 @@ class MyClass{
                     * 任意数量的a
                     ? 0-1次 {0,1}
             */
+           // i表示忽略大小写
+           // g表示全局匹配
 
             let re = /a{3}/
 
@@ -5410,6 +5414,8 @@ class MyClass{
             console.log(result)
         </script>
 ```
+
+
 
 ## 15.正则表达式的方法exec和test  也属于字符串方法
 
@@ -5521,6 +5527,10 @@ class MyClass{
 
     </script>
 ```
+
+
+
+
 
 ## 18.垃圾回收
 

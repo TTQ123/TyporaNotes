@@ -3663,3 +3663,256 @@ html{
 ![uTools_1669561612645](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669561612645.png)
 
 **,表示或者**
+
+
+
+
+
+# 8.补充
+
+## 1.where和is伪类选择器
+
+![image-20231005014158327](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005014158327.png)
+
+![image-20231005014220229](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005014220229.png)
+
+
+
+**is和weher的区别在于where的优先级为0 is会找条件中优先级最高的选择器，在这个例子中和前面正常写法的优先级一样，但是后面书写所以会生效为蓝色**
+
+
+
+
+
+```css
+/*这样写会报错，因为它认为这是一条规则，如果出错了就俩个选择器都不加样式*/
+#d1 h1,#d1 h1:hovre{ color:red } 
+
+/*这样不会报错，第一个选择器还是会执行*/
+:is(#d1 h1,#d1 h1:hovre){ color:red }
+```
+
+## 
+
+## 2.定位动画演示
+
+1. static为默认值 不需要定位(没有开启定位的意思)
+
+2. fixed固定定位
+
+   ![image-20231005015706361](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005015706361.png)
+
+3. sticky粘滞定位，到达指定位置时显示效果，受父容器影响，固定时原有位置为空白效果，不脱离文档流
+
+   ![image-20231005015916463](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005015916463.png)
+
+   4.relative相对元素本身进行定位，不脱离文档流，元素任然处于原来空间，不影响其它元素位置
+
+![](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005020113099.png)
+
+5. absolute绝对定位，寻找开启了定位的父元素(除了static以外都算开启定位)进行定位，寻找的是最近的父元素，如果最近没有会一直向上寻找到html根元素，如果根元素也没定位，则会根据窗口左上角进行定位；脱离文档流，可能影响其它元素，如果绝对定位元素没有设置宽度，移动后会根据内容设置一个宽度。
+
+![image-20231005020541661](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005020541661.png)
+
+6. z-index可以设置层级
+
+
+
+## 3.flex布局
+
+![image-20231005023154083](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023154083.png)
+
+
+
+`容器属性`
+
+1.设置主轴方向
+
+![image-20231005023309521](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023309521.png)
+
+2.定义子元素在主轴方向的对齐
+
+![image-20231005023334482](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023334482.png)
+
+3.定义子元素在纵轴的对齐方式（单行）
+
+![image-20231005023513745](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023513745.png)
+
+4.超出主轴长度是否换行
+
+![image-20231005023627462](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023627462.png)
+
+5.定义多行项目在纵轴方向上的对齐
+
+![image-20231005024057713](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005024057713.png)
+
+
+
+`项目属性`
+
+1.order 自定义项目(子元素)的排列顺序
+
+![image-20231005024643258](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005024643258.png)
+
+2.align-self  允许子元素设置自己的纵轴对齐方式(设置自己的align-item)
+
+![image-20231005024810355](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005024810355.png)
+
+3.设置元素的放大伸缩默认值
+
+![image-20231005025052744](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005025052744.png)
+
+
+
+## 4.grid二维布局
+
+页面场景为一个大盒子套了六个小盒子
+
+![image-20231005031838537](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005031838537.png)
+
+1.改成三列的固定宽度
+
+![image-20231005025742788](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005025742788.png)
+
+2.改成三列的fr自适应宽度
+
+![image-20231005025725932](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005025725932.png)
+
+![image-20231005025828458](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005025828458.png)
+
+3.column行间距 row列间距 gap统一设置
+
+![image-20231005025901952](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005025901952.png)
+
+![image-20231005030003036](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005030003036.png)
+
+
+
+4.特殊布局方式
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .layout{
+            width: 500px;
+            height: 600px;
+            background-color: aqua;
+            display: grid;
+            /*这里可以设置*/
+            grid-template-areas:
+            "header header header"
+            "sidebar content content"
+            "footer footer footer";
+        }
+        header{
+            grid-area: header;
+            background-color: blue;
+            border:1px solid red;
+        }
+        aside{
+            grid-area: sidebar;
+            background-color: pink;
+            border:1px solid red;
+        }
+        main{
+            grid-area: content;
+            background-color: yellow;
+            border:1px solid red;
+        }
+        footer{
+            grid-area: footer;
+            background-color: red;
+            border:1px solid red;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <header>头部</header>
+        <aside>侧边</aside>
+        <main>内容</main>
+        <footer>底部</footer>
+    </div>
+</body>
+</html>
+```
+
+效果
+
+![image-20231005031111056](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005031111056.png)
+
+5.水平垂直对齐和flex类似
+
+![image-20231005031413475](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005031413475.png)
+
+6.如果行轨道和列轨道的长度小于轴(子元素内容没有达到撑开整个grid布局)可以对轨道进行对齐
+
+![image-20231005031731659](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005031731659.png)
+
+## 5.伪类和伪元素
+
+`依附于已经存在的元素而生成`
+
+![image-20231005032847345](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005032847345.png)
+
+伪类选择器可以链式拼接
+
+![image-20231005032948904](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005032948904.png)
+
+![image-20231005033018369](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033018369.png)
+
+伪元素不支持链式
+
+![image-20231005033039577](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033039577.png)
+
+常用的伪类
+
+![image-20231005033107378](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033107378.png)
+
+常用的伪元素
+
+![image-20231005033140776](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033140776.png)
+
+
+
+## 6.阴影的高级用法
+
+阴影可以叠加 所以有无限的可能做成不一样的效果
+
+boxshadow:水平偏移 垂直偏移 模糊 扩散 颜色
+
+![image-20231005033251460](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033251460.png)
+
+内部阴影
+
+![image-20231005033349304](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033349304.png)
+
+光从左上方打入(阴影可以嵌套着写完成各种效果)
+
+![image-20231005033513412](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033513412.png)
+
+元素内凹效果
+
+![image-20231005033636468](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033636468.png)
+
+鼠标悬浮空间效果
+
+![image-20231005033820167](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005033820167.png)
+
+月亮
+
+```css
+        div{
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            box-shadow: 50px 0px 0px 0px rgba(255,255,0,0.7);
+        }
+```
+
