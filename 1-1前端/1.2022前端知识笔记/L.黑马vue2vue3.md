@@ -3940,7 +3940,7 @@ export default {
 
 #### 6.黑马购物车项目
 
-##### 1.vant-ui
+##### 1.vant-ui引入
 
 `vant2支持vue2  vant3和vant4支持vue3`
 
