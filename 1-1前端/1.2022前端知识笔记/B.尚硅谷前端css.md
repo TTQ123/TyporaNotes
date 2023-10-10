@@ -3670,17 +3670,19 @@ html{
 
 # 8.补充
 
-## 1.where和is伪类选择器
+## 1.where和is及has伪类选择器
 
 ![image-20231005014158327](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005014158327.png)
 
 ![image-20231005014220229](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005014220229.png)
 
+**选中了4个id选择器中的h1**
+
 
 
 **is和weher的区别在于where的优先级为0 is会找条件中优先级最高的选择器，在这个例子中和前面正常写法的优先级一样，但是后面书写所以会生效为蓝色**
 
-
+`is和where就是相当于判别小括号中的条件`
 
 
 
@@ -3692,7 +3694,27 @@ html{
 :is(#d1 h1,#d1 h1:hovre){ color:red }
 ```
 
-## 
+
+
+**has选择器(相当于一个条件)**
+
+1.通过子元素可以选择父元素  包含span的div样式会被设置
+
+![image-20231010193102162](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231010193102162.png)
+
+2.通过下一个兄弟元素选择上一个兄弟元素
+
+![image-20231010192853704](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231010192853704.png)
+
+
+
+
+
+3.dock栏demo
+
+![image-20231010193022466](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231010193022466.png)
+
+
 
 ## 2.定位动画演示
 

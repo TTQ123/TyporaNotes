@@ -853,6 +853,14 @@ console.log(2);//第二,调用栈中的代码
 
 ## 8.模块化
 
+```bash
+1.ES模块化是在浏览器中使用的，要在node中使用要进行配置，commjs是node默认支持的模块化
+
+2.这俩种模块化规范都可以在浏览器和服务器(node)中使用，但是需要进行配置
+```
+
+
+
 ### 1.commonJS
 
 ```javascript
@@ -896,6 +904,8 @@ const hello = require("./hello") // ./hello/index.js
 
 console.log(hello)
 ```
+
+
 
 ### 2.如何暴露内容
 
@@ -953,7 +963,13 @@ let b = 20
 console.log(__dirname) // 当前模块所在目录的路径
 ```
 
+
+
 ### 4.js自带的规范 es模块
+
+es规范要是要在浏览器中生效   需要配置
+
+![image-20231010195758679](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231010195758679.png)
 
 ```javascript
 /* 
