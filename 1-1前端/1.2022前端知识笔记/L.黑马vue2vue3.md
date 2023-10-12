@@ -4280,3 +4280,137 @@ export default {
 ![image-20231006210331281](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006210331281.png)
 
 此时打包以后会生成更多的js和css 在我们访问到新路由时在按需加载
+
+
+
+
+
+
+
+# vue3
+
+## 1.vue3的优势
+
+![image-20231011193309824](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011193309824.png)
+
+5.不用考虑this指向
+
+
+
+### 1.组合式API的优势
+
+项目越大选项式API的难以维护越严重
+
+vue3更容易复用，在vue2中我们要使用minxs混入，但是在vue3我们直接把需要复用的代码封装成一个函数，导入新组件即可
+
+代码量也更少
+
+![image-20231011193714181](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011193714181.png)
+
+![image-20231011193940802](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011193940802.png)
+
+
+
+## 2.基本使用
+
+### 1.vite创建项目
+
+![image-20231011194121381](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011194121381.png)
+
+![image-20231011194425932](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011194425932.png)
+
+![image-20231011203438893](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011203438893.png)
+
+要选择这个Customize with create-vue
+
+![image-20231011203452316](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011203452316.png)
+
+
+
+### 2.项目解析
+
+![image-20231011203555761](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011203555761.png)
+
+`vue3将所有创建都封装成了函数`
+
+![image-20231011203926270](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011203926270.png)
+
+
+
+vscode支持的vue3插件,vue2是vetur
+
+![image-20231011203724813](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011203724813.png)
+
+
+
+## 3.组合式API详情
+
+### 1.setup选项
+
+![image-20231011204057529](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011204057529.png)
+
+
+
+1.setup执行时机,比beforeCreate还要早
+
+2.setup函数中，获取不到this(时机太早，this是undefined)
+
+3.在vue3中，不用去考虑this的指向了
+
+4.这种写法，所有数据和函数都需要return才能使用
+
+![image-20231011204125116](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011204125116.png)
+
+
+
+**setup语法糖**
+
+![image-20231011204542200](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011204542200.png)
+
+
+
+**setup语法糖原理**
+
+![image-20231011204815629](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011204815629.png)
+
+
+
+**总结**
+
+![image-20231011204855759](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011204855759.png)
+
+
+
+### 2.reactive和ref函数
+
+`在vue3中，数据定义出来默认不是响应式的，react也是这种设定，因为在一个页面中需要响应式的数据是比较少的，这样设计可以减少vue2中所有数据都是响应式的开销`
+
+  `ref性能更好，然后既可以接收对象也可以是变量，以后都用这个就好`
+
+![image-20231011205802172](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011205802172.png)
+
+这个不需要加也是一个要注意的点
+
+
+
+### 3.computed计算属性
+
+```bash
+1.计算属性是基于它们的依赖进行缓存的，只有在依赖发生改变的时候，它们才会重新计算，否则，它们是不变的。换句话说，就是每次访问计算属性时，如果依赖没有发生改变，它们可以立即返回结果，而不需要进行复杂的逻辑运算。而methods中的方法，只要被触发，被调用的方法就会立即执行对应函数，重新进行渲
+```
+
+
+
+![image-20231011210144582](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011210144582.png)
+
+更多的功能参考vue3官网API
+
+![image-20231011210332737](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011210332737.png)
+
+
+
+**总结**
+
+![image-20231011210425574](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011210425574.png)
+
+异步和dom这种副作用都丢到watch去   全选反选情况下才适合配置get set的计算属性

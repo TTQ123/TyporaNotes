@@ -1004,13 +1004,17 @@ getFirstWord(123)
 3.npm run dev(运行项目)
 ```
 
-#### 2.create vue(基于vite)
+
+
+#### 2.create vue(基于vite)❥
 
 ```bash
 1.npm init vue@3(然后根据提示选择想要的扩展)
 2.npm install(项目创建完成后进入终端，安装项目依赖)
 3.npm run dev(运行项目)
 ```
+
+
 
 #### 3.简单使用create preset(1)
 
@@ -1020,6 +1024,8 @@ getFirstWord(123)
 3.npm run dev(运行项目)
 ```
 
+
+
 #### 4.全局使用create preset(2)
 
 ```bash
@@ -1028,6 +1034,8 @@ getFirstWord(123)
 3.npm install(项目创建完成后进入终端，安装项目依赖)
 4.npm run dev(运行项目)
 ```
+
+
 
 #### 5.通过create-vite  创建
 
