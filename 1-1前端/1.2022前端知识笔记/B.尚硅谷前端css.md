@@ -3938,3 +3938,39 @@ boxshadow:水平偏移 垂直偏移 模糊 扩散 颜色
         }
 ```
 
+
+
+## 7.0.5px的问题
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box1{
+            width: 100px;
+            height: 1px;
+            background-color: #000;
+            transform: scaleY(0.1);
+        }
+        .box2{
+            width: 100px;
+            height: 1px;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="box1"></div>
+    <br>
+    <div class="box2"></div>
+</body>
+</html>
+```
+
+
+
+移动端

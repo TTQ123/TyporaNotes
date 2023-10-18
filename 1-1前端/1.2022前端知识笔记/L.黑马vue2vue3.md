@@ -299,6 +299,8 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
 
 ![image-20230815223603274](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230815223603274.png)
 
+
+
 ### 11.v-model应用于其它表单元素
 
 ![image-20230815230255021](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230815230255021.png)
@@ -1561,7 +1563,7 @@ methods:{
 
 
 
-#### 3.v-model直接运用于父组件
+#### 3.v-model用于父子组件数据双向绑定
 
 ![image-20230830001432563](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230830001432563.png)
 
@@ -4413,4 +4415,814 @@ vscode支持的vue3插件,vue2是vetur
 
 ![image-20231011210425574](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011210425574.png)
 
-异步和dom这种副作用都丢到watch去   全选反选情况下才适合配置get set的计算属性
+
+
+**异步和dom这种副作用都丢到watch去   全选反选情况下才适合配置get set的计算属性**
+
+
+
+### 4.watch
+
+![image-20231015213648340](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015213648340.png)
+
+
+
+![image-20231015213701687](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015213701687.png)
+
+`tip:watch监视的都是响应式数据`
+
+![image-20231015214122463](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015214122463.png)
+
+
+
+#### 1.额外配置对象immediate和deep
+
+![image-20231015214247692](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015214247692.png)
+
+
+
+这样是监视不到的
+
+![image-20231015214416483](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015214416483.png)
+
+默认是浅层监视，只有当对象引用地址改变以后才会监视到
+
+![image-20231015214530255](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015214530255.png)
+
+这样开启以后才能监听对象内部数据的变化
+
+![image-20231015214644316](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015214644316.png)
+
+
+
+#### 2.精确监听对象的某个数据
+
+deep是监听整个对象的属性
+
+![image-20231015214744208](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015214744208.png)
+
+![image-20231015214852777](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015214852777.png)
+
+
+
+总结
+
+![image-20231015215003803](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015215003803.png)
+
+
+
+### 5.生命周期函数
+
+![image-20231015215033067](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015215033067.png)
+
+![image-20231015220132438](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015220132438.png)
+
+setup
+
+![image-20231015215216985](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015215216985.png)
+
+
+
+onMounted
+
+以前的写法是只有一个Mounted配置函数，所有逻辑只能写在一起不好分离
+
+Vue3封装成了一个个函数来调用
+
+![image-20231015215322997](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015215322997.png)
+
+
+
+#### 1.vue3组合式API生命周期图
+
+![lifecycle.16e4c08e](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/lifecycle.16e4c08e.png)
+
+#### 2.注意事项
+
+生命周期函数应该是同步调用的，否则不生效
+
+![image-20231015215748271](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015215748271.png)
+
+
+
+### 6.父子通信
+
+#### 1.porps父传子
+
+和vue2思想一致，写法不同
+
+父传子
+
+![image-20231015222129242](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015222129242.png)
+
+
+
+例子：
+
+![image-20231015222709935](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015222709935.png)
+
+响应式数据也是可以传递下去的,模板中可以直接使用prop的具体属性，不用props.xxx
+
+
+
+vue3组件的全局注册
+
+
+
+**definePops的原理**
+
+![image-20231015222839960](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015222839960.png)
+
+##### 1.补充 useAttrs
+
+![image-20231016182938037](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182938037.png)
+
+![image-20231016182954979](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182954979.png)
+
+#### 2.emits子传父
+
+![image-20231015223049510](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015223049510.png)
+
+完整例子:
+
+```vue
+APP
+<template>
+  <h3>
+    这是父组件
+  </h3>
+  <ChildApp car="宝马车" :money="money" @changeMoney="changeMoney"></ChildApp>
+</template>
+
+<script setup>
+import ChildApp from './components/ChildApp.vue';
+import { ref } from 'vue'
+const money = ref(1000)
+
+// 定义改变money的方法
+const changeMoney = (newMoney) => {
+  money.value = newMoney
+}
+</script>
+
+ChildApp
+<template>
+    <div class="box1">
+        我是子组件 -- {{ car }} -- {{ money }} <button @click="sendMsg">花钱</button>
+    </div>
+</template>
+
+<script setup>
+const props = defineProps({
+    car:String,
+    money:Number
+})
+console.log(props)
+
+const emit = defineEmits(['changeMoney'])
+
+// 发送消息提示父组件
+const sendMsg = () => {
+    emit('changeMoney' , props.money - 10)
+}
+
+</script>
+
+<style scoped>
+.box1{
+    width: 100%;
+    border: 1px solid #000;
+    height: 100px;
+    text-align: center;
+    line-height: 100px;
+}
+</style>
+```
+
+
+
+总结
+
+![image-20231015225000599](C:\Users\ttq\AppData\Roaming\Typora\typora-user-images\image-20231015225000599.png)
+
+
+
+### 7.模板引用(vue2也有)
+
+在现代的前端框架中，我们都是尽量避免直接操作DOM的，但是肯定有例外的情况。
+
+#### 1.vue2
+
+![image-20231015225606230](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015225606230.png)
+
+获取dom对象
+
+![image-20231015225640739](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015225640739.png)
+
+使用子组件方法
+
+![image-20231015225720849](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015225720849.png)
+
+
+
+#### 2.vue3
+
+获取DOM
+
+![image-20231015225826528](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015225826528.png)
+
+
+
+
+
+获取子组件
+
+**通过defineExpose暴露组件的属性和方法开放给父组件访问**
+
+![image-20231015230353087](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015230353087.png)
+
+
+
+完整例子
+
+APP
+
+```vue
+<script setup>
+import TestCom from '@/components/test-com.vue'
+import { onMounted, ref } from 'vue'
+
+// 模板引用(可以获取dom，也可以获取组件)
+// 1. 调用ref函数，生成一个ref对象
+// 2. 通过ref标识，进行绑定
+// 3. 通过ref对象.value即可访问到绑定的元素(必须渲染完成后，才能拿到)
+const inp = ref(null)
+
+// 生命周期钩子 onMounted
+onMounted(() => {
+  // console.log(inp.value)
+  // inp.value.focus()
+})
+const clickFn = () => {
+  inp.value.focus()
+}
+
+// --------------------------------------
+const testRef = ref(null)
+const getCom = () => {
+  console.log(testRef.value.count)
+  testRef.value.sayHi()
+}
+</script>
+
+<template>
+  <div>
+    <input ref="inp" type="text">
+    <button @click="clickFn">点击让输入框聚焦</button>
+  </div>
+  <TestCom ref="testRef"></TestCom>
+  <button @click="getCom">获取组件</button>
+</template>
+```
+
+test-con
+
+```vue
+<script setup>
+const count = 999
+const sayHi = () => {
+  console.log('打招呼')
+}
+
+defineExpose({
+  count,
+  sayHi
+})
+</script>
+
+<template>
+  <div>
+    我是用于测试的组件 - {{ count }}
+  </div>
+</template>
+```
+
+
+
+总结
+
+![image-20231015230514967](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015230514967.png)
+
+
+
+### 8.provide和inject 比vue2好用
+
+![image-20231016175909656](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016175909656.png)
+
+
+
+![image-20231016180407568](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016180407568.png)
+
+
+
+**vscode快速配置vue3模板**
+
+[vscode中如何快速生成vue3模板-非常实用的小技巧_vscode快速生成vue模板_China_YF的博客-CSDN博客](https://blog.csdn.net/m0_37873510/article/details/127794163)
+
+
+
+例子：
+
+![image-20231016181815742](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016181815742.png)
+
+![image-20231016181827354](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016181827354.png)
+
+![image-20231016181838883](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016181838883.png)
+
+
+
+### 9.defineOptions
+
+为什么要有这个API
+
+![image-20231016182016433](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182016433.png)
+
+
+
+俩个script不够优雅
+
+![image-20231016182104457](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182104457.png)
+
+![image-20231016182208899](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182208899.png)
+
+
+
+使用defineOptions
+
+![image-20231016182403655](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182403655.png)
+
+
+
+#### 1.补充 defineSlots
+
+作用域插槽是给插槽传参的一种语法
+
+![image-20231016183254273](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016183254273.png)
+
+在ts中使用的
+
+
+
+### 10.defineModel
+
+vue2中父子组件绑v-model时是 :value和@input组合  在vue3改为 ：modelValue 和 @update：modelValue组合
+
+![image-20231016185605877](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016185605877.png)
+
+使用例子
+
+![image-20231016185628307](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016185628307.png)
+
+![image-20231016185647636](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016185647636.png)
+
+由于还是新属性，需要配置vite.config.js
+
+![image-20231016185734803](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016185734803.png)
+
+
+
+
+
+#### 1.如果没有defineModel的父子数据双向绑定
+
+父组件
+
+![image-20231016190908397](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016190908397.png)
+
+子组件写法1
+
+![image-20231016190938429](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016190938429.png)
+
+子组件写法2 简便
+
+![image-20231016191148037](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016191148037.png)
+
+**defineModel省去了接收props以及提交emit，可以直接使用值和修改值**
+
+
+
+
+
+## 4.pinia
+
+![image-20231016192832444](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016192832444.png)
+
+pinia的actions可以直接支持异步修改state，非常方便。既可以选项式也可以组合式
+
+
+
+### 1.手动添加pinia
+
+![image-20231016193637772](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016193637772.png)
+
+![image-20231016193601327](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016193601327.png)
+
+如果vue2要用也可以，要配置一下
+
+
+
+### 2.基本语法
+
+![image-20231016193802557](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016193802557.png)
+
+![image-20231016193821603](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016193821603.png)
+
+**常用的组合式写法，和项目编码统一**
+
+![image-20231016194023198](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016194023198.png)
+
+
+
+#### 1.通过defineStore创建仓库
+
+每个仓库互相独立，但是可以跨仓库访问的，普通函数就是action。
+
+![image-20231016194222182](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016194222182.png)
+
+![image-20231016194331791](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016194331791.png)
+
+**在组件中使用**
+
+![image-20231016194411580](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016194411580.png)
+
+
+
+**完整例子**
+
+![image-20231016194751991](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016194751991.png)
+
+
+
+#### 2.异步处理
+
+![image-20231016194919567](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016194919567.png)
+
+
+
+和正常定义异步函数一模一样
+
+![image-20231016195344525](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016195344525.png)
+
+需要注意的是，在我们使用Store之前(没有任一组件引用)，store实例是不会被创建的。
+
+
+
+### 3.storeToRefs
+
+**我们不要对仓库进行解构，否则会失去数据的响应性，需要进行处理**
+
+![image-20231016195458456](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016195458456.png)
+
+**进行处理**
+
+![image-20231016195538698](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016195538698.png)
+
+**原因**
+
+store在底层是一个用reactive包装的对象，reactive底层实现的是proxy对象，proxy对象只能监视当前这个对象，如果解构以后，相当于是用了几个独立的变量来存放proxy对象中的几个属性，这样就失去了响应性。
+
+
+
+**实际应用**
+
+![image-20231016200344001](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016200344001.png)
+
+`如果是数据就用storeToRefs包装成响应对象，方法不需要响应，直接解构`
+
+**根据我的推理，这个storeToRefs会有一个属性和仓库进行关联，确保所有数据的一致性，它包的对象应该是数据+该数据引用的仓库**
+
+
+
+
+
+### 4.pinia持久化
+
+在以前使用vuex的时候，持久化习惯上需要我们自己封装函数，用localstorage来持久化数据，这样太麻烦了。其实有插件，用的少。
+
+![image-20231016201022133](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201022133.png)
+
+**介绍**
+
+![image-20231016200913197](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016200913197.png)
+
+**导入**
+
+![image-20231016201058771](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201058771.png)
+
+![image-20231016201201031](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201201031.png)
+
+**使用**
+
+![image-20231016201242325](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201242325.png)
+
+![image-20231016201300011](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201300011.png)
+
+
+
+**本地键名就是仓库名**
+
+![image-20231016201438886](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201438886.png)
+
+可以修改键名
+
+![image-20231016201527292](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201527292.png)
+
+![image-20231016201548266](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201548266.png)
+
+**也可以把默认的localstorge换成sessionstorege**
+
+**也可以指定仓库中的哪些数据需要被持久化**
+
+![image-20231016201808850](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201808850.png)
+
+**总结**
+
+![image-20231016201859961](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016201859961.png)
+
+
+
+## 5.vue3大事件管理系统项目
+
+![image-20231018160832884](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018160832884.png)
+
+
+
+### 1.pnpm包管理器
+
+**使用时不要直接创建在根目录**
+
+![image-20231018161220392](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018161220392.png)
+
+美化代码规范
+
+![image-20231018161639966](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018161639966.png)
+
+
+
+### 2.创建项目
+
+![image-20231018161852673](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018161852673.png)
+
+pnpm format是借助 Prettier对代码进行格式化
+
+#### 1.配置代码风格
+
+现在的项目都用eslint搭配prettier来进行代码规范和代码美化
+
+![image-20231018163756938](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018163756938.png)
+
+.eslintrc.cjs
+
+```js
+/* eslint-env node */
+require('@rushstack/eslint-patch/modern-module-resolution')
+
+module.exports = {
+  root: true,
+  extends: [
+    'plugin:vue/vue3-essential',
+    'eslint:recommended',
+    '@vue/eslint-config-prettier/skip-formatting'
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest'
+  },
+  // 额外的配资
+  rules: {
+    // prettier专注于美化代码 更易于观看
+    // 配置生效
+    // 1.禁用vscode格式化插件 prettier  关闭format on save
+    // 2.安装Eslint插件,并配置保存时自动修复 在vscode setiings.json
+    'prettier/prettier': [
+      'warn',
+      {
+        singleQuote: true, // 单引号
+        semi: false, // 无分号
+        printWidth: 80, // 每行宽度至多80字符
+        trailingComma: 'none', // 不加对象|数组最后逗号
+        endOfLine: 'auto' // 换行符号不限制（win mac 不一致）
+      }
+    ],
+    // Eslint 关注于规范，不符合规范会报错
+    'vue/multi-word-component-names': [
+      'warn',
+      {
+        ignores: ['index'] // vue组件名称多单词组成（忽略index.vue）
+      }
+    ],
+    'vue/no-setup-props-destructure': ['off'], // 关闭 props 解构的校验(因为解构会丢失响应)
+    // 💡 添加未定义变量错误提示，create-vue@3.6.3 关闭，这里加上是为了支持下一个章节演示。
+    'no-undef': 'error'
+  }
+}
+```
+
+vscode设置配置
+
+![image-20231018163918841](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018163918841.png)
+
+![image-20231018163943814](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018163943814.png)
+
+vscode的prettier插件一般在非工程化的项目中才用，正式的项目都用创建出来时安装的prettier第三方包，所以我们要禁用。
+
+
+
+#### 2.基于Husky的代码检查工作流
+
+**当我们没有处理到项目的报错，我们确直接向仓库提交，这样明显是不可以的，导致仓库一堆报错。**
+
+**husky 是一个 git hooks 工具  ( git的钩子工具，可以在特定时机执行特定的命令 )，他可以在提交的时候帮我们检查**
+
+##### 1.全量检查
+
+**这种检查方式是对整个项目所有文件进行检查，耗时，而且当你是从仓库中下载的项目，难免会有历史原因报错，我们不处理提交不了。**
+
+![image-20231018165421199](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018165421199.png)
+
+pnpm dlx husky-init && pnpm install
+
+![image-20231018165827571](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018165827571.png)
+
+我们安装Eslint时在package.json会自动添加一行命令，没有就自己加
+
+![image-20231018165935149](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018165935149.png)
+
+![image-20231018170024559](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018170024559.png)
+
+此时执行git add.   git commit -m 'first'  会提示我们有报错
+
+![image-20231018170158424](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018170158424.png)
+
+
+
+##### 2.暂存区Eslint校验
+
+全量提交是直接往仓库提交，但是这需要你检查所有的报错，如果你从仓库下载的有报错，你还要先解决在提交，效率太慢了，我们通过暂存区只要先保证当前我们写的是正确即可，历史问题以后在处理。
+
+就是我们下载以后动过的代码，有更新才会去校验。
+
+![image-20231018171208276](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018171208276.png)
+
+![image-20231018171227176](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018171227176.png)
+
+
+
+#### 3.调整项目目录
+
+![image-20231018171522528](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018171522528.png)
+
+
+
+修改过后 安装scss 引入main.scss进入main.js
+
+![image-20231018172340821](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018172340821.png)
+
+4.Vue-router4
+
+![image-20231018201902567](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018201902567.png)
+
+vue3不能在compositionApi中用this了
+
+![image-20231018202407080](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018202407080.png)
+
+
+
+![image-20231018202552583](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018202552583.png)
+
+有些网站需要在包一层地址 例如 127.0.0.1/jd/xxx  我们就可以在base中直接配置
+
+![image-20231018202717098](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018202717098.png)
+
+可以通过vite的环境变量拿到一些值
+
+![image-20231018202746365](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018202746365.png)
+
+
+
+#### 4.引入Element Plus
+
+![image-20231018203546419](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018203546419.png)
+
+**他这个按需导入的插件配置完以后功能就很强大，不用在像Vant-UI要导入，而是可以在vue组件中直接使用，连同components下的文件也会注册不用导入在使用，但是别的模块还是要导入一下才可以用**
+
+
+
+#### 5.构建用户仓库和pinia持久化
+
+![image-20231018211510257](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018211510257.png)
+
+
+
+**配置index.js统一导出**
+
+改造main.js
+
+![image-20231018211549620](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018211549620.png)
+
+在sotre中新建modules文件夹,index作为大家的出口
+
+![image-20231018211641533](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018211641533.png)
+
+相当于我们借助index导出了user，export * from ' '  这种写法不会把user的默认导出一起导出，只会导出按需导出的
+
+**原理**
+
+![image-20231018211853305](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018211853305.png)
+
+所以页面导入使用的时候用import
+
+![image-20231018211717637](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018211717637.png)
+
+
+
+#### 6.axios配置
+
+![image-20231018220116898](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018220116898.png)
+
+![image-20231018220136799](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018220136799.png)
+
+配置request.js
+
+```js
+import axios from 'axios'
+// 导入token
+import { useUserStore } from '@/store'
+// 导入提示框
+import { ElMessage } from 'element-plus'
+// 导入router
+import router from '@/router'
+
+const baseURL = 'http://big-event-vue-api-t.itheima.net'
+
+const instance = axios.create({
+  // TODO 1. 基础地址，超时时间
+  baseURL,
+  // 超时时间
+  timeout: 10000
+})
+
+// 请求拦截器和响应拦截器都是要根据接口文档和axios实例配置的
+// 请求拦截器
+instance.interceptors.request.use(
+  (config) => {
+    // TODO 2. 携带token
+    const userStore = useUserStore()
+    if (userStore.token) {
+      // 发送请求携带请求头
+      config.headers.Authorization = userStore.token
+    }
+    return config
+  },
+  (err) => Promise.reject(err)
+)
+
+// 响应拦截器
+instance.interceptors.response.use(
+  (res) => {
+    // TODO 4. 摘取核心响应数据
+    if (res.data.code === 0) {
+      // 处理成功
+      return res
+    }
+
+    // TODO 3. 处理业务失败
+    // 处理业务失败，给出提示，抛出错误
+    ElMessage.error(res.data.message || '服务异常')
+    return Promise.reject(res.data)
+  },
+  (err) => {
+    // TODO 5. 处理401错误 特殊错误(权限不足或token过期) => 拦截到登录
+    // 如果401状态码存在就是错误
+    if (err.response?.status === 401) {
+      router.push('/login')
+    }
+
+    // 捕获错误的失败-> 默认的错误，只要给提示
+    ElMessage.error(err.response.data.message || '服务异常')
+    return Promise.reject(err)
+  }
+)
+
+// axios实例默认导出
+export default instance
+// 基地址默认导出
+export { baseURL }
+```
+
+
+
+#### 7.整体路由设计
+
+![image-20231018220347125](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018220347125.png)
+
+![image-20231018220440255](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018220440255.png)
