@@ -5226,3 +5226,86 @@ export { baseURL }
 ![image-20231018220347125](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018220347125.png)
 
 ![image-20231018220440255](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018220440255.png)
+
+
+
+**在App配置一级路由出口，有俩个一级路由**
+
+**在LayoutContainer配置二级路由出口,有五个二级出口**
+
+```js
+import { createRouter, createWebHistory } from 'vue-router'
+
+const router = createRouter({
+  // WebHistory 就是Vue2的history模式  还有一种hash模式
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    // 一级路由2个 登录页(注册)  首页的架子
+    {
+      // 登录  
+      path: '/login',
+      component: () => import('@/views/login/LoginPage.vue')
+    },
+    // 本项目所有二级路由出口都在首页架子
+    {
+      path: '/',
+      component: () => import('@/views/layout/LayoutContainer.vue'),
+      // 访问首页重定向到这 不然就是展示一个空架子
+      redirect: '/article/manage',
+      children: [
+        {
+          // 文章管理  
+          path: '/article/manage',
+          component: () => import('@/views/article/ArticleManage.vue')
+        },
+        {
+          // 频道管理  
+          path: '/article/channel',
+          component: () => import('@/views/article/ArticleChannel.vue')
+        },
+        {
+          // 个人详情  
+          path: '/user/profile',
+          component: () => import('@/views/user/UserProfile.vue')
+        },
+        {
+          // 更换头像  
+          path: '/user/avatar',
+          component: () => import('@/views/user/UserAvatar.vue')
+        },
+        {
+          // 修改密码  
+          path: '/user/password',
+          component: () => import('@/views/user/UserPassWord.vue')
+        }
+      ]
+    }
+  ]
+})
+
+export default router
+```
+
+
+
+### 3.正式开始
+
+#### 1.注册登录页
+
+安装饿了么图标库
+
+pnpm i @element-plus/icons-vue
+
+用饿了么布局快速实现
+
+右边居中是靠把右边容器作为flex  通过flex
+
+  *// 主轴方向设为垂直*
+
+  flex-direction: column;
+
+  // 主轴居中就是在屏幕中间  因为整个屏幕已经分为左右 右边3:6:3 *占据一半*
+
+  justify-content: center;
+
+![1697772197806](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/1697772197806.png)
