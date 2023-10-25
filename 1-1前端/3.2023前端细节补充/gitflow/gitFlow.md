@@ -1,3 +1,21 @@
+❤从master上拉取一个develop分支，在从develop分支拉取feature分支
+
+1.从master拉取develop分支
+
+```bash
+1.在本地master分支上执行   git checkout -b develop
+2.在develop开发 假设新增了一个文件，执行 git add .和 git commit -m 'develop第一次提交'
+3.执行 git branch --set-upstream-to=origin/develop master
+4.执行合并 git merge develop
+5.将更新推送到 git push origin master
+```
+
+
+
+
+
+
+
 **1.stackoverflow上关于如何在master上创建一个分支**
 
 https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github
