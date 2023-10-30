@@ -4,19 +4,34 @@
 
 ```bash
 1.在本地master分支上执行   git checkout -b develop
-2.在develop开发 假设新增了一个文件，执行 git add .和 git commit -m 'develop第一次提交'
-3.执行 git branch --set-upstream-to=origin/develop master
-4.执行合并 git merge develop
-5.将更新推送到 git push origin master
+2.将develop推送到远程 git push origin develop(也可以合并后在更新)
+3.在develop分支上创建feature git checkout -b feature
+4.开发新功能并提交  git add . && git commit -m "Add new feature"
+5.将feature分支提交到远程 git push origin feature
+6.切换到develop分支合并feature  git checkout develop && git merge feature
+7.切换到master分支合并develop git checkout master && git merge develop
+8.更新master git push origin master(没打版本号)
+
+9.更新的事项 
+如果有冲突需要手动解决并提交，打上版本号提交到远程仓库
+git tag -a v1.0.1 -m "Release version 1.0.1"
+git push origin v1.0.1
+git push –-tags(将本地的所有标签推送到远程仓库的命令)
 ```
 
+切换到哪个分支，新建的分支就是基于该分支创建的。例如，如果你从master分支切换到develop分支，然后新建一个feature分支，这个feature分支就是基于develop分支创建的。同理，如果切换回master分支或其它任意分支，新建的分支仍然会基于相应的分支创建。
 
 
 
+**常用的git命令**
+
+![image-20231025142551568](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231025142551568.png)
+
+![image-20231025142428994](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231025142428994.png)
 
 
 
-**1.stackoverflow上关于如何在master上创建一个分支**
+**stackoverflow上关于如何在master上创建一个分支**
 
 https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github
 
@@ -24,7 +39,7 @@ https://www.coder.work/article/187885
 
  
 
-**2.gitflow基本概念**
+**gitflow基本概念**
 
 https://blog.csdn.net/lt6210925/article/details/131263986
 
@@ -36,9 +51,13 @@ https://blog.csdn.net/lt6210925/article/details/131263986
 5. hotfix 叫热修复分支，一般命名为hotfix/4.1.3 为固定某个版本进行修复，当master上遇到严重问题需要修复的时候，就要从master上指定tag拉取。这样做就是为了隔离feature开发和bug修复。hotfix只能从master上拉去，测试通过之后合并会master和develop
 ```
 
- 
+ ![image-20231025144426424](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231025144426424.png)
 
-**3.gitflow完整步骤**
+
+
+
+
+**gitflow完整步骤**
 
 ```bash
 1. 创建仓库
@@ -69,9 +88,7 @@ git push –-tags(将本地的所有标签推送到远程仓库的命令)
 
 
 
-**4. 切换到哪个分支 新建的分支就是基于该分支的吗**
 
-是的，切换到哪个分支，新建的分支就是基于该分支创建的。例如，如果你从master分支切换到develop分支，然后新建一个feature分支，这个feature分支就是基于develop分支创建的。同理，如果切换回master分支或其它任意分支，新建的分支仍然会基于相应的分支创建。
 
  
 

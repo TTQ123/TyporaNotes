@@ -4607,7 +4607,7 @@ const sendMsg = () => {
 
 
 
-### 7.模板引用(vue2也有)
+### 7.模板引用(vue2也有)通过ref
 
 在现代的前端框架中，我们都是尽量避免直接操作DOM的，但是肯定有例外的情况。
 
@@ -4625,7 +4625,7 @@ const sendMsg = () => {
 
 
 
-#### 2.vue3
+#### 2.vue3获取组件和DOM实例
 
 获取DOM
 
@@ -4636,6 +4636,8 @@ const sendMsg = () => {
 
 
 获取子组件
+
+##### 1.defineExpose
 
 **通过defineExpose暴露组件的属性和方法开放给父组件访问**
 
@@ -5039,7 +5041,7 @@ vscode的prettier插件一般在非工程化的项目中才用，正式的项目
 
 #### 2.基于Husky的代码检查工作流
 
-**当我们没有处理到项目的报错，我们确直接向仓库提交，这样明显是不可以的，导致仓库一堆报错。**
+**当我们没有处理到项目的报错，而我们确直接向仓库提交，这样明显是不可以的，导致仓库一堆报错。**
 
 **husky 是一个 git hooks 工具  ( git的钩子工具，可以在特定时机执行特定的命令 )，他可以在提交的时候帮我们检查**
 
@@ -5113,7 +5115,15 @@ vue3不能在compositionApi中用this了
 
 ![image-20231018203546419](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018203546419.png)
 
-**他这个按需导入的插件配置完以后功能就很强大，不用在像Vant-UI要导入，而是可以在vue组件中直接使用，连同components下的文件也会注册不用导入在使用，但是别的模块还是要导入一下才可以用**
+**他这个按需导入的插件配置完以后功能就很强大，不用在像Vant-UI要导入，而是可以在vue组件中直接使用，连同components下的文件也会注册不用导入就可以使用，但是别的模块还是要导入一下才可以用**
+
+![image-20231029225940243](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231029225940243.png)
+
+我们按需导入后在组件里在手动导入时就会报错,但是如果设置了ESlint 我们要去配置一个globals不然会显示报错，因为eslint不知道已经按需导入了
+
+![image-20231029230044654](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231029230044654.png)
+
+
 
 
 
@@ -5294,18 +5304,247 @@ export default router
 
 安装饿了么图标库
 
+```node
 pnpm i @element-plus/icons-vue
-
-用饿了么布局快速实现
-
-右边居中是靠把右边容器作为flex  通过flex
-
-  *// 主轴方向设为垂直*
-
-  flex-direction: column;
-
-  // 主轴居中就是在屏幕中间  因为整个屏幕已经分为左右 右边3:6:3 *占据一半*
-
-  justify-content: center;
+```
 
 ![1697772197806](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/1697772197806.png)
+
+![image-20231029211122337](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231029211122337.png)
+
+![image-20231029211234545](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231029211234545.png)
+
+**利用饿了么布局快速完成布局**
+
+
+
+#### 2.饿了么的注册校验
+
+![image-20231029220348600](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231029220348600.png)
+
+```bash
+1.:model和:rules配置在 el-form
+2.prop配置在el-form-item
+3.v-model配置在表单域的具体表单项
+```
+
+
+
+#### 3.利用饿了么表单进行注册提交预校验
+
+**在表单没有填写时是不能允许他像后台提交的,这时候要给注册按钮注册点击事件**
+
+表单暴露的方法(提前准备好的方法，通过defineExpose暴露给父组件引用)
+
+![image-20231029221219235](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231029221219235.png)
+
+
+
+发起真正的请求
+
+![image-20231029223356307](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231029223356307.png)
+
+饿了么会自己按需导入,但是这个eslint不知道，所以配置一下即可。
+
+
+
+#### 4.登录验证
+
+![image-20231030132536842](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030132536842.png)
+
+![image-20231030132549334](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030132549334.png)
+
+![image-20231030132606997](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030132606997.png)
+
+
+
+#### 5.首页架子
+
+##### 1.利用饿了么布局容器进行搭建
+
+通过饿了么进行首页架子布局
+
+![image-20231030195705405](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030195705405.png)
+
+aside侧边栏通过el-menu(单级菜单)  el-sub-menu(多级菜单)
+
+例子：左侧占满的导航条
+
+```vue
+<style scoped>
+.box {
+  height: 100vh;
+  background-color: #fff;
+}
+</style>
+<template>
+  <el-row class="tac">
+    <el-col :span="4" class="box">
+      <h5 class="mb-2">Default colors</h5>
+      <!-- 整个菜单组件 -->
+      <el-menu
+        default-active="2"
+        class="el-menu-vertical-demo"
+        @open="handleOpen"
+        @close="handleClose"
+      >
+        <!-- 多级菜单 -->
+        <el-sub-menu index="1">
+          <template #title>
+            <el-icon><location /></el-icon>
+            <span>Navigator One</span>
+          </template>
+          <!-- group创建一个分组菜单 -->
+          <!-- 包裹了俩项 -->
+          <el-menu-item-group title="Group One">
+            <el-menu-item index="1-1">item one</el-menu-item>
+            <el-menu-item index="1-2">item two</el-menu-item>
+          </el-menu-item-group>
+          <el-menu-item-group title="Group Two">
+            <el-menu-item index="1-3-1">item three</el-menu-item>
+            <!-- 嵌套一个分组菜单 -->
+            <el-menu-item-group index="1-3-2" title="子分组">
+              <el-menu-item>子菜单项</el-menu-item>
+            </el-menu-item-group>
+          </el-menu-item-group>
+          <!-- 嵌套一个多级菜单 -->
+          <el-sub-menu index="1-4">
+            <template #title>item four</template>
+            <el-menu-item index="1-4-1">item one</el-menu-item>
+            <el-menu-item index="1-4-2">item two</el-menu-item>
+          </el-sub-menu>
+        </el-sub-menu>
+        <el-menu-item index="2">
+          <el-icon><icon-menu /></el-icon>
+          <span>Navigator Two</span>
+        </el-menu-item>
+        <el-menu-item index="3" disabled>
+          <el-icon><document /></el-icon>
+          <span>Navigator Three</span>
+        </el-menu-item>
+        <el-menu-item index="4">
+          <el-icon><setting /></el-icon>
+          <span>Navigator Four</span>
+        </el-menu-item>
+      </el-menu>
+    </el-col>
+    <el-col :span="20">1</el-col>
+  </el-row>
+</template>
+
+<script setup>
+// 饿了么图标组件
+import {
+  Document,
+  Menu as IconMenu,
+  Location,
+  Setting
+} from '@element-plus/icons-vue'
+const handleOpen = (key, keyPath) => {
+  console.log(key, keyPath)
+}
+const handleClose = (key, keyPath) => {
+  console.log(key, keyPath)
+}
+</script>
+```
+
+
+
+![image-20231030193729228](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030193729228.png)
+
+
+
+##### 2.登录访问拦截
+
+`tip: 如果用户没有token并且前往要非登录页,要进行拦截`
+
+![image-20231030203155795](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030203155795.png)
+
+
+
+##### 3.用户基本信息渲染
+
+![image-20231030204635494](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030204635494.png)
+
+
+
+##### 4.下拉菜单设置
+
+通过饿了么下拉菜单
+
+command和handleCommand结合可以设置点击事件
+
+![image-20231030205318646](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030205318646.png)
+
+###### 1.退出功能
+
+![image-20231030223042657](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030223042657.png)
+
+![image-20231030223058107](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030223058107.png)
+
+
+
+#### 6.文章分类架子
+
+1.页面架子用el-card
+
+封装示例
+
+![image-20231030230209384](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030230209384.png)
+
+实际例子
+
+```vue
+<script setup>
+// 该组件需要父传子接收一个title
+defineProps({
+  // 接收prop
+  title: {
+    required: true,
+    type: String
+  }
+})
+</script>
+
+<template>
+  <el-card class="page-container">
+    <!--el-card 具名插槽提供头部-->
+    <template #header>
+      <div class="header">
+        <!--定制标题-->
+        <span>{{ title }}</span>
+        <!--定制右侧按钮-->
+        <div class="extra">
+          <slot name="extra"></slot>
+        </div>
+      </div>
+    </template>
+    <!--默认插槽用来存放页面主体数据( // el-card 默认插槽提供内容)-->
+    <slot></slot>
+  </el-card>
+</template>
+
+<style lang="scss" scoped>
+.page-container {
+  // 父元素的全部
+  min-height: 100%;
+  box-sizing: border-box;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+</style>
+
+```
+
+![image-20231030230338005](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030230338005.png)
+
+
+
+**进行使用**
+
+![image-20231030230438774](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030230438774.png)

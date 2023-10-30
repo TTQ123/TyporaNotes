@@ -14,8 +14,14 @@
 
 
 
-创建go文件
 
-运行 进入到文件夹终端
 
-命令： go run 1.go
+**拉取最新后台项目**
+
+```bash
+1.git pull ....
+2.进入项目终端  配置go env -w GO111MODULE=on go env -w GOPROXY=https://goproxy.cn,direct(go镜像)
+3.下载依赖  go mod tidy
+4.运行项目  go run app.go
+```
+
