@@ -3210,7 +3210,7 @@ display:none，visibility:hiden，opacity:0 这三种；
 
 ## 1.css函数兼容性的问题
 
-**css新特性函数在浏览器的兼容性太差了**
+目前原生css也可以直接变量设置这些东西了
 
 ### 1.--*  设置变量
 
@@ -3470,7 +3470,7 @@ span{
 -->
 
 3.<!--  [设置在父元素里]
-	align-content: 辅轴空白空间的分布
+	align-content: 辅轴空白空间的分布(多行)
 		可选值和justify-content一样
 -->
 
@@ -3652,17 +3652,52 @@ html{
 这样适配以后,只要将设计图里的大小除于40得出结果
 ```
 
+
+
+### 1.最终解决方案
+
+**设置font-size**
+
+![image-20231101133003310](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101133003310.png)
+
+这样你在设计图上量到多少px就写多少rem就可以
+
+
+
+**如果是项目开发可以用px转换vw的插件**
+
+![image-20231101132854494](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101132854494.png)
+
 # 7.媒体查询
 
-![uTools_1669543703682](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669543703682.png)
+![image-20231101141202634](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101141202634.png)
 
-![uTools_1669544413867](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669544413867.png)
+打印的时候可以加上水印。
 
-**这种写法和and意思一样**
 
-![uTools_1669561612645](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669561612645.png)
 
-**,表示或者**
+## 1.width
+
+一般在响应式页面只设置宽度
+
+```bash
+1.min-width 表示最小视口，样式要大于等于指定宽度生效
+2.max-width 表示最大视口，样式要小于等于指定宽度生效
+```
+
+## 2.连接符
+
+![image-20231101142152391](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101142152391.png)
+
+图中生效的宽度在500-800之间
+
+
+
+## 3.响应式布局
+
+**响应式适合用在页面内容较少且简单的页面，如果内容很多就适合移动端一套页面，PC端一套页面**
+
+![image-20231101193818645](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101193818645.png)
 
 
 
@@ -3742,6 +3777,14 @@ html{
 
 ## 3.flex布局
 
+简介：
+
+一个元素既可以是弹性容器也可以是弹性子元素，不会冲突。
+
+![image-20231101134753227](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101134753227.png)
+
+
+
 ![image-20231005023154083](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023154083.png)
 
 
@@ -3752,21 +3795,33 @@ html{
 
 ![image-20231005023309521](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023309521.png)
 
-2.定义子元素在主轴方向的对齐
+
+
+2.定义弹性子元素在主轴方向的对齐
 
 ![image-20231005023334482](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023334482.png)
 
-3.定义子元素在纵轴的对齐方式（单行）
+
+
+3.定义弹性子元素在纵轴的对齐方式（单行）
 
 ![image-20231005023513745](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023513745.png)
 
-4.超出主轴长度是否换行
+
+
+4.定义多行项目在纵轴方向上的对齐
+
+![image-20231005024057713](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005024057713.png)
+
+
+
+5.超出主轴长度是否换行
 
 ![image-20231005023627462](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005023627462.png)
 
-5.定义多行项目在纵轴方向上的对齐
 
-![image-20231005024057713](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005024057713.png)
+
+6.flex-flow是flex-direction和flex-warp的简写
 
 
 
@@ -3776,17 +3831,34 @@ html{
 
 ![image-20231005024643258](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005024643258.png)
 
+
+
 2.align-self  允许子元素设置自己的纵轴对齐方式(设置自己的align-item)
 
 ![image-20231005024810355](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005024810355.png)
+
+
 
 3.设置元素的放大伸缩默认值
 
 ![image-20231005025052744](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231005025052744.png)
 
-- **flex-grow：定义元素在主轴方向上的弹性大小，即默认情况下，元素会根据剩余空间的大小自动增长。例如，如果一个元素的 flex-grow 值为 2，则它会在水平方向上占据两个剩余空间。**
-- **flex-shrink：定义元素在主轴方向上的弹性大小，即默认情况下，元素会根据剩余空间的大小自动收缩。例如，如果一个元素的 flex-shrink 值为 1，则当空间不足时，它会自动缩小。**
-- **flex-basis：定义元素在主轴方向上的初始大小。例如，如果一个元素的 flex-basis 值为 100px，则它在水平方向上占据 100 像素的初始空间。**
+```bash
+1.flex-grow：定义元素在主轴方向上的弹性大小，即默认情况下，元素会根据剩余空间的大小自动增长。例如，如果一个元素的 flex-grow 值为 2，则它会在水平方向上占据两个剩余空间。
+2.flex-shrink：定义元素在主轴方向上的弹性大小，即默认情况下，元素会根据剩余空间的大小自动收缩。例如，如果一个元素的 flex-shrink 值为 1，则当空间不足时，它会自动缩小,如果设置为0,则他不会缩小
+3.flex-basis：定义元素在主轴方向上的初始大小(项目占据的主轴空间)。例如，如果一个元素的 flex-basis 值为 100px，则它在水平方向上占据 100 像素的初始空间
+4.flex:1 不管内容多少，一般都是平分空间，空间大小都一致
+5.flex:1 1 auto;有剩余空间就放大，空间不够就缩小，项目长度为原本的长度
+6.felx:auto 的效果和 flex： 1 1 auto 相同  
+```
+
+
+
+
+
+
+
+
 
 
 
@@ -4007,6 +4079,8 @@ body{
 var()
 var()函数可以代替元素中任何属性中的值的任何部分。var()函数不能作为属性名、选择器或者其他除了属性值之外的值。（这样做通常会产生无效的语法或者一个没有关联到变量的值。）
 ```
+
+
 
 ## 10.图片作为背景
 

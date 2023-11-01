@@ -5548,3 +5548,113 @@ defineProps({
 **进行使用**
 
 ![image-20231030230438774](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231030230438774.png)
+
+
+
+```bash
+1.封装请求文章分类的详情接口
+
+2.利用el-table进行数据展示
+
+3.添加一个el-empty
+```
+
+![image-20231101210811845](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101210811845.png)
+
+```vue
+<!-- 文章管理 -->
+<script setup>
+import PageContainer from '../../components/PageContainer.vue'
+import { onMounted, ref } from 'vue'
+import { artGetChannelsService } from '@/api/article'
+import { Edit } from '@element-plus/icons-vue'
+import { Delete } from '@element-plus/icons-vue'
+// 数据列表
+const channelList = ref([])
+// loading
+const loading = ref(false)
+
+// 获取文章详情
+const getChannelList = async () => {
+  // 发请求时打开loading
+  loading.value = true
+  const res = await artGetChannelsService()
+  channelList.value = res.data.data
+  // 关闭loading
+  loading.value = false
+}
+
+onMounted(() => {
+  getChannelList()
+})
+
+// 设置表格的编辑方法
+const onEditChannel = (row, $index) => {
+  console.log(row, $index)
+}
+// 设置表格的删除方法
+const onDeleteChannel = (row, $index) => {
+  console.log(row, $index)
+}
+</script>
+
+<template>
+  <!-- 传过去一个prop -->
+  <PageContainer title="文章分类">
+    <template #extra>
+      <el-button type="primary">添加分类</el-button>
+    </template>
+    <!-- 主体部分
+          使用了el-table :data是数据源 height固定表格高度
+          el-table-column type=index 可以设置序号 label设置列名 prop可以接收data中的数据来显示
+          el-table-column可以直接自定义列模板 通过slot的作用域插槽实现的
+            row就是channelList的一项 $index表示下标
+          有时候请求回来没有数据，用el-empty空状态更好看 会显示一个图片  
+      -->
+    <el-table
+      v-loading="loading"
+      :data="channelList"
+      style="width: 100%"
+      height="500"
+    >
+      <el-table-column type="index" label="序号" width="60"></el-table-column>
+      <el-table-column prop="cate_name" label="分类名称"></el-table-column>
+      <el-table-column prop="cate_alias" label="分类别名"></el-table-column>
+      <el-table-column label="操作" width="100">
+        <template #default="{ row, $index }">
+          <el-button
+            circle
+            type="primary"
+            plain
+            :icon="Edit"
+            @click="onEditChannel(row, $index)"
+          ></el-button>
+          <el-button
+            circle
+            plain
+            type="danger"
+            :icon="Delete"
+            @click="onDeleteChannel(row, $index)"
+          ></el-button>
+        </template>
+      </el-table-column>
+
+      <template #empty>
+        <el-empty description="没有数据"></el-empty>
+      </template>
+    </el-table>
+  </PageContainer>
+</template>
+```
+
+
+
+##### 使用饿了么弹层设置添加和编辑和删除方法
+
+![image-20231101213047359](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101213047359.png)
+
+通过el-dialog封装我们的弹层组件
+
+![image-20231101213128725](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101213128725.png)
+
+![image-20231101213145573](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101213145573.png)
