@@ -1622,6 +1622,38 @@ methods:{
 
 
 
+##### 1.v-model在vue2和vue3中的使用有区别
+
+vue3中使用
+
+父组件v-model绑定子组件,提供变量绑定v-model
+
+![image-20231107213051429](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107213051429.png)
+
+![image-20231107213117833](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107213117833.png)
+
+子组件绑定 :modelValue数据 和  @update:modelValue事件
+
+ ![image-20231107213358390](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107213358390.png)
+
+![image-20231107213512616](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107213512616.png)
+
+这个相当于整合了vue2 sync修饰符
+
+![image-20231107214637227](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107214637227.png)
+
+
+
+改了以后就变成这样
+
+![image-20231107215128401](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107215128401.png)
+
+![image-20231107215157229](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107215157229.png)
+
+![image-20231107215228110](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107215228110.png)
+
+
+
 #### 4.sync修饰符
 
 ![image-20230830041942369](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230830041942369.png)
@@ -2544,7 +2576,7 @@ new Vue({
 
 ```js
 1.route是用来获取路由信息的，router是用来操作路由的。
-2.route对象是一个路由信息对象，里面主要包含路由的一些基本信息，包含当前的路径，参数，query对象等。而router对象则是用来定义路由表，实现页面跳转等功能。
+2.route对象是一个路由信息对象，里面主要包含路由的一些基本信息，包含当前的路径，跳转路径，参数，query对象等。而router对象则是用来定义路由表，实现页面跳转等功能。
 3.query和params属性都是用来传递参数的。其中，params(动态路由传参)是在路由路径上直接绑定的，形式是 /path/:paramName，而query(查询参数传参)则是通过 ?key=value 的形式添加在路由地址后面 。
 ```
 
@@ -2561,6 +2593,8 @@ new Vue({
 ##### 2.编程式导航路由传参
 
 ###### 1.path的路径跳转传参 --> 查询参数传参
+
+**不用配置路径/id,params时需要**
 
 ![image-20230906215209797](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906215209797.png)
 
@@ -2611,6 +2645,16 @@ new Vue({
 ![image-20230906220542827](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906220542827.png)
 
 `path适合路径简单，name适合路径复杂，query适合多个参数，动态路由参数适合单个参数`
+
+
+
+###### 6.具体使用
+
+   ![image-20231106113220673](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231106113220673.png)
+
+![image-20231106113255713](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231106113255713.png)
+
+
 
 
 
@@ -5149,7 +5193,7 @@ vue3不能在compositionApi中用this了
 
 ![image-20231018211853305](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018211853305.png)
 
-所以页面导入使用的时候用import
+所以页面导入使用的时候用import {store}  from '@/stores'
 
 ![image-20231018211717637](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018211717637.png)
 
@@ -5232,6 +5276,12 @@ export { baseURL }
 
 
 #### 7.整体路由设计
+
+##### 1.router跳转的俩种方式
+
+![image-20231105222029345](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231105222029345.png)
+
+##### 2.开始设计
 
 ![image-20231018220347125](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231018220347125.png)
 
@@ -5649,7 +5699,7 @@ const onDeleteChannel = (row, $index) => {
 
 
 
-##### 使用饿了么弹层设置添加和编辑和删除方法
+##### 使用饿了么弹层封装弹层组件 ChannelEdit
 
 ![image-20231101213047359](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101213047359.png)
 
@@ -5658,3 +5708,262 @@ const onDeleteChannel = (row, $index) => {
 ![image-20231101213128725](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101213128725.png)
 
 ![image-20231101213145573](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231101213145573.png)
+
+
+
+准备弹层表单
+
+准备数据和校验规则
+
+![image-20231102211842235](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102211842235.png)
+
+准备表单 放入前面准备的div内容部分
+
+![image-20231102211924303](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102211924303.png)
+
+![image-20231102212012306](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102212012306.png)
+
+确认提交
+
+![image-20231102212049556](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102212049556.png)
+
+![image-20231102212057485](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102212057485.png)
+
+删除功能
+
+![image-20231102213516257](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102213516257.png)
+
+
+
+#### 7.文章管理模块
+
+##### 1.搭建基本架子 通过el-table
+
+```vue
+<!-- 文章管理 -->
+<script setup>
+import PageContainer from '../../components/PageContainer.vue'
+import { Delete, Edit } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+// 假数据
+const articleList = ref([
+  {
+    id: 5961,
+    title: '新的文章啊',
+    pub_date: '2022-07-10 14:53:52.604',
+    state: '已发布',
+    cate_name: '体育'
+  },
+  {
+    id: 5962,
+    title: '新的文章啊',
+    pub_date: '2022-07-10 14:54:30.904',
+    state: '已发布',
+    cate_name: '体育'
+  }
+])
+
+// 编辑逻辑
+const onEditArticle = (row) => {
+  console.log(row)
+}
+// 删除逻辑
+const onDeleteArticle = (row) => {
+  console.log(row)
+}
+</script>
+
+<template>
+  <!-- 传过去一个prop -->
+  <PageContainer title="文章管理">
+    <!-- 通过template #extra来分发具体内容 -->
+    <template #extra>
+      <el-button type="primary">发布文章</el-button>
+    </template>
+    <!-- 表单区域 -->
+    <el-form inline>
+      <el-form-item label="文章分类:">
+        <el-select>
+          <!-- label是显示的值,value是收集起来传递给后台的值 -->
+          <el-option label="新闻" value="110"></el-option>
+          <el-option label="体育" value="111"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="发布状态:">
+        <el-select>
+          <!-- label是显示的值,value是收集起来传递给后台的值(通过中文标记) -->
+          <el-option label="已发布" value="已发布"></el-option>
+          <el-option label="草稿" value="草稿"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary">搜索</el-button>
+        <el-button>重置</el-button>
+      </el-form-item>
+    </el-form>
+    <!-- 表格区域 -->
+    <!-- data配置数据源 prop对应data的每一项 label是配置显示 -->
+    <el-table :data="articleList" style="width: 100%">
+      <el-table-column label="文章标题" width="400">
+        <!-- 饿了么表格支持自定义列模板 row就是:data传入的数据 -->
+        <template #default="{ row }">
+          <!-- 饿了么链接组件 type配置颜色 :underline取消下滑线 -->
+          <el-link type="primary" :underline="false">{{ row.title }}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="分类" prop="cate_name"></el-table-column>
+      <el-table-column label="发表时间" prop="pub_date"></el-table-column>
+      <el-table-column label="状态" prop="state"></el-table-column>
+      <el-table-column label="操作" width="100">
+        <!-- 利用作用域插槽的row可以拿到当前行的数据 相当于v-for时的item -->
+        <template #default="{ row }">
+          <el-button
+            :icon="Edit"
+            circle
+            plain
+            type="primary"
+            @click="onEditArticle(row)"
+          ></el-button>
+          <el-button
+            :icon="Delete"
+            circle
+            plain
+            type="danger"
+            @click="onDeleteArticle(row)"
+          ></el-button>
+        </template>
+      </el-table-column>
+      <!-- 表格没数据时显示空白图片 -->
+      <template #empty>
+        <el-empty description="没有数据" />
+      </template>
+    </el-table>
+  </PageContainer>
+</template>
+
+<style lang="scss" scoped></style>
+```
+
+##### 2.饿了么UI中文配置
+
+默认时候饿了么ui用的是英文包，组件显示的会是英文
+
+![image-20231107153345678](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107153345678.png)
+
+如何修改
+
+![image-20231107153450741](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107153450741.png)
+
+![image-20231107153739051](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107153739051.png)
+
+
+
+在我们的项目中不需要中英文切换,所以直接设置成全局
+
+![image-20231107154538559](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231107154538559.png)
+
+
+
+##### 3.处理文章分类
+
+文章分类需要动态渲染，发布状态是写死的。
+
+由于文章分类在项目中多处用到，所以提取出来封装成一个组件。
+
+这里要用到父子组件v-model双向绑定
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 1.接口
+
+## 1.三种参数
+
+![image-20231102214725589](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102214725589.png)
+
+header存在http请求头，一般我们会为每个请求带上header统一设置
+
+![image-20231102214954170](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102214954170.png)
+
+params参数存在url地址中
+
+
+
+body参数存在http请求体中
+
+![image-20231102214742577](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102214742577.png)
+
+
+
+## 2.根据接口文档来判断参数传递方式
+
+params传参
+
+![image-20231102215105269](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215105269.png)
+
+![image-20231102215121844](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215121844.png)
+
+
+
+body传参
+
+![image-20231102215149733](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215149733.png)
+
+![image-20231102215213815](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215213815.png)
