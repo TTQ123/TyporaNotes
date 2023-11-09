@@ -1377,6 +1377,74 @@ const changeTitle = () => {
 
 ![image-20230823005141169](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230823005141169.png)
 
+###### 1.属性还分为prop和attribute
+
+在 Vue 中，父组件给子组件传递的属性可以分为两种类型：props 和 attributes。
+
+1. Props：Props 是父组件向子组件传递的数据，它们被显式地声明在子组件的 `props` 选项中。Props 是通过组件实例的属性方式传递给子组件，子组件可以在其模板中直接使用这些 props。Props 是响应式的，当父组件的数据发生变化时，子组件中的 props 也会相应更新。
+
+```html
+<!-- 父组件中传递 props -->
+<template>
+  <child-component :message="parentMessage" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      parentMessage: 'Hello from parent!'
+    };
+  }
+};
+</script>
+
+<!-- 子组件中接收 props -->
+<template>
+  <div>{{ message }}</div>
+</template>
+
+<script>
+export default {
+  props: {
+    message: String
+  }
+};
+</script>
+```
+
+在上面的示例中，`message` 是一个 prop，父组件通过 `:message` 的方式将数据传递给子组件，并在子组件中使用 `message` 来访问这个 prop 的值。
+
+1. Attributes：Attributes 是父组件向子组件传递的非 props 属性。当父组件将一个非 props 属性传递给子组件时，它会被作为一个 HTML attribute 传递给子组件的根元素。子组件可以通过 `$attrs` 属性访问这些传递的 attributes。
+
+```html
+<!-- 父组件中传递 attributes -->
+<template>
+  <child-component title="Child Component" />
+</template>
+
+<!-- 子组件中接收 attributes -->
+<template>
+  <div>{{ $attrs.title }}</div>
+</template>
+```
+
+在上面的示例中，父组件传递了一个名为 `title` 的 attribute 给子组件，子组件可以通过 `$attrs` 来访问这个 attribute 的值。
+
+需要注意的是，props 和 attributes 之间有一些区别：
+
+- Props 是显式地声明在子组件中，而 attributes 是父组件传递给子组件的非 props 属性。
+- Props 是响应式的，而 attributes 不是响应式的。
+- Props 可以通过子组件的模板直接访问，而 attributes 需要通过 `$attrs` 属性来访问。
+
+###### 2.在vue3中接收attributes 
+
+![image-20231108230305521](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108230305521.png)
+
+![image-20231108230328385](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108230328385.png)
+
+![image-20231108230341080](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108230341080.png)
+
 
 
 ##### 2.porps校验
@@ -4333,6 +4401,64 @@ export default {
 
 
 
+## 2.vue2补充
+
+### 1.过滤器
+
+在 Vue 2 中，过滤器（Filters）是一种用于在模板中格式化数据的技术。过滤器可以用于在数据呈现之前对数据进行一些处理。在 Vue 2 中，你可以使用过滤器来改变数据的显示方式，比如格式化日期、格式化文本等。
+
+### 定义过滤器
+
+在 Vue 2 中，你可以使用 `Vue.filter` 方法来定义全局过滤器，也可以在组件内部使用 `filters` 选项来定义局部过滤器。
+
+#### 全局过滤器
+
+```javascript
+Vue.filter('capitalize', function (value) {
+  if (!value) return '';
+  value = value.toString();
+  return value.charAt(0).toUpperCase() + value.slice(1);
+});
+```
+
+在这个例子中，我们定义了一个名为 `capitalize` 的全局过滤器，它接受一个值作为输入，并将该值的首字母大写后返回。
+
+#### 局部过滤器
+
+```javascript
+export default {
+  // ...
+  filters: {
+    capitalize: function (value) {
+      if (!value) return '';
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+  }
+  // ...
+};
+```
+
+在这个例子中，我们在组件内部使用 `filters` 选项定义了一个名为 `capitalize` 的局部过滤器。
+
+### 在模板中使用过滤器
+
+一旦过滤器定义完成，你可以在模板中使用过滤器来处理数据。
+
+```vue
+<template>
+  <div>
+    <p>{{ message | capitalize }}</p>
+  </div>
+</template>
+```
+
+在这个例子中，我们使用了名为 `capitalize` 的过滤器来处理 `message` 的值。
+
+
+
+
+
 # vue3
 
 ## 1.vue3的优势
@@ -5866,15 +5992,17 @@ const onDeleteArticle = (row) => {
 
 ##### 3.处理文章分类
 
-文章分类需要动态渲染，发布状态是写死的。
+文章分类的选择框需要动态渲染，发布状态是写死的。
 
-由于文章分类在项目中多处用到，所以提取出来封装成一个组件。
+由于文章分类选择框在项目中多处用到，所以提取出来封装成一个组件。
 
 这里要用到父子组件v-model双向绑定
 
 
 
+获取文章详情
 
+![image-20231108141638292](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108141638292.png)
 
 
 
@@ -5882,43 +6010,158 @@ const onDeleteArticle = (row) => {
 
 
 
+###### 1.vue3格式化时间处理
 
+Vue 3 的模板语法允许你调用函数来处理数据，以便在模板中展示处理后的结果。
 
+我们可以在获取到数据后，调用方法对时间进行处理。
 
+在饿了么中给我们封装好了时间处理函数可以直接调用
 
+![image-20231108141821616](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108141821616.png)
 
+![image-20231108141849222](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108141849222.png)
 
+![image-20231108141928765](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108141928765.png)
 
 
 
+###### 2.❤利用饿了么组件分页渲染
 
+**原生的比较麻烦**
 
+组件属性分析
 
+```bash
+:current-page="params.pagenum"  // 当前页
+:page-size="params.pagesize"  // 每页条数
+:page-sizes="[2, 3, 5]"  // 可以选择的每页条数选项
+:background="true"  // 开启按钮背景色
+layout="jumper, total, sizes, prev, pager, next"  // 调整组件布局,谁在前面就先显示谁
+:total="total" // 总条数
+@size-change="onSizeChange" // 更改当前页
+@current-change="onCurrentChange" // 更改每页条数
+```
 
 
 
+![image-20231108144608469](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108144608469.png)
 
+饿了么分页组件支持自定义样式 style 该组件默认开启了flex 所以我们可以调整位置
 
+函数处理的逻辑，基于当前页或者每页条数重新渲染数据
 
+![image-20231108144726044](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108144726044.png)
 
+添加loading效果
 
+![image-20231108211312227](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108211312227.png)
 
 
 
+搜索和重置
 
+![image-20231108211900241](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108211900241.png)
 
 
 
+###### 3.发布文章和编辑文章
 
+利用饿了么抽屉组件 el-drawer
 
+![image-20231108212026273](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108212026273.png)
 
+![image-20231108212349176](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231108212349176.png)
 
+完善抽屉结构 抽离封装成一个组件
 
 
 
+**利用饿了么上传组件 完成图片上传**
 
+结构
 
+```bash
+ 		<!-- 文件上传分为俩种 所有数据一起提交或者是一导入文件就提交 一般都是采用第一种 避免垃圾文件-->
+        <!-- 我们要根据接口文档来分析 如果有单独提交文件的接口那就可以一导入就提交 -->
+        <!-- 文件的上传要用到异步的 Body 参数 (application/form-data)的方式提交 -->
+        <!-- 文件上传后后台会给我们返回一个url地址 -->
 
+        <!-- 由于饿了么plus是默认自动上传图片的 所以我们要进行配置
+             默认的action表示提交地址 默认提交方式post 提交名称 file  使用auto-upload来关闭
+             只需要进行前端的本地预览
+                  语法: URL.createObjectURL(....) 会返回一个地址可以预览 将来我们也要讲这个放入表单中提交
+        -->
+        <el-upload
+          class="avatar-uploader"
+          :auto-upload="false"
+          :show-file-list="false"
+          :on-change="onSelectFile"
+        >
+          <!-- 默认显示 + 号 -->
+          <img v-if="imgUrl" :src="imgUrl" class="avatar" />
+          <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+        </el-upload>
+```
+
+需要配置上传逻辑
+
+```js
+// 图片上传的相关逻辑
+const imgUrl = ref('')
+
+// 上传文件时的钩子函数(可以是多文件的,此处是单文件上传 多文件可以在第二个参数拿到)
+const onSelectFile = (uploadFile) => {
+  // raw 存储的是图片信息  uploadFile存的东西更多
+  imgUrl.value = URL.createObjectURL(uploadFile.raw) // 会返回一个前端预览地址，可以让我们预览图片
+  console.log(imgUrl.value)
+  // 将返回的地址存入表单对象 用于以后发起请求
+  formModel.value.cover_img = uploadFile.raw
+}
+```
+
+样式美化
+
+```scss
+<style lang="scss" scoped>
+.avatar-uploader {
+  // deep() 在scss中表示选中作用域中的子元素
+  :deep() {
+    .avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+    .el-upload {
+      border: 1px dashed var(--el-border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: var(--el-transition-duration-fast);
+    }
+    .el-upload:hover {
+      border-color: var(--el-color-primary);
+    }
+    .el-icon.avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 178px;
+      height: 178px;
+      text-align: center;
+    }
+  }
+}
+</style>
+```
+
+
+
+**利用富文本编辑器vue-quill完成内容编辑模块**
+
+![image-20231109114519828](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231109114519828.png)
+
+![image-20231109114540156](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231109114540156.png)
 
 
 
@@ -5926,44 +6169,3 @@ const onDeleteArticle = (row) => {
 
 
 
-
-
-
-
-
-
-# 1.接口
-
-## 1.三种参数
-
-![image-20231102214725589](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102214725589.png)
-
-header存在http请求头，一般我们会为每个请求带上header统一设置
-
-![image-20231102214954170](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102214954170.png)
-
-params参数存在url地址中
-
-
-
-body参数存在http请求体中
-
-![image-20231102214742577](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102214742577.png)
-
-
-
-## 2.根据接口文档来判断参数传递方式
-
-params传参
-
-![image-20231102215105269](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215105269.png)
-
-![image-20231102215121844](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215121844.png)
-
-
-
-body传参
-
-![image-20231102215149733](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215149733.png)
-
-![image-20231102215213815](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102215213815.png)
