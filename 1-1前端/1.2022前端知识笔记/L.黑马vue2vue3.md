@@ -5147,6 +5147,8 @@ store在底层是一个用reactive包装的对象，reactive底层实现的是pr
 
 pnpm format是借助 Prettier对代码进行格式化
 
+
+
 #### 1.配置代码风格
 
 现在的项目都用eslint搭配prettier来进行代码规范和代码美化
@@ -6162,6 +6164,8 @@ const onSelectFile = (uploadFile) => {
 ![image-20231109114519828](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231109114519828.png)
 
 ![image-20231109114540156](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231109114540156.png)
+
+
 
 
 
