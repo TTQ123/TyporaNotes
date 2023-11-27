@@ -6173,3 +6173,44 @@ const onSelectFile = (uploadFile) => {
 
 
 
+
+
+# 补充1:vue如何挂载全局变量
+
+1.定义全局变量专用模块
+
+![image-20231127124515219](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127124515219.png)
+
+![image-20231127124531838](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127124531838.png)
+
+2.挂载到vue的原型链上面去
+
+![image-20231127125208370](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127125208370.png)
+
+![image-20231127125226548](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127125226548.png)
+
+
+
+setup语法糖访问
+
+![image-20231127125248601](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127125248601.png)
+
+也可以用`getCurrentInstance` 函数
+
+![image-20231127125312453](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127125312453.png)
+
+![image-20231127125335927](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127125335927.png)
+
+
+
+# 补充2：minxis混入
+
+在vue2中用混入复用一些组件的公共逻辑，但是在vue3中用组合式函数去封装更推荐
+
+vue3封装
+
+![image-20231127130043503](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127130043503.png)
+
+![image-20231127130126103](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127130126103.png)
+
+![](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127130105294.png)
