@@ -22,6 +22,10 @@
 
 ### 3.响应性数据
 
+**其实响应式的底层本质，是通过数据和一些函数进行绑定，当数据更新时触发函数重新执行。**
+
+**例如模板其实就是render函数，当数据发生变化时，render函数会重新执行，于是模板就重新渲染了**
+
 ![image-20230814222849718](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814222849718.png)
 
 ![image-20230814222924906](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814222924906.png)
@@ -34,7 +38,7 @@
 
 **data的值不能是全中文的，不然在vue调试工具是不能显示的**
 
-## 
+
 
 ## 2.vue指令
 
@@ -64,7 +68,7 @@
 
 ![image-20230814231114383](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814231114383.png)
 
-**vue2中，data声明的数据(选项式API)只能在模板中直接使用，无法在methods中使用，需要通过 `实例.数据` 或者 `this.数据` 来获取**
+**vue2中，data声明的数据(选项式API)只能在模板中直接使用，无法在methods中直接使用，需要通过 `实例.数据` 或者 `this.数据` 来获取**
 
 ![image-20230814232043669](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814232043669.png)
 
@@ -74,11 +78,15 @@
 
 
 
-
-
 #### 1.vue2和vue3中this的区别
 
 **VUE3中已经没有了this，因为他用的是组合式API，想要this可以用ref去代替获取到数据的值，或者是getCurrentInstance（）方法，这个方法返回了ctx和proxy**
+
+![image-20231130104853515](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130104853515.png)
+
+```bash
+1. 在 vue3 中，我们可以通过ref绑定自身的DOM元素或者是绑定子组件，使用defineExpose暴露出来的方法
+```
 
 ![image-20230814232841350](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814232841350.png)
 
@@ -232,11 +240,21 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
 
 **@事件名.stop的原理**
 
+就是调用了原生的e.stopPropagation()
+
+设置了这个事件后，事件就不会向上冒泡到父元素了
+
 ![image-20230815221341970](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230815221341970.png)
 
 
 
 ### 10.v-bind对于css样式的控制(操作css和style)
+
+在vue中我们仍然可以使用伪类选择器，但是我们更推荐:class或:style
+
+使用`:class`指令可以更好地与 Vue 的响应式数据配合，使得样式能够根据数据的变化而动态地更新，这是 Vue 中推荐的样式控制方式。
+
+
 
 #### 1.操作css
 

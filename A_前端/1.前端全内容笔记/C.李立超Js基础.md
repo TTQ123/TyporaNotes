@@ -6760,7 +6760,21 @@ class MyClass{
 </html>
 ```
 
+
+
 ## 21.事件对象简介
+
+```bash
+                event 事件
+                    - 事件对象
+                        - 事件对象是由浏览器在事件触发时所创建的对象，这个对象中封装了事件相关的各种信息
+                        - 通过事件对象可以获取到事件的详细信息
+                            比如：鼠标的坐标、键盘的按键..
+                        - 浏览器在创建事件对象后，会将事件对象作为响应函数的参数传递，
+                            所以我们可以在事件的回调函数中定义一个形参来接收事件对象
+```
+
+
 
 ```html
 <!DOCTYPE html>
@@ -6783,27 +6797,16 @@ class MyClass{
         <div id="box1"></div>
 
         <script>
-            /* 
-                event 事件
-                    - 事件对象
-                        - 事件对象是由浏览器在事件触发时所创建的对象，
-                            这个对象中封装了事件相关的各种信息
-                        - 通过事件对象可以获取到事件的详细信息
-                            比如：鼠标的坐标、键盘的按键..
-                        - 浏览器在创建事件对象后，会将事件对象作为响应函数的参数传递，
-                            所以我们可以在事件的回调函数中定义一个形参来接收事件对象
-            */
-
             const box1 = document.getElementById("box1")
 
-            // box1.onmousemove = event => {  创建参数为event的函数
+            // box1.onmousemove = (event) => {  创建参数为event的函数
             //     console.log(event)
             // 	   当箭头函数中只有一个参数时，可以省略()。建议不省略
             // }
 
             box1.addEventListener("mousemove", event => {
                 console.log(event.clientX, event.clientY)
-
+                // 将鼠标坐标设置为box1的文本内容
                 box1.textContent = event.clientX + "," + event.clientY
             })
         </script>
@@ -6811,7 +6814,28 @@ class MyClass{
 </html>
 ```
 
+
+
 ## 22.事件对象event详解
+
+```bash
+            在DOM中存在着多种不同类型的事件对象
+                - 多种事件对象有一个共同的祖先 Event
+                    - event.target 触发事件的对象
+                    - this是绑定事件的对象,但是由于冒泡的存在,触发事件的对象是不确定的,2者不一定相等
+                    - event.currentTarget 绑定事件的对象（和this一样）
+                    - event.stopPropagation() 停止事件的传导
+                    - event.preventDefault() 取消元素的默认行为
+                - 事件的冒泡（bubble）
+                    - 事件的冒泡就是指事件的向上传导(好像是微软搞出来的,向下传递时网警搞出来的)
+                    - 当元素上的某个事件被触发后，其祖先元素上的相同事件也会同时被触发
+                    - ❤❤冒泡是默认存在的,和绑定没绑定事件无关
+                    - 冒泡的存在大大的简化了代码的编写，但是在一些场景下我们并不希望冒泡存在
+                        不希望事件冒泡时，可以通过事件对象来取消冒泡
+                         -event.stopPropagation() // 取消事件的传导
+```
+
+
 
 ```html
         <style>
@@ -6844,30 +6868,15 @@ class MyClass{
         <a id="chao" href="https://lilichao.com">超链接</a>
 
         <script>
-            /* 
-            在DOM中存在着多种不同类型的事件对象
-                - 多种事件对象有一个共同的祖先 Event
-                    - event.target 触发事件的对象
-                      this是绑定事件的对象,但是由于冒泡的存在,触发事件的对象是不确定的,2者不一定相等
-                    - event.currentTarget 绑定事件的对象（和this一样）
-                    - event.stopPropagation() 停止事件的传导
-                    - event.preventDefault() 取消默认行为
-                - 事件的冒泡（bubble）
-                    - 事件的冒泡就是指事件的向上传导
-                    - 当元素上的某个事件被触发后，其祖先元素上的相同事件也会同时被触发
-                    - 冒泡是默认存在的,和绑定没绑定事件无关
-                    - 冒泡的存在大大的简化了代码的编写，但是在一些场景下我们并不希望冒泡存在
-                        不希望事件冒泡时，可以通过事件对象来取消冒泡
-                         -event.stopPropagation() // 取消事件的传导
-        */
-            
             const box1 = document.getElementById("box1")
             const box2 = document.getElementById("box2")
             const box3 = document.getElementById("box3")
             const chao = document.getElementById("chao")
 
             chao.addEventListener("click", (event) => {
-                event.preventDefault() // 取消默认行为(代替return false,不考虑使用绑定事件响应函数的方式)
+                // 取消默认行为(代替return false,不考虑使用绑定事件响应函数的方式)
+                // 设置后a标签失去了跳转的默认行为
+                event.preventDefault() 
                 alert("被点了~~~")
 
             })
@@ -6877,8 +6886,8 @@ class MyClass{
                 /* 
                 在事件的响应函数中：
                     event.target 表示的是触发事件的对象
-                    this 绑定事件的对象
-            */
+                    this 是绑定事件的对象
+            	*/
                 // console.log(event.target)
                 // console.log(this)
 
@@ -6898,6 +6907,8 @@ class MyClass{
             // })
         </script>
 ```
+
+
 
 ## 23.练习冒泡(冒泡的优点)
 
@@ -6954,10 +6965,10 @@ class MyClass{
         /*
             使小绿球可以跟随鼠标一起移动
             
-            事件的冒泡和元素的样式无关，之和结构相关
+            事件的冒泡和元素的样式无关，和结构相关
 
             鼠标在box2中移动时,按理应该触发box2的事件
-            然而box2会一直传导导document层,从而触发document的事件(祖先和子元素一样的事件都会被chu'fa)
+            然而box2会一直传导导document层,从而触发document的事件(祖先和子元素一样的事件都会被触发)
         */
 
         const box1 = document.getElementById("box1")

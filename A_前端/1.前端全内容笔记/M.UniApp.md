@@ -363,6 +363,8 @@ index.vue
 
 如果需要自定义easycom就要自定义设置，看官网
 
+**easycom在pages.json也是一样**
+
 #### 1.给组件设置样式
 
 在vue中，可以直接给引入的组件设置不一样的样式
@@ -592,6 +594,8 @@ js编程方式....
 
 
 
+
+
 #### 2.uni.redirectTo
 
 
@@ -610,7 +614,7 @@ js编程方式....
 
 ### 3.参数传递
 
-**❤在uni-app中，`navigator`组件本身并不能直接传递参数。**
+![image-20231203192731514](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203192731514.png)
 
 页面携带参数
 
@@ -618,7 +622,7 @@ js编程方式....
 
 ![image-20231127111308279](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127111308279.png)
 
-跳转后的页面接收参数(onLoad生命周期内)
+**跳转后的页面接收参数(必须在onLoad生命周期内)**
 
 ![image-20231127110939355](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127110939355.png)
 
@@ -1044,3 +1048,778 @@ my组件
 </style>
 ```
 
+
+
+## 7.运行环境及平台配置
+
+![image-20231128165439847](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128165439847.png)
+
+![image-20231128165741600](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128165741600.png)
+
+
+
+### 1.判断环境
+
+开发环境生产环境测试环境....
+
+![image-20231128172147179](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128172147179.png)
+
+![image-20231128172247455](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128172247455.png)
+
+```js
+// 三元运算符可以这样写
+// 如果为dev 返回dev.com 如果为pro 返回xxx.com 其它情况返回空
+let baseApi = process.env.NODE_ENV === 'development' ? 'http://dev.xxx.com' : process.env.NODE_ENV === 'production' ? 'http://www.xxx.com':'';
+
+export default{
+	baseApi
+}
+```
+
+挂载到vue全局变量里
+
+![image-20231128172708547](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128172708547.png)
+
+
+
+vue文件中使用全局变量来判断目前处于什么环境
+
+![image-20231128172619737](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128172619737.png)
+
+### 2.自定义环境
+
+![image-20231128172851536](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128172851536.png)
+
+![image-20231128172920877](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128172920877.png)
+
+
+
+### 3.判断平台
+
+#### 1.编译期间判断
+
+使用条件编译可以为不同平台配置不同代码
+
+![image-20231128174608118](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128174608118.png)
+
+![image-20231129214611873](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129214611873.png)
+
+**js、css、html都是可以用条件编译的**
+
+![image-20231129215219135](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129215219135.png)
+
+![image-20231129215236710](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129215236710.png)
+
+![image-20231129215248616](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129215248616.png)
+
+只有|| 或这种连接符号 表示在俩个平台都行
+
+ifndef就是除了这个平台
+
+
+
+#### 2.运行时判断
+
+尽量不用，在开发时都解决好
+
+![image-20231129215602195](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129215602195.png)
+
+
+
+## 8.内置组件
+
+### 1.view组件
+
+![image-20231129215711469](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129215711469.png)
+
+![image-20231129215947684](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129215947684.png)
+
+设置hover-class
+
+![image-20231129220549944](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129220549944.png)
+
+
+
+### 2.button组件
+
+它的open-type的开放能力，其实就是 uni.xxxx()  就是和前面那个路由跳转组件一样的，只是封装到了这个组件里面去，让它功能更强大。
+
+#### 1.type值
+
+button如果设置了type值，就会有一些默认样式，有时候给它设置类样式无法解决，这是因为选择器优先级问题，uniapp的优先级可能设置了更高，例如 父>button{},这种情况我们可以用行内样式解决。
+
+#### 2.去除边框
+
+要去除默认样式的边框第一种是border-radius设置为0 第二种是
+
+![image-20231129223937786](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231129223937786.png)
+
+open-type有很多的开放功能
+
+![image-20231130085912242](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130085912242.png)
+
+![image-20231130090059617](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130090059617.png)
+
+
+
+#### 3.分享小程序
+
+![image-20231130211044181](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130211044181.png)
+
+**注意小程序的分享方法和生命周期是同级的**
+
+![image-20231130211142893](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130211142893.png)
+
+![image-20231130211159305](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130211159305.png)
+
+点右上角也可以分享给好友
+
+![image-20231130211308711](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130211308711.png)
+
+### 3.checkBox组件
+
+```react
+<template>
+	<view>
+		<!-- checkbox组件 -->
+		<checkbox-group @change="checkboxChange">
+			<label class="uni-list-cell" v-for="item in items" :key="item.value">
+				<view>
+					<checkbox :value="item.value" :checked="item.checked" />
+				</view>
+				<view>{{item.name}}</view>
+			</label>
+		</checkbox-group>
+		<button @click="submit()">提交</button>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				title: 'checkbox组件',
+				items: [{
+						value: 'USA',
+						name: '美国'
+					},
+					{
+						value: 'CHN',
+						name: '中国',
+						checked: 'true' // 默认选中中国
+					},
+					{
+						value: 'BRA',
+						name: '巴西'
+					},
+					{
+						value: 'JPN',
+						name: '日本'
+					},
+					{
+						value: 'ENG',
+						name: '英国'
+					},
+					{
+						value: 'FRA',
+						name: '法国'
+					}
+				]
+			}
+		},
+		methods: {
+			checkboxChange(e) {
+				// 获取detail.value值
+				console.log(e)
+				var items = this.items,
+                     // 事件对象的detail里面存放着值
+					values = e.detail.value;
+				for (var i = 0, lenI = items.length; i < lenI; ++i) {
+					const item = items[i]
+					// 如果是有被选中的
+					if (values.includes(item.value)) {
+						this.$set(item, 'checked', true)
+					} else {
+						this.$set(item, 'checked', false)
+					}
+				}
+			},
+			// 提交时，将选中的数据存入数组，然后输出。最终目的是在数据库里进行处理
+			submit() {
+				let arr = [];
+				for (var i = 0; i < this.items.length; i++) {
+					// 如果items里面被选中的
+					if (this.items[i].checked) {
+						// 就添加到数组中
+						arr.push(this.items[i])
+					}
+				}
+				// 字符串转成数组
+				console.log(JSON.stringify(arr))
+			}
+		}
+	}
+</script>
+
+<style>
+	.uni-list-cell {
+		display: flex;
+	}
+</style>
+```
+
+
+
+### 4.radio单选框组件
+
+```vue
+<template>
+	<view>
+		<!-- radio组件 -->
+		<radio-group @change="radioChange">
+			<label class="uni-list-cell" v-for="item in items" :key="item.value">
+				<view>
+					<radio :value="item.value" :checked="item.checked" />
+				</view>
+				<view>{{item.name}}</view>
+			</label>
+		</radio-group>
+		<button @click="submit()">提交</button>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				title: 'radio组件',
+				items: [{
+						value: 'USA',
+						name: '美国'
+					},
+					{
+						value: 'CHN',
+						name: '中国',
+						checked: 'true' // 默认选中中国
+					},
+					{
+						value: 'BRA',
+						name: '巴西'
+					},
+					{
+						value: 'JPN',
+						name: '日本'
+					},
+					{
+						value: 'ENG',
+						name: '英国'
+					},
+					{
+						value: 'FRA',
+						name: '法国'
+					}
+				]
+			}
+		},
+		onLoad() {
+			this.newItem = {} // 全局变量
+		},
+		methods: {
+			radioChange(e) {
+				var val = e.detail.value;
+				// console.log(val)   // 输出选中的value
+				for (var i = 0; i < this.items.length; i++) {
+					if (this.items[i].value == val) {
+						this.newItem = this.items[i];
+						break;
+					}
+				}
+			},
+			// 提交时，将选中的数据存入数组，然后输出。最终目的是在数据库里进行处理
+			submit() {
+				console.log(JSON.stringify(this.newItem))
+			}
+		}
+	}
+</script>
+
+<style>
+	.uni-list-cell {
+		display: flex;
+	}
+</style>
+```
+
+
+
+### 5.scroll-view
+
+滚动组件 可以上下左右滚动
+
+![image-20231130214158187](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130214158187.png)
+
+```vue
+<style>
+	.scroll-y {
+		width: 100%;
+		height: 300rpx;
+		background: gray;
+	}
+
+	.red {
+		background-color: red;
+	}
+
+	.yellow {
+		background-color: yellow;
+	}
+
+	.bluie {
+		background-color: blue;
+	}
+
+	/* uniapp中的scroll组件没办法直接用felx：1让子元素水平分bu */
+	.scroll-x {
+		width: auto;
+		height: 300rpx;
+		display: flex;
+		/* white-space 属性设置如何处理元素内的空白。 */
+		/* 空白不换行 */
+		white-space: nowrap;
+	}
+
+	.red1 {
+		display: inline-block;
+		height: 300rpx;
+		width: 100%;
+		background-color: red;
+	}
+
+	.yellow1 {
+		display: inline-block;
+		height: 300rpx;
+		width: 100%;
+		background-color: yellow;
+	}
+
+	.bluie1 {
+		display: inline-block;
+		height: 300rpx;
+		width: 100%;
+		background-color: blue;
+	}
+</style>
+<template>
+	<view>
+		<!-- 开启上下滚动 -->
+		<scroll-view :scroll-top="scrollTop" scroll-y="true" class="scroll-y" @scrolltoupper="top" @scrolltolower="bottom"
+			@scroll="scroll" :scroll-with-animation="true">
+			<view class="red">第一个A</view>
+			<view class="yellow">B</view>
+			<view class="bluie">C</view>
+			<view class="red">A</view>
+			<view class="yellow">B</view>
+			<view class="bluie">C</view>
+			<view class="red">A</view>
+			<view class="yellow">B</view>
+			<view class="bluie">C</view>
+			<view class="red">A</view>
+			<view class="yellow">B</view>
+			<view class="bluie">C</view>
+			<view class="red">A</view>
+			<view class="yellow">B</view>
+			<view class="bluie">C</view>
+			<view class="red">A</view>
+			<view class="yellow">B</view>
+			<view class="bluie">最后一个C</view>
+		</scroll-view>
+		<button @click="toTop">回到顶部</button>
+		<!-- 横向滚动 -->
+		<scroll-view scroll-x="true" class="scroll-x" :scroll-with-animation="true">
+			<view class="red1">A</view>
+			<view class="yellow1">B</view>
+			<view class="bluie1">C</view>
+		</scroll-view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				// 默认状态下和元素内容页面顶部的距离
+				scrollTop: 0,
+				// 滚动条临时的距离
+				tmpScrollTop: 0
+			}
+		},
+		methods: {
+			// 滚动到顶部
+			top(e) {},
+			// 滚动到底部
+			bottom(e) {},
+			// 发生滚动
+			scroll(e) {
+				// 发生滚动时给临时滚动条设置距离(不能直接给scrollTop设置，不然会一直回滚)
+				this.tmpScrollTop = e.detail.scrollTop
+				// console.log(this.scrollTop)
+			},
+			// 使用按钮回到顶部的方法 需要用到组件异步更新(也可以用定时器)
+			toTop() {
+				// 临时滚动条的目的是赋值给这里用
+				this.scrollTop = this.tmpScrollTop
+				this.$nextTick(() => {
+					// 回到顶部
+					this.scrollTop = 0
+				})
+				uni.showToast({
+					icon: "none",
+					title: "纵向滚动 scrollTop 值已被修改为 0"
+				})
+			}
+		}
+	}
+</script>
+```
+
+### 6.swiper
+
+**滑块组件，类似轮播图**
+
+![image-20231203143300698](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203143300698.png)
+
+![image-20231203143645356](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203143645356.png)
+
+
+
+### 7.text组件
+
+![image-20231203144049512](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203144049512.png)
+
+![image-20231203144456618](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203144456618.png)
+
+例子
+
+![image-20231203144513529](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203144513529.png)
+
+![image-20231203144639774](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203144639774.png)
+
+**不开decode解码的话，文本有特殊字符就不会解析，只能解析纯文本**
+
+
+
+### 8.rich-text
+
+这个东西是用来设置一些超级文本，比如超链接或者是不同的字体颜色，其实没必要这样，直接用class什么的去控制了
+
+![image-20231203145634789](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203145634789.png)
+
+![image-20231203150147589](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203150147589.png)
+
+
+
+html字符串节点支持style和class的设置
+
+![image-20231203150807362](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203150807362.png)
+
+
+
+用数组的方式性能好但是很难书写，可以用这个插件来吧html字符串转为数组
+
+![image-20231203151601009](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203151601009.png)
+
+![image-20231203151635424](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203151635424.png)
+
+![image-20231203151741158](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203151741158.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 9.内置API
+
+### 1.请求微信授权
+
+开始授权前，需要配置appid以及开启微信登录模块，同时微信开发者工具基础库应该调至2.25.2
+
+```vue
+<template>
+	<view class="btn-box">
+		<button @click="toIndex">前往首页</button>
+		<button @click="getUserProfile">获取授权</button>
+	</view>
+	<view class="userinfo-box" v-if="isAutorized">
+		<image class="img-avar" :src="userinfo.avatarUrl"></image>
+		<text class="text-name">{{ userinfo.nickName }}</text>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				isAutorized: false,
+				userinfo: {
+					avatarUrl: '',
+					nickName: '',
+					openid: ''
+				},
+				// 请求微信接口需要的参数
+				weixin: {
+					jscode2sessionUrl: 'jscode2session',
+					appid: 'wx303da12a38734d48',
+					secret: ''
+				}
+			}
+		},
+
+		methods: {
+			toIndex() {
+				uni.switchTab({
+					url: '/pages/index/index'
+				})
+			},
+			getUserProfile() {
+				// 固定this
+				const that = this;
+				uni.showLoading({
+					title: '正在授权进行中...'
+				})
+				// 获取用户信息的接口
+				uni.getUserProfile({
+					lang: 'zh_CN',
+					desc: '授权获得更多服务',
+					success(userRes) {
+						// 给了一个默认的头像和姓名
+						const {
+							avatarUrl,
+							nickName
+						} = userRes.userInfo;
+						uni.login({
+							provider: 'weixin',
+							success(res) {
+								// 拼接请求微信后台的url
+								let url =
+									`https://api.weixin.qq.com/sns/${that.weixin.jscode2sessionUrl}?appid=${that.weixin.appid}&secret=${that.weixin.secret}&js_code=${res.code}&grant_type=authorization_code `;
+								console.log("登录成功！" + url)
+								// 发起网络请求
+								uni.request({
+									// 请求地址
+									url,
+									success(res2) {
+										console.log("授权成功成功！")
+										console.log("获取头像，昵称成功！")
+										that.userinfo.avatarUrl = avatarUrl;
+										that.userinfo.nickName = nickName;
+										that.userinfo.openid = res2.data.openid;
+
+										//保存授权状态
+										// that.userStore.saveWxUserinfo(that.userinfo);
+
+										// 显示用户头像和nickName
+										that.isAutorized = true
+									}
+								})
+							}
+						})
+					},
+					fail() {
+						title: '授权失败'
+					},
+					// 请求结束了以后隐藏 loading 提示框。
+					complete() {
+						uni.hideLoading();
+					},
+				})
+			}
+		}
+	};
+</script>
+```
+
+
+
+### 2.现在的方法是这样的
+
+需要授权就用授权按钮，需要头像就用头像
+
+```vue
+<style scoped>
+	.avatar {
+		width: 100rpx;
+		height: 100rpx;
+	}
+
+	.weui-input {
+		width: 100%;
+		height: 30rpx;
+	}
+</style>
+
+<template>
+	<view class="serach-bar">
+		<!-- <button open-type="openSetting">跳出授权页</button> -->
+		<button class="avatar-wrapper" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
+			设置头像
+		</button>
+		<view>
+			<input type="nickname" class="weui-input" placeholder="请输入昵称" v-model="nickname" @focus="onInput($event)" />
+		</view>
+		<view>
+			用户头像:
+			<image class="avatar" :src="avatarUrl"></image>
+		</view>
+
+		<view class="text">
+			用户名称:
+			{{ nickname }}
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				avatarUrl: '',
+				nickname: ''
+			}
+		},
+		methods: {
+			onInput(e) {
+				// 如果用户直接选择了微信昵称 这里需要我们手动绑定一下
+				if (e.detail.value) {
+					this.nickname = e.detail.value
+				}
+			},
+			onChooseAvatar(e) {
+				const {
+					avatarUrl
+				} = e.detail
+				this.avatarUrl = avatarUrl
+			}
+		}
+	}
+</script>
+```
+
+![image-20231201002005532](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231201002005532.png)
+
+### 3.交互反馈
+
+#### 1.uni.showToast
+
+![image-20231203193417599](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203193417599.png)
+
+mask用的比较多，因为弹出提示的时候，我们不希望用户还能操作页面。
+
+![image-20231203193503721](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203193503721.png)
+
+![image-20231203193756923](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203193756923.png)
+
+#### 2.uni.showLoading()
+
+![image-20231203193925960](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203193925960.png)
+
+#### 3.uni.showModal()
+
+这东西可以在里面内嵌一个输入框
+
+![image-20231203194449082](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203194449082.png)
+
+![image-20231203194508873](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203194508873.png)
+
+例子:
+
+```vue
+<template>
+	<button @click="showModal">验证手机号</button>
+	<view class="active">
+		手机号 --- {{ data }}
+	</view>
+</template>
+
+<script setup>
+	import {
+		ref
+	} from 'vue'
+	const data = ref()
+
+	const showModal = () => {
+		uni.showModal({
+			title: '输入框',
+			placeholderText: '请输入手机号',
+			// 显示输入框
+			editable: true,
+			success(res) {
+				// 用户点了确定
+				if (res.confirm) {
+					data.value = res.content
+					console.log(res.content);
+				} else if (res.cancel) {
+					console.log('用户取消输入');
+				}
+			}
+		})
+	}
+</script>
+
+<style>
+</style>
+```
+
+
+
+#### 4.uni.showActionSheet()
+
+显示上拉选项卡，和表单里面的一个组件很像
+
+![image-20231203200658228](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203200658228.png)
+
+
+
+
+
+## 10.vue补充
+
+### 1.修饰符
+
+#### 1.native
+
+在组件上定义的方法vue都认为我们是自定义的事件，有时候我们需要在组件上用原生事件例如click，此时要加上native修饰符
+
+![image-20231203153853804](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203153853804.png)
+
+#### 2.sync
+
+这是父组件
+
+![image-20231203154454193](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203154454193.png)
+
+写上这个相当于是
+
+![image-20231203154524745](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203154524745.png)
+
+**sync相当于替你绑定了事件，事件名为update:xxx , 相当于v-model**
+
+vue3里面已经没有了这个修饰符
+
+
+
+## 11.命令行创建uni-app项目
+
+![image-20231203182908183](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203182908183.png)
