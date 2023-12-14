@@ -1792,6 +1792,117 @@ mask用的比较多，因为弹出提示的时候，我们不希望用户还能�
 
 
 
+#### 5.uni.setNavigationBarTitle(OBJECT)
+
+动态设置标题栏
+
+动态设置标题栏颜色
+
+![image-20231204103427522](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231204103427522.png)
+
+#### 6.uni.showNavigationBarLoading(OBJECT)
+
+loading显示在导航栏上面
+
+
+
+### 4.tabbar补充
+
+给tabbar加上iconfont图标，官方文档里面有iconfont的相关配置，可以弄成更好的图片
+
+**首先把iconfont下载下来，引入static文件夹，记得是.ttf的格式**
+
+**不过这个不支持小程序端，小程序还是用原来的iconpath**
+
+
+
+![image-20231204212144214](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231204212144214.png)
+
+![image-20231204213158689](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231204213158689.png)
+
+
+
+#### 1.动态设置tabBar  -- uni.setTabBarItem
+
+#### 2.在APP.vue中动态设置tabBar样式
+
+![image-20231204220317490](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231204220317490.png)
+
+
+
+#### 3.隐藏和显示tabBar
+
+在tabBar页面，有时候我们想暂时隐藏tabBar或显示就可以用这个
+
+![image-20231204220429158](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231204220429158.png)
+
+
+
+#### 4.为tabBar右上角添加文本
+
+![image-20231204220618868](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231204220618868.png)
+
+
+
+#### 5.右上角添加小红点
+
+![image-20231204220815385](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231204220815385.png)
+
+
+
+### 5.网络请求API
+
+例子 演示了俩种传参
+
+```vue
+<template>
+	<view v-for="item in url" :key="item.id">
+		<button @click="createMsg(1)">获取消息</button>
+		<image :src="item.url" mode="aspectFill"></image>
+	</view>
+	<br />
+	<!-- 用/的传参方式 -->
+	<button @click="createMsg1(1)">获取消息1</button>
+	<view v-for="item in newUrl" :key="item.id">
+		{{ item.title }}
+	</view>
+</template>
+
+<script setup>
+	import {
+		ref
+	} from 'vue'
+	const url = ref([''])
+	const newUrl = ref([])
+	const createMsg = (limit) => {
+		uni.request({
+			url: 'https://api.thecatapi.com/v1/images/search',
+			method: 'get',
+			data: {
+				// 一次获取三张图片
+				limit: limit
+			},
+			success: (res) => {
+				console.log(res.data)
+				url.value = res.data
+			}
+		})
+	}
+	const createMsg1 = (row) => {
+		uni.request({
+			url: `https://jsonplaceholder.typicode.com/photos/${row}`,
+			// 这种方式就不用data传值了
+			method: 'get',
+			success: (res) => {
+				console.log(res.data)
+				newUrl.value.push(res.data)
+				console.log(newUrl.value);
+			}
+		})
+	}
+</script>
+```
+
 
 
 ## 10.vue补充
