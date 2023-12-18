@@ -1,3 +1,5 @@
+# 1.axios
+
 ![image-20231026123628076](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231026123628076.png)
 
 axios.post(请求地址,参数,配置对象)
@@ -97,3 +99,95 @@ body参数存在http请求体中
 
 ![image-20231102214742577](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231102214742577.png)
 
+
+
+# 2.原生AJAX
+
+## 1.发送get请求
+
+```bash
+1.send方法发送请求
+```
+
+![image-20231217194447467](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231217194447467.png)
+
+## 2.发送post请求
+
+```bash
+1.post请求发送请求的时候要说明发送的参数的格式(类型) -- 其实就是设置请求头
+```
+
+![image-20231217194602496](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231217194602496.png)
+
+
+
+# 3.axios实例
+
+**一般是把实例提出来作为一个公共函数**
+
+```js
+const getNumber = async () => {
+    // 配置请求实例
+    const ins = axios.create({
+        // 配置请求基地址
+        baseURL:'https://www.baidu.com',
+        // 超时时间
+        timeout: 10000
+    })
+
+    // 配置请求拦截器
+    ins.interceptors.request.use(config => {
+        console.log('请求拦截器')
+        // 配置token
+        const userStore = useUserStore()
+        // 如果用户token存在
+        if (userStore.token) {
+          // 发送请求携带请求头
+          config.headers.Authorization = userStore.token
+        }
+        return config;
+    })
+
+    // 配置响应拦截器
+    ins.interceptors.response.use(config => {
+        // 一般在这里处理鉴权
+        console.log('响应拦截器')
+        return config;
+    })
+
+    // get请求 携带参数俩种方式
+    // const res = await ins.get('/get?name=张三&age=18')
+    const res1 = await ins.get('/get', {
+        params: {
+            name: '张三',
+            age: 18
+        }
+    })
+    console.log(res1.data);
+
+    // post请求
+    const res2 = await ins.post('/post', {
+        name: '张三',
+        age: 18
+    })
+    console.log(res2.data);
+}
+```
+
+
+
+# 4.fetchAPI
+
+**返回的也是promise,用then接收和async和await都一样**
+
+## 1.get
+
+默认发送的就是get请求
+
+![image-20231217200845835](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231217200845835.png)
+
+## 2.post
+
+**body配置的就是发送的参数**
+
+![image-20231217200936907](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231217200936907.png)
