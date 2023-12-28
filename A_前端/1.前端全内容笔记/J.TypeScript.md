@@ -488,6 +488,75 @@ console.log(Gender.Male);
 console.log(Gender.Female);
 ```
 
+![image-20231227161527807](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227161527807.png)
+
+```ts
+// 1.数字枚举
+enum Gender {
+    Male,
+    Female
+}
+
+// 数字枚举的取值也可以是常量或者计算结果
+const val = 100
+let fn = () => 200
+
+enum Gender1 {
+    Male = val, //100
+    Female, // 101 采用字面量对第一个成员赋值,下面会自动递增
+    Female1 = fn() // 200
+}
+console.log(Gender1.Male); // 100
+console.log(Gender1.Female); // 200
+
+
+// 2.字符串枚举
+/*
+    1.如果采用字面量对第一个成员赋值,下面的成员必须赋值
+    2.采用[index]不能获取值,需要传入[key]
+    3.字符串枚举不能使用计算结果给枚举值赋值
+    4.它可以使用内部其它枚举值来赋值
+*/
+enum Direction {
+    Up = "UP",
+    Down = "DOWN",
+    Left = "LEFT",
+    Right = "RIGHT"
+}
+console.log(Direction.Up); // UP
+console.log(Direction["Up"]); // UP
+
+const name1 = '杨幂'
+let fn1 = () => '刘亦菲'
+enum User {
+    a = name1,
+    // b = fn1() 不能用
+    c = '李沁',  // 可以使用内部其它枚举值
+    d = c
+}
+
+console.log(User); // {a: '杨幂', b: '李沁', c: '李沁'}
+
+// 3.异构枚举 数字和字符串都有 还是遵循的字符串规则
+enum User1 {
+    a = 1,
+    b = 'b'
+}
+console.log(User1.a, User1.b); // 1 b
+console.log(User1[0], User1['b']); // undefined b
+
+
+// 4.把枚举成员当做类型来使用
+enum LeiXi {
+    str,
+    num
+}
+
+interface face {
+    userName: LeiXi // userName: (LeiXi.str | LeiXi.num)
+}
+```
+
 
 
 ### 7.bigint和symbol
@@ -1113,6 +1182,8 @@ let son = new Son('Son', 10);
 
 **抽象类和给类构造函数设置protected的区别**
 
+设置protected这种比较少用,还是抽象类用的多
+
 ![image-20231221092823147](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231221092823147.png)
 
 
@@ -1192,3 +1263,1219 @@ myClass.fullName = '李四'; // 设置值
 console.log(myClass.fullName);
 ```
 
+
+
+### 5.抽象类
+
+![image-20231221144002319](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231221144002319.png)
+
+```ts
+abstract class MyClass {
+    abstract name:string // 定义抽象属性
+    abstract say():string // 定义抽象方法
+    public age:number   // 定义具体属性
+	
+    constructor(age:number){
+        this.age = age
+    }
+    // 抽象类也可以实现具体操作,这是和接口最不一样的地方
+    sayName(){
+        console.log(this.age);
+        console.log(this.say());
+    }
+}
+
+class MyClassImpl extends MyClass {
+    name:string = "张三"
+    say(){
+        return this.name
+    }
+}
+
+let myClass = new MyClassImpl()
+myClass.sayName()
+```
+
+
+
+### 6.implements
+
+**❤类继承类用extends,类实现接口用implements**
+
+![image-20231221144834914](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231221144834914.png)
+
+**接口继承类这种使用场景是比较少的**
+
+```ts
+interface ITest {
+    name: string;
+    age: number;
+}
+class myClass {
+    sex: string
+    constructor(sex: string){
+        this.sex = sex
+    }
+
+    public sayHello(name: string) {
+        console.log(`hello `);
+    }
+}
+
+// 类实现接口
+class test implements ITest {
+    name: string;
+    age: number;
+    constructor(name: string, age: number) {
+        this.name = name;
+        this.age = age;
+    }
+}
+
+// 接口继承类 必须重写类的属性和方法
+interface ITest2 extends myClass {
+    sex: string
+    sayHello(name: string): void;
+}
+
+// 一个类可以同时继承类和实现接口
+class Star extends myClass implements ITest {
+    name:string
+    age: number
+    sex: string
+    constructor(name:string,age:number,sex: string) {
+        super(sex)
+        this.sex = sex
+        this.name = name
+        this.age = age
+    }
+    sayHello(name: string): void {
+        console.log(`hello `);
+    }
+}
+```
+
+
+
+### 7.类的实例化顺序
+
+![image-20231221151147082](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231221151147082.png)
+
+```ts
+/*
+    类的实例化顺序
+        1.基类的字段被初始化
+        2.基类的构造函数执行
+        3.子类的字段被初始化
+        4.子类的构造函数执行
+*/
+
+class myClass {
+    name: string
+    constructor(name: string){
+        this.name = name
+    }
+    public sayHello() {
+        console.log('hello');
+    }
+}
+
+class testClass extends myClass {
+    age:number
+    constructor(name: string, age:number) {
+        super(name)
+        this.age = age
+    }
+}
+```
+
+
+
+下面这段代码就可以看到运行顺序
+
+```ts
+class myClass {
+    name: string = '林青霞'
+    constructor(){
+        console.log('旧名字', this.name);
+    }
+
+}
+
+class testClass extends myClass {
+    name: string = '张曼玉'
+    constructor() {
+        super()
+        console.log('新名字', this.name);
+    }
+}
+
+let test = new testClass()
+// 打印的顺序
+// 旧名字 林青霞
+// 新名字 张曼玉  
+```
+
+
+
+## 7.泛型
+
+![image-20231221152850775](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231221152850775.png)
+
+new Array()方法 和 fill方法
+
+```ts
+ let arr = new Array(1,2,3,4,5)
+ console.log(arr); // [1,2,3,4,5]
+ let arr1 = new Array(5)
+ console.log(arr1); // [empty*5] 5个空数组
+ let arr2 = new Array(4).fill(1)
+ console.log(arr2); // [1,1,1,1]
+```
+
+
+
+```ts
+// 使用泛型  定义的时候无需指定类型
+let getArray = function <T>(value: T, items: number): T[] {
+    // fill这个方法用来填充数组
+    return new Array(items).fill(value);
+}
+
+let arr = getArray<string>('张三', 5); //  使用泛型  调用的时候指定类型
+console.log(arr); // ['张三','张三','张三','张三','张三']
+let res = arr.map(item => item.length) // 字符串有length
+console.log(res);
+
+let arr1 = getArray<number>(1, 5);
+console.log(arr1); // [1,1,1,1,1]
+let res1 = arr1.map(item => item.length) // 数字没有length,使用了泛型就可以检测到,在非编译阶段就报错
+```
+
+
+
+### 1.泛型约束
+
+**由于泛型过于灵活,过于灵活也会造成很多报错，所以可以使用泛型接口来进行泛型的约束**
+
+```ts
+// 接口
+interface ILength{
+    length: number;
+}
+// 泛型继承接口
+// 泛型为T 返回值为number
+function getLength<T extends ILength>(arr: T): number{
+    return arr.length;
+}
+
+let res1 = getLength('黄宇')
+let res2 = getLength([1,2,3])
+let res3 = getLength({length: 10})
+```
+
+
+
+### 2.泛型接口
+
+```ts
+// 定义接口时使用泛型约束
+interface IPerson<T1, T2>{
+    name: T1,
+    age: T2
+}
+
+let p: IPerson<string, number> = {
+    name: "张三",
+    age: 18
+}
+
+// 泛型接口也可以拥有默认值
+// 默认值只能是类型,而不是具体的值
+interface IPerson1<T1=string, T2=number>{
+    name: T1,
+    age: T2
+}
+
+let p1: IPerson1 = {
+    name: "张三",
+    age: 18
+}
+```
+
+
+
+### 3.泛型类
+
+```ts
+// 泛型类
+class Person<T1, T2>{
+    name: T1;
+    age: T2;
+    sex: T1
+
+    constructor(name:T1, age:T2, sex:T1){
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+    }
+}
+
+// 编译器自动推断T1 T2类型 要确保name和sex同类型
+const p1 = new Person('张三', 18, '男');
+
+// 明确指出类型 推荐
+// 写法1
+const p2 = new Person<string, number>('张三', 18, '男');
+// 写法2
+const p3:Person<string, number> = new Person('张三', 18, '男');
+```
+
+
+
+### 4.使用泛型参数进行约束
+
+一个泛型必须包含在另一个泛型中
+
+![image-20231225123940791](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225123940791.png)
+
+
+
+没有约束前，代码不报错
+
+![image-20231225124025912](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225124025912.png)
+
+约束后
+
+```ts
+function getKeyProps<T, K extends keyof T>(obj: T, key: K){
+    return obj[key]
+}
+
+let x = {a: '1', b: '2'}
+let res = getKeyProps(x, 'a') // '1'
+// let res1 = getKeyProps(x, 'c') // Error
+```
+
+
+
+## 8.补充
+
+### 1.unknown类型
+
+![image-20231225124255845](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225124255845.png)
+
+```TS
+// 1.任何类型都可以赋值给unknown类型
+let str:unknown
+str = 18
+str = "18"
+str = true
+
+// 2.不能将unknown类型赋值给其它类型
+let val:unknown
+let num:number
+// num = val 报错
+// 解决方式
+num = val as number // 类型断言跳过编译器
+// 使用类型缩小
+if(typeof val === 'number'){
+    num = val
+}
+
+// 3.unknown与其它任何类型组成的交叉类型都是其它类型
+// & 交叉类型
+type MyType =  string & number // never类型 没这东西
+type MyType1 =  string & unknown  // string类型
+
+// 4.unknown除了与any以外,与其它类型组成的联合类型都是unknown类型 
+type MyType2 = unknown | any // any类型
+type MyType3 = unknown | string // unknown类型
+
+// 5. never类型继承与unknown类型
+type MyType4 = never extends unknown ? true : false // true
+```
+
+
+
+### 2.map类型
+
+![image-20231225202158846](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225202158846.png)
+
+```ts
+const map = new Map()
+
+map.set('1', 'one')
+map.set('2', 'two')
+map.set('3', 'three')
+
+// 如果需要同时遍历键和值 有俩种方法
+// 方法1
+for (let [key, value] of map.entries()) {
+    console.log(key, value)
+}
+for (let entries of map.entries()) {
+    console.log(entries)
+}
+
+// 方法2
+for (let [key, value] of map) {
+    console.log(key, value);
+}
+```
+
+
+
+### 3.索引类型
+
+![image-20231225203447421](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225203447421.png)
+
+```ts
+// 需求: 获取指定对象部分属性的值,放在数组中返回
+let obj = {
+    name: 'zs',
+    age: 20,
+    sex: '男'
+}
+
+// T为泛型 K为继承自T的泛型
+// 参数1: 对象 参数2:键值数组
+function getObjValue<T, K extends keyof T>(obj:T, keys:K[]): T[K][]{
+    let arr:T[K][] = [];
+    // 对键值的数组进行遍历
+    keys.forEach(key => {
+        arr.push(obj[key])
+    })
+    return arr;
+}
+
+let res = getObjValue(obj, ['name', 'age'])
+console.log(res);
+```
+
+
+
+### 4.条件类型
+
+![image-20231225204211699](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225204211699.png)
+
+```ts
+// 1.条件类型的基本使用
+type MyType<T> = T extends string ? string : any
+type res = MyType<string> // string
+type res1 = MyType<number> // any
+
+// 2.解决函数重载
+interface IName {
+    name:string
+}
+interface IAge {
+    age:number
+}
+
+// 如果T是继承自string就是IName 否则就是 IAge
+type Condition<T> = T extends string ? IName : IAge
+function reLoad<T extends string | number>(NameOrAge: T): Condition<T> {
+    throw ''
+}
+reLoad('HuangYu')
+reLoad(79)
+```
+
+
+
+### 5.分布式条件类型
+
+![image-20231225210316648](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225210316648.png)
+
+![image-20231225210149481](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225210149481.png)
+
+![image-20231225210256642](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225210256642.png)
+
+
+
+### 6.infer关键字
+
+```ts
+
+// 假如想获取数组里的元素类型。
+// 如果是数组则返回数组中元素的类型，否则返回这个类型本身
+type ID = number[]
+type IName = string[]
+
+type Unpacked<T> = T extends ID ? number : T extends IName ? string : T
+type T1 = Unpacked<ID> // number
+type T2 = Unpacked<IName> // string
+type T3 = Unpacked<boolean> // boolean
+
+// infer 关键字可以简化操作
+type Unpacked2<T> = T extends Array<infer U> ? U : T;
+type T4 = Unpacked2<ID> // number
+type T5 = Unpacked2<IName> // string
+type T6 = Unpacked2<boolean> // boolean
+
+// infer 关键字可以推断出联合类型
+type Foo<T> = T extends {a: infer U, b: infer U} ? U : never;
+type T7 = Foo<{a: string, b: number}> // string | number
+```
+
+
+
+### 7.映射类型
+
+#### 1.基本使用
+
+通过已有的类型推断出新类型
+
+```ts
+// 旧类型
+type Person = {
+    name: string;
+    age: number;
+}
+
+// 通过person类型映射一个只读的新类型
+// 映射的类型不能添加新的
+type ReadonlyPerson<T> = {
+    readonly [P in keyof T]: T[P];
+};
+type res = ReadonlyPerson<Person>;
+
+let obj: res = {
+    name: '123',
+    age: 123
+}
+
+// 通过person类型映射一个可选的新类型
+type PartialTest<T> = {
+    [P in keyof T]?: T[P];
+}
+
+// 简写上面代码
+type Person1 = {
+    name: string;
+    age: number;
+}
+// 只读
+type res1 = Readonly<Person1>;
+// 可选
+type res2 = Partial<Person1>;
+```
+
+
+
+#### 2.进阶
+
+1.
+
+```ts
+// Record 映射类型 会将一个类型的所有属性值都映射到另一个类型上并创造一个新的类型
+type Person = {
+    name: string;
+    age: number;
+}
+type Name = 'person' | 'animal'
+
+// 想要谁为名称谁写前面, 底层属性写在后面
+type NewType = Record<Name, Person>
+let res:NewType = {
+    person:{name: 'zs', age: 18},
+    animal:{name: 'dog', age: 20}
+}
+```
+
+2.
+
+```ts
+// Pick 映射类型 将原有类型中的部分内容映射到新类型中
+interface Info {
+    name: string
+    age: number
+}
+
+type PartProp = Pick<Info, 'name'>
+let res: PartProp = {name: 'zs'}
+console.log(res);
+```
+
+
+
+### 8.其它公共类型
+
+![image-20231225214629831](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225214629831.png)
+
+
+
+## 9.Ts的兼容性
+
+### 1.自动类型推论
+
+![image-20231225214719596](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231225214719596.png)
+
+```ts
+// 根据初始值推论
+let name = 'zs'
+name = 'ls'
+// name = 14 //报错
+let arr = [0,1,null]
+// arr = ['zs', null, undefined] //报错
+
+// 不会进行推论
+let age
+age = 18
+age = true
+
+// 根据上下文推论
+window.onmousedown = function (event) {
+    event.clientX
+}
+```
+
+
+
+### 2.对象类型兼容性
+
+```ts
+// 属性可多不可少
+interface obj1 {
+    name: string,
+}
+
+let o1 = {name: 'zs'}
+let o2 = {name: 'zs', age: 18}
+let o3 = {age: 18}
+
+let obj1: obj1 = o1
+obj1 = o2
+// obj1 = o3  // error 至少需要一个name属性
+
+// 不管嵌套多少层,类型必须一一对应,ts内部会进行递归检查
+interface obj2 {
+    name: string,
+    children: {
+        age: number,
+    }
+}
+
+let o4 = {name: 'zs', children: {age: 18}}
+let o5 = {name: 'zs', children: {age: true}}
+let obj2:obj2 = o4
+// obj2 = o5  // error 子属性age的类型必须和父属性children的类型一致
+```
+
+
+
+### 3.函数类型兼容性
+
+```ts
+// 参数个数可少不可多
+let func1 = (x:number, y:string) => {}
+let func2 = (x:number) => {}
+// func1 = func2 // 正确 2赋值给1可以
+// func2 = func1 // 错误 1赋值给2不可以
+
+// 参数类型必须相同
+let func3 = (x:string) => {}
+let func4 = (x:string) => {}
+let func5 = (x:number) => {}
+// func3 = func4 // 正确
+// func4 = func3 // 正确
+// func5 = func4 // 错误
+
+// 返回值类型必须相同
+let func6 = (x:string) => 18
+let func7 = (x:string) => 18
+let func8 = (x:number) => '字符串'
+// func6 = func7 // 正确
+// func7 = func6 // 正确
+// func8 = func7 // 错误
+```
+
+![image-20231227151731238](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227151731238.png)
+
+函数重载的兼容性
+
+可选参数及剩余参数的兼容性
+
+视频地址：[50_对象类型的兼容性_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1Wa411S7hr/?p=51&spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=0d0608d8a87b289f0f02f9f3332ce89b)
+
+P51
+
+
+
+### 4.枚举类型的兼容
+
+都不兼容
+
+```
+1.数字枚举与数字不兼容
+2.数字枚举与数字枚举不兼容
+3.字符串枚举与字符串不兼容
+4.字符串枚举与字符串枚举不兼容
+```
+
+
+
+### 5.类的兼容性
+
+![image-20231227165510701](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227165510701.png)
+
+
+
+### 6.泛型兼容性
+
+![image-20231227165852048](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227165852048.png)
+
+
+
+## 10.装饰器
+
+![image-20231227170218915](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227170218915.png)
+
+
+
+### 1.类的装饰器
+
+![image-20231227170459805](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227170459805.png)
+
+1.基本使用
+
+```ts
+// 装饰器的本质是一个函数
+// 从外界接收装饰用来扩展自己
+
+// 1.类装饰器的基本使用 缺点:不能传参
+function fun1(constructor: any){
+    // 往参数原型上添加一个name属性
+    // 相当于往类的原型挂载了一个name属性
+    constructor.prototype.name = '扩展名字:黄宇';
+    // 挂载类的静态属性
+    constructor.age = 18
+}
+
+// @fun1 ===> @fun1(Person)
+@fun1
+class Person{}
+
+let p = new Person()
+// @ts-ignore 取消下一行报错
+console.log(p.name);
+// @ts-ignore 取消下一行报错
+console.log(Person.age);
+```
+
+
+
+2.装饰器工厂
+
+```ts
+function func(options:any){
+    return function(target:any){
+        target.prototype.username = options.name;
+        target.prototype.age = options.age;
+    }
+}
+
+// 这里相当于套了一层 调用了一次函数就可以传递参数 @func((User))
+@func({
+    name:'张三',
+    age:20
+})
+class User{}
+
+let user = new User();
+// @ts-ignore
+console.log(user.username,user.age); // 输出：张三 20
+```
+
+
+
+3.装饰器组合 nest.js用的非常多
+
+代码
+
+```ts
+function demo1(target:any){
+    console.log('demo1');
+}
+function demo2(){
+    console.log('demo2');
+    return function(target:any){
+        console.log('demo2内部');
+    }
+}
+function demo3(){
+    console.log('demo3');
+    return function(target:any){
+        console.log('demo3内部');
+    }
+}
+function demo4(target:any){
+    console.log('demo4');
+}
+
+@demo1
+@demo2()
+@demo3()
+@demo4
+class User{}
+
+let user = new User();
+// 先从上下到下执行所有装饰器工厂，在从下至上执行所有类装饰器
+```
+
+![image-20231227174915274](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227174915274.png)
+
+运行顺序
+
+![image-20231227175218011](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227175218011.png)
+
+### 2.类属性装饰器
+
+4.类某个属性的装饰器
+
+非传参写法
+
+```ts
+function demo(target:any, attr:any){
+    // console.log(target, attr); // 类本身 属性
+    target[attr] = '黄宇'
+}
+
+class User{
+    @demo
+    // @ts-ignore
+    userName:string
+}
+let user = new User();
+console.log(user.userName);
+```
+
+传参写法
+
+```ts
+function demo(options:any){
+    return function(target:any, attr:any){
+        target[attr] = options;
+    }
+}
+
+class User{
+    @demo('黄宇')
+    // @ts-ignore
+    userName:string
+}
+let user = new User();
+console.log(user.userName);
+```
+
+
+
+### 3.类方法装饰器
+
+![image-20231227181532240](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227181532240.png)
+
+```ts
+function demo(target:any, key:string, descriptor:PropertyDescriptor){
+//    console.log(target); // 普通方法为类的原型 | 静态方法为类本身
+//    console.log(key); // 方法名
+      console.log(descriptor); // 方法修饰符 writable enumrable configurable
+    descriptor.value = function(){
+        return 'Hello,我是被修改后的宇宇'
+    }
+}
+
+class User{
+    @demo
+    sayName(){
+        console.log('hello,我是宇宇');
+    }
+}
+let user = new User();
+console.log(user.sayName()); // Hello,我是被修改后的宇宇
+```
+
+
+
+get和set访问器的装饰器也是和方法一样传入三个参数
+
+
+
+### 4.参数的装饰器
+
+![image-20231227220257314](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231227220257314.png)
+
+
+
+### 5.例子
+
+```ts
+// 这东西一定不存在
+const userInfo: any = undefined
+
+function catchErrorDecorator(msg:string){
+    return function(target: any, key: string, descriptor: PropertyDescriptor){
+        const fn = descriptor.value // 记录旧函数
+        descriptor.value = function(){
+            try {
+                fn()
+            } catch (e) {
+                console.log(msg);
+            }
+        }
+    }
+}
+
+class User {
+    @catchErrorDecorator('userInfo.name不存在')
+    getName(){
+        return userInfo.name
+    }
+    @catchErrorDecorator('userInfo.age不存在')
+    getAge(){
+        return userInfo.age
+    }
+}
+
+let user = new User()
+```
+
+
+
+## 11.补充
+
+### 1.混入
+
+对象混入
+
+```ts
+let nameObj = {name:'王楚然'}
+let ageObj = {age:23}
+// 对象混入 让nameObj也拥有age属性
+// Object.assign方法用于对象的合并，将源对象（ source ）的所有可枚举属性，复制到目标对象（ target ）
+Object.assign(nameObj,ageObj)
+```
+
+类混入
+
+```ts
+// 类混入
+class Name {
+    name:string = '王楚然'
+    getName(){
+        console.log('我是王楚然');
+    }
+}
+
+class Age {
+    age:number = 23
+    getAge(){
+        console.log('我今年23岁');
+    }
+}
+
+class Person implements Name,Age{
+    // 实现接口
+    name:string
+    age:number
+    getName: () => void
+    getAge: () => void
+}
+
+// 定义混入函数 
+// target 表示Person from 表示 Name和Age类
+function mixins(target: any, from:any[]){
+    from.forEach(item => {
+        Object.getOwnPropertyNames(item.prototype).forEach(name => {
+            target.prototype[name] = item.prototype[name]
+        })
+    })
+}
+
+// 调用混入函数
+mixins(Person, [Name, Age])
+let person = new Person()
+person.getName()
+person.getAge()
+```
+
+
+
+## 12.ts中的模块
+
+![image-20231228221244099](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231228221244099.png)
+
+js中的模块
+
+![image-20231228221458664](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231228221458664.png)
+
+node中的模块
+
+![image-20231228221536418](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231228221536418.png)
+
+ts中的模块
+
+导入
+
+```ts
+export const obj = {
+    name: '王楚然',
+    age: 24
+}
+
+export const arr = [1, 2, 3]
+```
+
+使用
+
+```ts
+// 默认情况js中时不兼容上面俩种导入方式混合使用，而ts对它们进行了综合
+// 这俩种方式都可以使用,NODE和js默认的都可以使用
+import { obj } from './02'
+console.log(obj);
+
+import module = require('./02')
+console.log(module.arr);
+```
+
+
+
+### 1.命名空间
+
+![image-20231228222415222](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231228222415222.png)
+
+单文件内使用
+
+```ts
+namespace A {
+    export const a = 10
+}
+console.log(A.a);
+
+// 嵌套的命名空间
+namespace B {
+    export const b = 20
+    export namespace C {
+        export const b = 30
+    }
+}
+console.log(B.b);
+console.log(B.C.b);
+
+// 命名空间可以进行简化
+import b = B.C.b
+console.log(b);
+```
+
+导出给其它文件使用
+
+定义
+
+```ts
+export namespace A {
+    export const a = 10
+    export const name = '王楚然'
+}
+```
+
+使用
+
+```ts
+import { A } from './02'
+console.log(A.a);
+console.log(A.name);
+```
+
+
+
+### 2.三斜杠语法
+
+在不同文件中(模块)使用命名空间更推荐使用这种语法导入导出
+
+导出
+
+```ts
+// 三斜杆语法不能加上export
+namespace User {
+    export const name =  '王楚然'
+    export const age = 25
+}
+```
+
+导入
+
+```ts
+export default{}
+/// <reference path="./02.ts" />
+const name = User.name
+console.log(name);
+```
+
+
+
+### 3.声明合并
+
+![image-20231228224245175](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231228224245175.png)
+
+
+
+## 13.ts配置文件
+
+### 1.ts配置文件
+
+```json
+{
+  "compilerOptions": {
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /* 项目 */
+    "incremental": true,              /* 启用增量编译 */
+
+    /* 语言和环境 */
+    "target": "es2016",               /* 设置 JavaScript 语言版本 */
+
+    /* 模块 */
+    "module": "es6",                  /* 指定生成什么模块代码 */
+    "rootDir": "./src",               /* 指定源文件的根文件夹 */
+    "resolveJsonModule": true,        /* 启用导入 .json 文件 */
+    "moduleResolution": "node",       /* 指定 TypeScript 如何从给定的模块说明符中查找文件(为了向后兼容，不用管) */
+
+    /* JavaScript 支持 */
+    "allowJs": true,                  /* 允许 JavaScript 文件成为您程序的一部分。使用 `checkJS` 选项从这些文件中获取错误 */
+    "checkJs": true,                  /* 在类型检查的 JavaScript 文件中启用错误报告 */
+
+    /* 输出?(Emit) */
+    // "declaration": true,           /* 从项目中的 TypeScript 和 JavaScript 文件生成 .d.ts 文件 */
+    // "declarationMap": true,        /* 为 d.ts 文件创建源映射 */
+    // "emitDeclarationOnly": true,   /* 只输出 d.ts 文件而不输出 JavaScript 文件 */
+    "sourceMap": true,                /* 为创建的 JavaScript 文件创建源映射文件(生产环境不需要) */
+    // "inlineSourceMap": true,       /* 在输出的 JavaScript 中写入映射文件位置(生产环境不需要) */
+    "noEmitOnError": true,            /* 如果发现任何类型检查错误，则停止编译并不输出编译结果 */
+    "outDir": "./build",              /* 为所有输出文件指定一个输出文件夹 */
+    // "declarationDir": "./",        /* 指定生成的声明文件的输出目录. */
+    // "importHelpers": true,         /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
+    // "noEmitHelpers": true,         /* 禁止在编译输出中生成自定义辅助函数，如`__extends`. */
+
+    /* 类型检查 */
+    "strict": true,                                      /* 启用所有严格的类型检查选项 */
+
+    /* 互操作约束 */
+    // "allowSyntheticDefaultImports": true,             /* 当模块没有默认导出时允许 `import x from y` */
+    "esModuleInterop": true,                             /* 发出额外的 JavaScript 以简化对导入 CommonJS 模块的支持。这将启用 `allowSyntheticDefaultImports` 以实现类型兼容性 */
+    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
+
+    /* 完整性 */
+    // "skipDefaultLibCheck": true,                      /* 跳过 TypeScript 中包含 .d.ts 文件的类型检查 */
+    "skipLibCheck": true                                 /* 跳过所有 .d.ts 文件类型检查. */
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /* 项目 */
+    // "incremental": true,                              /* 启用增量编译 */
+    // "composite": true,                                /* 启用允许 TypeScript 项目与项目引用一起使用的约束 */
+    // "tsBuildInfoFile": "./",                          /* 指定增量编译文件的文件夹(默认`.tsbuildinfo`) */
+    // "disableSourceOfProjectReferenceRedirect": true,  /* 在引用复合项目时禁用首选源文件而不是声明文件 */
+    // "disableSolutionSearching": true,                 /* 编辑时从多项目参考检查中选择一个项目 */
+    // "disableReferencedProjectLoad": true,             /* 减少 TypeScript 自动加载的项目数量 */
+
+    /* 语言和环境 */
+    // "target": "es2016",                               /* 设置 JavaScript 语言版本 */
+    // "lib": [],                                        /* 指定一组描述目标运行时环境的捆绑库声明文件. */
+    // "jsx": "preserve",                                /* 指定生成什么 JSX 代码 */
+    // "experimentalDecorators": true,                   /* 启用对 TC39 stage 2 草稿装饰器的实验性支持 */
+    // "emitDecoratorMetadata": true,                    /* Emit design-type metadata for decorated declarations in source files */
+    // "jsxFactory": "",                                 /* 指定针对 React JSX 发出时使用的 JSX 工厂函数，例如'React.createElement' 或 'h' */
+    // "jsxFragmentFactory": "",                         /* 指定在针对 React JSX 发出时用于片段的 JSX 片段引用，例如'React.Fragment' 或 'Fragment' */
+    // "jsxImportSource": "",                            /* 指定用于在使用 `jsx: react-jsx` 时导入 JSX 工厂函数的模块说明符 */
+    // "reactNamespace": "",                             /* 指定为 `createElement` 调用的对象。这仅适用于针对 `react` JSX 发出的 */
+    // "noLib": true,                                    /* 禁用包括任何库文件，包括默认的 lib.d.ts */
+    // "useDefineForClassFields": true,                  /* 发出符合 ECMAScript 标准的类字段 */
+
+    /* 模块 */
+    // "module": "commonjs",                             /* 指定生成什么模块代码 */
+    // "rootDir": "./",                                  /* 指定源文件的根文件夹 */
+    // "moduleResolution": "node",                       /* 指定 TypeScript 如何从给定的模块说明符中查找文件(为了向后兼容，不用管) */
+    // "baseUrl": "./",                                  /* 指定解析非绝对路径模块名时的基准目录 */
+    // "paths": {},                                      /* 一些将模块导入重新映射到相对于 baseUrl 路径的配置 */
+    // "rootDirs": [],                                   /* 告诉编译器有许多“虚拟”的目录作为一个根目录。这将会允许编译器在这些“虚拟”目录中解析相对应的模块导入，就像它们被合并到同一目录中一样。 */
+    // "typeRoots": [],                                  /* 指定"@types"包的路径，默认为 `./node_modules/@types`. */
+    // "types": [],                                      /* 当 types 被指定，只有列出的包才会被包含在全局范围内 */
+    // "allowUmdGlobalAccess": true,                     /* 允许从模块访问 UMD 全局变量 */
+    // "resolveJsonModule": true,                        /* 启用导入 .json 文件 */
+    // "noResolve": true,                                /* 禁止 `import`s、`require`s 或 `<reference>`s 扩展 TypeScript 应该添加到项目中的文件数量. */
+
+    /* JavaScript 支持 */
+    // "allowJs": true,                                  /* 允许 JavaScript 文件成为您程序的一部分。使用 `checkJS` 选项从这些文件中获取错误 */
+    // "checkJs": true,                                  /* 在类型检查的 JavaScript 文件中启用错误报告 */
+    // "maxNodeModuleJsDepth": 1,                        /* 指定用于从“node_modules”检查 JavaScript 文件的最大文件夹深度。仅适用于 `allowJs` */
+
+    /* 发射? */
+    // "declaration": true,                              /* 从项目中的 TypeScript 和 JavaScript 文件生成 .d.ts 文件 */
+    // "declarationMap": true,                           /* 为 d.ts 文件创建源映射 */
+    // "emitDeclarationOnly": true,                      /* 只输出 d.ts 文件而不输出 JavaScript 文件 */
+    // "sourceMap": true,                                /* 为创建的 JavaScript 文件创建源映射文件 （source map) */
+    // "outFile": "./",                                  /* 如果被指定，所有全局(非模块)文件将被合并到指定的单个输出文件中。如果 `declaration` 为 true，则还指定一个文件，该文件捆绑了所有 .d.ts 输出。如果 module 为 system 或 amd，所有模块文件也将在所有全局内容之后被合并到这个文件中 */
+    // "outDir": "./",                                   /* 为所有输出文件指定一个输出文件夹 */
+    // "removeComments": true,                           /* 移除注释. */
+    // "noEmit": true,                                   /* 禁止编译器生成文件(只是运行检查) */
+    // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
+    // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types */
+    // "downlevelIteration": true,                       /* 为迭代发出更合规但冗长且性能较低的 JavaScript. */
+    // "sourceRoot": "",                                 /* 为调试器指定根路径以参考源代码. */
+    // "mapRoot": "",                                    /* 指定调试器应从指定路径获取映射文件而不是从生成位置 */
+    // "inlineSourceMap": true,                          /* 在输出的 JavaScript 中写入映射文件位置 */
+    // "inlineSources": true,                            /* 在输出的 JavaScript 中的源映射中包含源代码 */
+    // "emitBOM": true,                                  /* Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files. */
+    // "newLine": "crlf",                                /* 设置输出文件的换行符 */
+    // "stripInternal": true,                            /* 禁用在其 JSDoc 注释中包含 `@internal` 的发出声明 */
+    // "noEmitHelpers": true,                            /* 禁止在编译输出中生成自定义辅助函数，如`__extends`. */
+    // "noEmitOnError": true,                            /* 如果发现任何类型检查错误，则停止编译并不输出编译结果 */
+    // "preserveConstEnums": true,                       /* 在生成的代码中禁用擦除 `const enum` 声明 */
+    // "declarationDir": "./",                           /* 指定生成的声明文件的输出目录. */
+    // "preserveValueImports": true,                     /* 保留 JavaScript 输出中未使用的导入 */
+
+    /* 互操作约束 */
+    // "isolatedModules": true,                          /* 确保每个文件都可以安全地转译，而不依赖于其他导入 */
+    // "allowSyntheticDefaultImports": true,             /* 当模块没有默认导出时允许 `import x from y` */
+    // "esModuleInterop": true,                          /* 发出额外的 JavaScript 以简化对导入 CommonJS 模块的支持。这将启用 `allowSyntheticDefaultImports` 以实现类型兼容性 */
+    // "preserveSymlinks": true,                         /* 禁用解析符号链接到其真实路径。这与节点中的相同标志相关 */
+    // "forceConsistentCasingInFileNames": true,         /* Ensure that casing is correct in imports. */
+
+    /* 类型检查 */
+    // "strict": true,                                   /* 启用所有严格的类型检查选项 */
+    // "noImplicitAny": true,                            /* 为带有隐含“any”类型的表达式和声明启用错误报告。 */
+    // "strictNullChecks": true,                         /* 类型检查时，考虑`null`和`undefined` */
+    // "strictFunctionTypes": true,                      /* 分配函数时，检查以确保参数和返回值是子类型兼容的 */
+    // "strictBindCallApply": true,                      /* 检查`bind`、`call` 和`apply` 方法的参数是否与原始函数匹配 */
+    // "strictPropertyInitialization": true,             /* 检查在构造函数中声明但未设置的类属性 */
+    // "noImplicitThis": true,                           /* 当 `this` 的类型为 `any` 时启用错误报告 */
+    // "useUnknownInCatchVariables": true,               /* 将 catch 子句变量输入为“unknown”而不是“any” */
+    // "alwaysStrict": true,                             /* 确保始终启用 'use strict' */
+    // "noUnusedLocals": true,                           /* 未读取局部变量时启用错误报告 */
+    // "noUnusedParameters": true,                       /* 未读取函数参数时引发错误 */
+    // "exactOptionalPropertyTypes": true,               /* Interpret optional property types as written, rather than adding 'undefined'. */
+    // "noImplicitReturns": true,                        /* 为未在函数中显式返回的代码路径启用错误报告. */
+    // "noFallthroughCasesInSwitch": true,               /* 为 switch 语句中的失败案例启用错误报告 */
+    // "noUncheckedIndexedAccess": true,                 /* Include 'undefined' in index signature results */
+    // "noImplicitOverride": true,                       /* 确保派生类中的覆盖成员使用覆盖修饰符进行标记 */
+    // "noPropertyAccessFromIndexSignature": true,       /* 强制对使用索引类型声明的键使用索引访问器 */
+    // "allowUnusedLabels": true,                        /* 禁用未使用标签的错误报告 */
+    // "allowUnreachableCode": true,                     /* 禁用无法访问代码的错误报告 */
+
+    /* 完整性 */
+    // "skipDefaultLibCheck": true,                      /* 跳过 TypeScript 中包含 .d.ts 文件的类型检查 */
+    // "skipLibCheck": true                              /* 跳过所有 .d.ts 文件类型检查. */
+  }
+}
+```
+
+
+
+### 2.rollup打包ts文件
+
+### 3.webpack打包ts文件
+
+### 4.描述声明文件 xx.d.ts
+
+### 5.搭建vue+ts环境
+
+### 6.搭建react+ts环境
