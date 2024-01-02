@@ -440,14 +440,6 @@ Promise.any([//返回执行最快的完成的Promise(都报错才会跳出错误
 
 ## 5.宏任务和微任务
 
-```css
-    完整的代码执行顺序就是
-        1.同步代码
-        2.await当函数执行完后
-        3.微任务
-        4.宏任务
-```
-
 ```javascript
 0.// 开启了一个定时器
 // 定时器的作用是间隔一段时间后，将函数放入到任务队列中(宏任务)
@@ -548,7 +540,7 @@ Promise.resolve().then(() => {
         所以完整的代码执行顺序就是
             1.同步代码
             2.await当函数执行完后
-            3.微任务
+            3.微任务(promise)
             4.宏任务
     */
 ```
@@ -712,8 +704,7 @@ async function fn2() {
 
 /* 
     Promise解决了异步调用中回调函数问题，
-        虽然通过链式调用解决了回调地狱，但是链式调用太多以后还是不好看
-        我多想以同步的方式去调用异步的代码
+        虽然通过链式调用解决了回调地狱，但是链式调用太多以后还是不好看，我多想以同步的方式去调用异步的代码
 */
 function sum(a, b) {
     return new Promise(resolve => {
@@ -811,6 +802,8 @@ fn6()
 })()
 
 ```
+
+
 
 ## 总结:Node中代码的执行顺序(面试)
 
@@ -1023,6 +1016,8 @@ export default d
 */
 ```
 
+
+
 ### 4.1 es实现a文件在b文件中导出
 
 ```js
@@ -1045,7 +1040,7 @@ export { someFunction,someVariable }
 方式2使用export from快捷方式
 
 ```js
-// b.js
+// b.js 同时导入又导出
 export { someFunction, someVariable } from './a.js';
 ```
 

@@ -84,6 +84,8 @@
 
 ![uTools_1669644859686](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669644859686.png)
 
+
+
 ## 5.字面量和变量
 
 ![uTools_1669645465797](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669645465797.png)
@@ -108,6 +110,8 @@
 
 **常量的值是会被固定不能被修改(内存地址固定了)**
 
+
+
 ## 6.变量的内存结构
 
 ![uTools_1669709903890](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669709903890.png)
@@ -115,6 +119,8 @@
 ![uTools_1669648141698](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669648141698.png)
 
 **就是类似c语言中的指针,通过内存地址找到内存存储的内容**
+
+
 
 ## 7.标识符的规则
 
@@ -1688,6 +1694,8 @@ if( isPrime){
     </script>
 ```
 
+
+
 ## 8.利用对象来存储相反的值
 
 ```java
@@ -2883,6 +2891,8 @@ let可以直接加上代码块{}来创建块作用域。var用立即执行函数
 
 ![uTools_1670750845280](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1670750845280.png)
 
+
+
 ## 6.原型对象(prototype)
 
 ```html
@@ -3041,6 +3051,8 @@ let可以直接加上代码块{}来创建块作用域。var用立即执行函数
 
 **区别是一个通过类访问,一个通过实例访问**
 
+
+
 ## 9.instanceof和hasOwn
 
 ### (1).instanceof
@@ -3075,6 +3087,8 @@ let可以直接加上代码块{}来创建块作用域。var用立即执行函数
 很少场景能用到
 
 ![uTools_1670767409256](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1670767409256.png)
+
+
 
 ## 10.早期类的创建方式(旧类,兼容老项目)(面试题)
 
@@ -3570,6 +3584,8 @@ coslose.log(stu)
 
 ![uTools_1671106658163](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1671106658163.png)
 
+
+
 ## 6.复制的方式(...展开运算符)(对象数组的复制总结)
 
 **数组**
@@ -3602,6 +3618,8 @@ coslose.log(stu)
 ```
 
 **深复制有方法 还有利用json转换**
+
+
 
 **对象**
 
@@ -7341,11 +7359,13 @@ class MyClass{
         </script>
 ```
 
+
+
 ## 6.事件循环(调用堆栈)
 
 ```html
         <script>
-            // 整个script也是一个整个的执行环境
+            // 整个script是一个整个的执行环境
             /* 
                 事件循环（event loop）
                     - 函数在每次执行时，都会产生一个执行环境
@@ -7386,6 +7406,8 @@ class MyClass{
 
 ![uTools_1675777374122](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1675777374122.png)
 
+
+
 ## 7.事件循环(消息队列)(js代码是单线程的,所以等待执行的代码在消息队列中)
 
 ```html
@@ -7412,9 +7434,7 @@ class MyClass{
                     - 消息队列负责存储将要执行的函数
                     - 当我们触发一个事件时，其响应函数并不是直接就添加到调用栈中的
                         因为调用栈中有可能会存在一些还没有执行完的代码
-                    - 事件触发后，JS引擎是将事件响应函数插入到消息队列中排队
-                        
-                    
+                    - 事件触发后，JS引擎是将事件响应函数插入到消息队列中排队  
         */
 
         function fn() {
@@ -7441,7 +7461,7 @@ class MyClass{
 
             const begin = Date.now()//获取时间戳
 
-            while (Date.now() - begin < 3000) { }//当前时间-刚才获取的时间 < 3秒(时间过去3秒后就循环借宿)
+            while (Date.now() - begin < 3000) { }//当前时间-刚才获取的时间 < 3秒(时间过去3秒后就循环结束)
             //使用while占着调用栈,需要3秒执行完才会执行,此时alert会被延时三秒
         }
 
@@ -7458,7 +7478,7 @@ class MyClass{
 ```html
     <script>
         /* 
-        定时器的本质，就是在指定时间后将函数添加到消息队列中(此时不一定执行,因为栈中不一定是空的)
+        定时器的本质，就是在指定时间后将函数添加到消息队列中(此时不一定执行,因为栈中不一定是空的,所以要通过setTimeout模拟setInterval)
         */
 
         // console.time()

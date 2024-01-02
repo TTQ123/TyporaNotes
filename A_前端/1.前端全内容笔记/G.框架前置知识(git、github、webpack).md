@@ -621,6 +621,14 @@ module.exports = {
 
 
 
+### 3.webpack工作原理
+
+![image-20231229172242433](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231229172242433.png)
+
+
+
+
+
 ### 2.Vite（新）
 
 -   Vite 也是前端的构建工具

@@ -2,6 +2,8 @@
 
 ## 1.vue是什么
 
+**声明式(不需要我们去操作底层DOM)，组件化，渐进式**
+
 ![image-20230814163453506](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814163453506.png)
 
 ![image-20230814163623307](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230814163623307.png)
@@ -22,7 +24,7 @@
 
 ### 3.响应性数据
 
-**其实响应式的底层本质，是通过数据和一些函数进行绑定，当数据更新时触发函数重新执行。**
+**vue响应式的本质的是函数 和 数据之间的关联，当数据更新时触发函数重新执行。**
 
 **例如模板其实就是render函数，当数据发生变化时，render函数会重新执行，于是模板就重新渲染了**
 
@@ -250,9 +252,9 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
 
 ### 10.v-bind对于css样式的控制(操作css和style)
 
-在vue中我们仍然可以使用伪类选择器，但是我们更推荐:class或:style
+**在vue中我们仍然可以使用伪类选择器，但是我们更推荐:class或:style**
 
-使用`:class`指令可以更好地与 Vue 的响应式数据配合，使得样式能够根据数据的变化而动态地更新，这是 Vue 中推荐的样式控制方式。
+**使用`:class`指令可以更好地与 Vue 的响应式数据配合，使得样式能够根据数据的变化而动态地更新，这是 Vue 中推荐的样式控制方式。**
 
 
 
@@ -1245,8 +1247,8 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
 ### 1.vue2vue3工程化的不同点
 
 ```apl
-vue3:vite->create-vue->pinia
-vue2:webpack->vue-cli->vuex
+vue3:vite -> create-vue -> pinia
+vue2:webpack -> vue-cli -> vuex
 ```
 
 
@@ -1675,6 +1677,7 @@ export default{
   }
 }
 </script>
+
 a1
 <template>
   <div>
@@ -4509,11 +4512,41 @@ vue3更容易复用，在vue2中我们要使用minxs混入，但是在vue3我们
 
 ![image-20231011194425932](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011194425932.png)
 
-![image-20231011203438893](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011203438893.png)
+
+
+```bash
+$ npm create vue@latest
+$ pnpm create vue@latest
+$ yarn create vue@latest
+$ bun create vue@latest
+```
 
 要选择这个Customize with create-vue
 
 ![image-20231011203452316](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011203452316.png)
+
+#### 1.对比 vue-cli和vite创建项目的命令
+
+vue-cli
+
+```bash
+npm install -g @vue/cli
+vue create 项目名
+cd 项目目录
+npm run serve
+```
+
+
+
+vite
+
+```bash
+npm init vite@latest
+pnpm create vite
+yarn create vite
+```
+
+
 
 
 
@@ -4659,6 +4692,10 @@ deep是监听整个对象的属性
 
 
 
+![image-20231229170617582](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231229170617582.png)
+
+
+
 ### 5.生命周期函数
 
 ![image-20231015215033067](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231015215033067.png)
@@ -4724,6 +4761,8 @@ vue3组件的全局注册
 ##### 1.补充 useAttrs
 
 ![image-20231016182938037](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182938037.png)
+
+语法糖写法怎么获取
 
 ![image-20231016182954979](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231016182954979.png)
 
