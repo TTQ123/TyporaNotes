@@ -1408,8 +1408,11 @@ person.vue
   import News from '@/pages/News.vue'
   import About from '@/pages/About.vue'
   
+  // 创建路由器
   const router = createRouter({
+      // 指定路由工作模式
   	history:createWebHistory(),
+      // 制定路由规则
   	routes:[
   		{
   			path:'/home',
@@ -1421,6 +1424,7 @@ person.vue
   		}
   	]
   })
+  // 导出路由器
   export default router
   ```
 * `main.ts`代码如下：
@@ -1456,13 +1460,21 @@ person.vue
   </script>
   ```
 
+
+
 ## 4.3. 【两个注意点】
 
 > 1. 路由组件通常存放在`pages` 或 `views`文件夹，一般组件通常存放在`components`文件夹。
 >
 > 2. 通过点击导航，视觉效果上“消失” 了的路由组件，默认是被**卸载**掉的，需要的时候再去**挂载**。
+>
+> 
 
 ## 4.4.【路由器工作模式】
+
+前端框架路由器工作模式
+
+![image-20240103224132029](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103224132029.png)
 
 1. `history`模式
 
@@ -1470,12 +1482,18 @@ person.vue
    >
    > 缺点：后期项目上线，需要服务端配合处理路径问题，否则刷新会有`404`错误。
    >
+   > 需要展示比如b站一般就用这个模式
+   >
    > ```js
    > const router = createRouter({
-   >   	history:createWebHistory(), //history模式
-   >   	/******/
+   > 	history:createWebHistory(), //history模式
+   > 	/******/
    > })
    > ```
+
+   服务端在Nginx中怎么配置解决这个问题
+
+   ![image-20240103224407146](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103224407146.png)
 
 2. `hash`模式
 
@@ -1483,12 +1501,16 @@ person.vue
    >
    > 缺点：`URL`带有`#`不太美观，且在`SEO`优化方面相对较差。
    >
+   > 后台管理项目追求稳定一般用这个
+   >
    > ```js
    > const router = createRouter({
-   >   	history:createWebHashHistory(), //hash模式
-   >   	/******/
+   > 	history:createWebHashHistory(), //hash模式
+   > 	/******/
    > })
    > ```
+
+
 
 ## 4.5. 【to的两种写法】
 
@@ -1497,8 +1519,11 @@ person.vue
 <router-link active-class="active" to="/home">主页</router-link>
 
 <!-- 第二种：to的对象写法 -->
+<!-- 对象形式在多层路由嵌套的时候就更方便,可以通过name跳转 -->
 <router-link active-class="active" :to="{path:'/home'}">Home</router-link>
 ```
+
+
 
 ## 4.6. 【命名路由】
 
@@ -1560,7 +1585,7 @@ routes:[
    			children:[
    				{
    					name:'xiang',
-   					path:'detail',
+   					path:'detail', // 子级不用/
    					component:Detail
    				}
    			]
@@ -1594,7 +1619,7 @@ routes:[
          </RouterLink>
        </nav>
        <div class="news-detail">
-         <RouterView/>
+         <RouterView/> // 二级路由出口
        </div>
      </div>
    </template>
@@ -1603,6 +1628,8 @@ routes:[
    
 
 ## 4.8. 【路由传参】
+
+编程式导航的传参和这个差不多
 
 ### query参数
 
@@ -1639,6 +1666,13 @@ routes:[
       console.log(route.query)
       ```
 
+route对象也是响应式的,解构的时候要注意套个toRefs
+
+![image-20240103231013532](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103231013532.png)
+
+**注意toRefs是调用了一次ref,在js使用的时候记得query.value.id**
+
+
 
 ### params参数
 
@@ -1672,9 +1706,19 @@ routes:[
       console.log(route.params)
       ```
 
-> 备注1：传递`params`参数时，若使用`to`的对象写法，必须使用`name`配置项，不能用`path`。
+> **备注1：传递`params`参数时，若使用`to`的对象写法，必须使用`name`配置项，不能用`path`。**
 >
 > 备注2：传递`params`参数时，需要提前在规则中占位。
+>
+> 备注3: 不能传递数组对象这些七七八八的参数,严格意义上query是可以的(但是不建议这样去做,很呆)。
+
+**占位**
+
+![image-20240103232458080](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103232458080.png)
+
+**可以配置有些选项不是必传的,例如这里title不是必传的,可以不传值也可以**
+
+![image-20240103234921247](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103234921247.png)
 
 ## 4.9. 【路由的props配置】
 
@@ -1729,6 +1773,8 @@ console.log(route.parmas)
 console.log(router.push)
 console.log(router.replace)
 ```
+
+
 
 ## 4.12. 【重定向】
 

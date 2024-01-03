@@ -143,6 +143,8 @@ createApp(App).use(router).mount('#app')
 
 **不足的地方是--传值会出现在地址栏**
 
+
+
 ### 2.动态路由传参(根据不同用户的身份跳转)
 
 **假设要访问http://xx/id**
@@ -154,6 +156,8 @@ createApp(App).use(router).mount('#app')
 **在router-link中进行动态跳转**
 
 ![image-20230701210216273](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230701210216273.png)
+
+
 
 ## 6.嵌套路由(父子路由)
 
@@ -167,6 +171,8 @@ footer.vue
 
 **如果父路由的path参数为"/"时 就不用带前缀/user**
 
+
+
 ## 7.命名视图(类似插槽)
 
 ![image-20230701210956531](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230701210956531.png)
@@ -178,6 +184,8 @@ footer.vue
 跳转后就会走不同的出口 user1有出口  user2也有出口
 
 ![image-20230701211205140](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230701211205140.png)
+
+
 
 ## 8.重定向
 

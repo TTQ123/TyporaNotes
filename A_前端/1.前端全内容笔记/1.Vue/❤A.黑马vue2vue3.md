@@ -2613,9 +2613,13 @@ new Vue({
 
 ###### 1.查询参数传参
 
+补充：还可以使用 :to{path: '', query:{}}的方式传参
+
 ![image-20230906205045647](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906205045647.png)
 
 ![image-20230906204954602](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906204954602.png)
+
+
 
 ###### 2.动态路由传参
 
