@@ -2156,6 +2156,12 @@ let ageObj = {age:23}
 Object.assign(nameObj,ageObj)
 ```
 
+
+
+![image-20240102220337133](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240102220337133.png)
+
+
+
 类混入
 
 ```ts
