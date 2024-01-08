@@ -1720,7 +1720,13 @@ route对象也是响应式的,解构的时候要注意套个toRefs
 
 ![image-20240103234921247](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103234921247.png)
 
+
+
 ## 4.9. 【路由的props配置】
+
+**因为路由组件的本质也是一个组件,所以也可以使用props**
+
+![image-20240104210517508](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240104210517508.png)
 
 作用：让路由组件更方便的收到参数（可以将路由参数作为`props`传给组件）
 
@@ -1730,18 +1736,22 @@ route对象也是响应式的,解构的时候要注意套个toRefs
 	path:'detail/:id/:title/:content',
 	component:Detail,
 
-  // props的对象写法，作用：把对象中的每一组key-value作为props传给Detail组件
-  // props:{a:1,b:2,c:3}, 
-
-  // props的布尔值写法，作用：把收到了每一组params参数，作为props传给Detail组件
+  // props的布尔值写法，作用：把收到了每一组【params】参数，作为props传给Detail组件
   // props:true
   
-  // props的函数写法，作用：把返回的对象中每一组key-value作为props传给Detail组件
+  // props的函数写法，作用：把返回的对象中每一组key-value作为props传给Detail组件【query用这个更方便】
   props(route){
     return route.query
   }
+    
+  // props的对象写法，作用：把对象中的每一组key-value作为props传给Detail组件
+  // props:{a:1,b:2,c:3}, 
 }
 ```
+
+
+
+
 
 ## 4.10. 【 replace属性】
 
@@ -1759,6 +1769,28 @@ route对象也是响应式的,解构的时候要注意套个toRefs
      ```
 
 ## 4.11. 【编程式导航】
+
+**在RouterLink的to属性可以怎么写在编程式导航就可以怎么写**
+
+```vue
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+let id = 11
+let title = '四黄鱼'
+
+const router = useRouter()
+const goToIndex = (id:number, title:string) => {
+  router.push({
+    name: 'index',
+    params: { id, title }
+  })
+}
+</script>
+
+<template>
+  <button @click="goToIndex(id, title)">去Index</button>    
+</template>
+```
 
 路由组件的两个重要的属性：`$route`和`$router`变成了两个`hooks`
 
@@ -1784,6 +1816,7 @@ console.log(router.replace)
 
    ```js
    {
+       // 访问/时会重定向到/about
        path:'/',
        redirect:'/about'
    }
@@ -1793,9 +1826,19 @@ console.log(router.replace)
 
 # 5. pinia 
 
+**集中式状态(数据)管理  redux vuex pinia....**
+
 ## 5.1【准备一个效果】
 
-<img src="./images/pinia_example.gif" alt="pinia_example" style="zoom:30%;border:3px solid" /> 
+![image-20240104215238411](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240104215238411.png)
+
+nanoid可以生成一个随机id,和uuid很像
+
+![image-20240104220156390](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240104220156390.png)
+
+![image-20240104220223578](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240104220223578.png)
+
+
 
 ## 5.2【搭建 pinia 环境】
 
@@ -1819,9 +1862,26 @@ app.use(pinia)
 app.mount('#app')
 ```
 
+
+
+```ts
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import App from './App.vue'
+import router from './router'
+
+const app = createApp(App)
+/* 直接调用 */
+app.use(createPinia())
+app.use(router)
+app.mount('#app')
+```
+
 此时开发者工具中已经有了`pinia`选项
 
 <img src="https://cdn.nlark.com/yuque/0/2023/png/35780599/1684309952481-c67f67f9-d1a3-4d69-8bd6-2b381e003f31.png" style="zoom:80%;border:1px solid black;border-radius:10px" />
+
+
 
 ## 5.3【存储+读取数据】
 
@@ -1888,9 +1948,13 @@ app.mount('#app')
      
      // 调用useXxxxxStore得到对应的store
      const sumStore = useSumStore()
+     
+     // 下面这俩种方式都可以拿到state中的数据
+     console.log(useSumStore.sum)
+       console.log(useSumStore.$state.sum)
    </script>
    ```
-
+   
    ```vue
    <template>
    	<ul>
@@ -1907,8 +1971,23 @@ app.mount('#app')
      const talkStore = useTalkStore()
    </script>
    ```
-
    
+
+**调用store仓库,返回的是一个reactive的对象,所以它里面的东西我们都不用.value,这也是一个面试题**
+
+
+
+## 5.补充 store的定义方式
+
+有俩种定义方式 选项式和组合式  选项式的action访问state的时候要 this
+
+![image-20240104230349966](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240104230349966.png)
+
+
+
+![image-20240104230507415](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240104230507415.png)
+
+
 
 ## 5.4.【修改数据】(三种方式)
 
@@ -1929,6 +2008,8 @@ app.mount('#app')
 
 3. 第三种修改方式：借助`action`修改（`action`中可以编写一些业务逻辑）
 
+   这里写法是optionsAPI  访问state需要用this.xxx
+
    ```js
    import { defineStore } from 'pinia'
    
@@ -1938,7 +2019,7 @@ app.mount('#app')
        //加
        increment(value:number) {
          if (this.sum < 10) {
-           //操作countStore中的sum
+           //操作countStore中的sum  
            this.sum += value
          }
        },
@@ -1962,6 +2043,7 @@ app.mount('#app')
    // 调用对应action
    countStore.incrementOdd(n.value)
    ```
+
 
 
 ## 5.5.【storeToRefs】
@@ -1988,6 +2070,14 @@ app.mount('#app')
 </script>
 
 ```
+
+当你用了toRefs以后,整个仓库所有东西都变成了对象，代价太大了
+
+![image-20240105122309128](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240105122309128.png)
+
+toRefs是在vue里的
+
+
 
 ## 5.6.【getters】
 
@@ -2029,9 +2119,46 @@ app.mount('#app')
      let {sum,school,bigSum,upperSchool} = storeToRefs(countStore)
      ```
 
-     
+
+
+
+如果是组合式API的写法 就用computer
+
+这里还介绍了getter(computer)的一些其它用法
+
+```ts
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia'
+import { useUserStore } from './user'
+
+export const useCounterStore = defineStore('counter', () => {
+  // 数据
+  const count = ref(4)
+  
+  const doubleCount = computed(() => count.value * 2)
+  // 一个计算属性调用另一个计算属性
+  const fourCount = computed(() => doubleCount.value * 2)
+
+  // 在一个仓库中调用另一个仓库的getter(computed)
+  const userStore = useUserStore()
+  const countSum = computed(() => count.value + userStore.sumDouble)
+
+  // 定义方法
+  function increment() {
+    count.value++
+  }
+
+  return { count, doubleCount, increment,fourCount,countSum }
+})
+```
+
+
+
+
 
 ## 5.7.【$subscribe】
+
+**这是订阅仓库的方法**
 
 通过 store 的 `$subscribe()` 方法侦听 `state` 及其变化
 
