@@ -1934,3 +1934,68 @@ vue3里面已经没有了这个修饰符
 ## 11.命令行创建uni-app项目
 
 ![image-20231203182908183](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231203182908183.png)
+
+
+
+## 12.补充
+
+### 1.ubiapp拦截器
+
+经典案例:路由拦截
+
+```js
+//白名单
+const whiteList = [
+	'/',
+	'/pages/index/index',
+	'/pages/my/my',
+	'/pages/index/login',
+	'/pages/index/register',
+	'/pages/index/wiki',
+	'/pages/index/crop',
+	'/pages/serach/search',
+	'/pages/listview/listIndex'
+]
+
+function hasPermission(url) {
+	let islogin = uni.getStorageSync('isLogin');
+	islogin = Boolean(Number(islogin)); //返回布尔值
+	// 在白名单中或有登录判断条件可以直接跳转
+	if (whiteList.indexOf(url) !== -1 || islogin) {
+		return true
+	}
+	return false
+}
+
+export default async function() {
+	const list = ['navigateTo', 'redirectTo', 'reLaunch', 'switchTab'];
+	list.forEach(item => {
+		uni.addInterceptor(item, {
+			invoke(e) {
+				// 获取要跳转的页面路径（url去掉"?"和"?"后的参数）
+                 // 拆分以后取第一部分就是url地址
+				const url = e.url.split('?')[0]
+				if (whiteList.includes(url)) {
+					console.log('url', url, e)
+					// 判断当前窗口是白名单，如果是则不重定向路由
+					return true;
+				} else {
+					uni.showToast({
+						title: '用户没有权限...',
+						duration: 2000,
+						icon: 'none',
+					})
+					return false
+				}
+			},
+			fail() {
+				return false
+			}
+		})
+	})
+}
+```
+
+参考地址:[uniapp如何实现路由守卫、路由拦截，权限引导_uniapp路由导航守卫-CSDN博客](https://blog.csdn.net/m0_57033755/article/details/132871892)
+
+官网地址:[uni.addInterceptor(STRING, OBJECT) | uni-app官网 (dcloud.net.cn)](https://uniapp.dcloud.net.cn/api/interceptor.html#拦截器的适用场景非常多-比如路由拦截-权限引导等。)
