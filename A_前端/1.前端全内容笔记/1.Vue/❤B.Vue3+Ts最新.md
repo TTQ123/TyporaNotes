@@ -2163,11 +2163,17 @@ export const useCounterStore = defineStore('counter', () => {
 通过 store 的 `$subscribe()` 方法侦听 `state` 及其变化
 
 ```ts
-talkStore.$subscribe((mutate,state)=>{
+talkStore.$subscribe((mutation,state)=>{
+  // 1.参数1 本次修改的事件信息
+  // 2.参数2 仓库的数据 
   console.log('LoveTalk',mutate,state)
+  // 当仓库发生变化以后  
+  // 我们可以使用 JSON.stringify() 方法将 JavaScript 对象转换为字符串
   localStorage.setItem('talk',JSON.stringify(talkList.value))
 })
 ```
+
+![image-20240110210012566](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240110210012566.png)
 
 
 
@@ -2204,7 +2210,7 @@ export const useTalkStore = defineStore('talk',()=>{
 
 **`Vue3`组件通信和`Vue2`的区别：**
 
-* 移出事件总线，使用`mitt`代替。
+* 移除事件总线，使用`mitt`代替。
 
 - `vuex`换成了`pinia`。
 - 把`.sync`优化到了`v-model`里面了。
@@ -2213,14 +2219,28 @@ export const useTalkStore = defineStore('talk',()=>{
 
 **常见搭配形式：**
 
-<img src="images/image-20231119185900990.png" alt="image-20231119185900990" style="zoom:60%;" /> 
+不是说只能这样用 知识建议这样用
+
+![image-20240112234013396](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240112234013396.png)
+
+
 
 ## 6.1. 【props】
 
-概述：`props`是使用频率最高的一种通信方式，常用与 ：**父 ↔ 子**。
+概述：`props`是使用频率最高的一种通信方式，常用与 ：**父 ↔ 子 双方通信**。
 
 - 若 **父传子**：属性值是**非函数**。
 - 若 **子传父**：属性值是**函数**。
+
+**❤子传父是要先接收父亲传递的函数,然后在函数中将想传递的值以参数形式传递给父组件**
+
+![image-20240111214406343](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111214406343.png)
+
+![image-20240111214419015](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111214419015.png)
+
+![image-20240111214432566](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111214432566.png)
+
+
 
 父组件：
 
@@ -2267,6 +2287,10 @@ export const useTalkStore = defineStore('talk',()=>{
 </script>
 ```
 
+
+
+
+
 ## 6.2. 【自定义事件】
 
 1. 概述：自定义事件常用于：**子 => 父。**
@@ -2274,8 +2298,12 @@ export const useTalkStore = defineStore('talk',()=>{
 
 - 原生事件：
   - 事件名是特定的（`click`、`mosueenter`等等）	
-  - 事件对象`$event`: 是包含事件相关信息的对象（`pageX`、`pageY`、`target`、`keyCode`）
+  - 事件对象`$event`: 是包含事件相关信息的对象（`pageX`、`pageY`、`target`、`keyCode`） 接收的时候一定不能写错
+  
+  
+  
 - 自定义事件：
+  
   - 事件名是任意名称
   - <strong style="color:red">事件对象`$event`: 是调用`emit`时所提供的数据，可以是任意类型！！！</strong >
 
@@ -2294,7 +2322,25 @@ export const useTalkStore = defineStore('talk',()=>{
    this.$emit('send-toy', 具体数据)
    ```
 
+自定义事件的规范标准写法(前面肉串后面驼峰)   send-toy = getToy()
+
+![image-20240111223353012](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111223353012.png)
+
+
+
+
+
+其实当你什么都不写的时候也能接收到这个事件对象(点击了按钮就是触发了事件,他能拿到这个事件对象)
+
+![image-20240111215115286](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111215115286.png)
+
+![image-20240111215127656](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111215127656.png)
+
+
+
 ## 6.3. 【mitt】
+
+![image-20240111221243758](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111221243758.png)
 
 概述：与消息订阅与发布（`pubsub`）功能类似，可以实现任意组件间通信。
 
@@ -2329,7 +2375,7 @@ const emitter = mitt()
   }, 1000);
 
   setTimeout(() => {
-    // 清理事件
+    // 清理所有事件
     emitter.all.clear()
   }, 3000); 
 */
@@ -2338,7 +2384,9 @@ const emitter = mitt()
 export default emitter
 ```
 
-接收数据的组件中：绑定事件、同时在销毁前解绑事件：
+
+
+**接收数据的组件中**：绑定事件、同时在销毁前解绑事件：
 
 ```typescript
 import emitter from "@/utils/emitter";
@@ -2350,12 +2398,14 @@ emitter.on('send-toy',(value)=>{
 })
 
 onUnmounted(()=>{
-  // 解绑事件
+  // 解绑事件(不解绑一是占用内存,二是事件只能触发一次,不能多次触发)
   emitter.off('send-toy')
 })
 ```
 
-【第三步】：提供数据的组件，在合适的时候触发事件
+
+
+【第三步】：**提供数据的组件**，在合适的时候触发事件
 
 ```javascript
 import emitter from "@/utils/emitter";
@@ -2367,6 +2417,12 @@ function sendToy(){
 ```
 
 **注意这个重要的内置关系，总线依赖着这个内置关系**
+
+
+
+**可以在mian.js中全局挂载，这样不用在每次都去引用**
+
+
 
 ## 6.4.【v-model】
 
@@ -2384,9 +2440,10 @@ function sendToy(){
      :value="userName" 
      @input="userName =(<HTMLInputElement>$event.target).value"
    >
+   <!-- <HTMLInputElement>表示这是一个html的输入框元素 Ts类型检查就不会报错 -->
    ```
 
-3. 组件标签上的`v-model`的本质：`:moldeValue` ＋ `update:modelValue`事件。
+3. vue3组件标签上的`v-model`的本质：`:moldeValue` ＋ `update:modelValue`事件。
 
    ```vue
    <!-- 组件标签上使用v-model指令 -->
@@ -2419,6 +2476,8 @@ function sendToy(){
    </script>
    ```
 
+   **vue3 v-model 默认绑定的是modelValue,你可以自己在v-model后面指定要的变量名**
+
 4. 也可以更换`value`，例如改成`abc`
 
    ```vue
@@ -2450,16 +2509,72 @@ function sendToy(){
    </script>
    ```
 
-5. 如果`value`可以更换，那么就可以在组件标签上多次使用`v-model`
+5. 如果`value`可以更换，那么就可以在组件标签上多次使用`v-model`, vue2好像是不行的
 
    ```vue
    <AtguiguInput v-model:abc="userName" v-model:xyz="password"/>
    ```
 
-   
+
+
+
+**尝试封装一个输入框组件**
+
+父组件
+
+```vue
+<script setup lang="ts">
+// 父组件 引用testBInput组件
+import { ref } from 'vue'
+import testBInput from '@/components/testBInput.vue'
+
+let username = ref('')
+</script>
+
+<template>
+    <testBInput v-model="username"></testBInput>
+    <!-- 第九行的本质 -->
+    <testBInput :modelValue="username"(父传子) @update:modelValue="username = $event"(子传父)></testBInput>
+</template>
+```
+
+子组件
+
+```vue
+<script lang="ts" setup>
+// 子组件 模仿el组件库提供一个input组件
+
+// 接收props和自定事件
+defineProps(['modelValue'])
+const emit = defineEmits(['update:modelValue'])
+</script>
+
+<template>
+  <!-- 原生的input元素绑定value实现数据到页面 -->
+  <!-- 输入的时候触发@input事件实现页面到数据 -->
+  <input type="text" class="input"
+  :value="modelValue"
+  @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+  >
+</template>
+
+<style scoped>
+.input {
+  font-size: 20px;
+  border: 2px solid #000;
+  background-image: linear-gradient(#e66465, #9198e5);
+  color: white;
+}
+</style>
+```
+
 
 
 ## 6.5.【$attrs 】
+
+attrs就是父组件传给子组件时,子组件没有主动接收的对象(没有用defineProps接收)
+
+![image-20240111225824704](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111225824704.png)
 
 1. 概述：`$attrs`用于实现**当前组件的父组件**，向**当前组件的子组件**通信（**祖→孙**）。
 
@@ -2486,6 +2601,7 @@ function sendToy(){
 	let d = ref(4)
 
 	function updateA(value){
+        // 从孙组件中得到value 更改a的值
 		a.value = value
 	}
 </script>
@@ -2497,6 +2613,7 @@ function sendToy(){
 <template>
 	<div class="child">
 		<h3>子组件</h3>
+        <!-- 整个$attrs都传给孙组件,这是固定写法 -->
 		<GrandChild v-bind="$attrs"/>
 	</div>
 </template>
@@ -2518,6 +2635,7 @@ function sendToy(){
 		<h4>d：{{ d }}</h4>
 		<h4>x：{{ x }}</h4>
 		<h4>y：{{ y }}</h4>
+        <!-- 孙组件给爷组件传递数据 -->
 		<button @click="updateA(666)">点我更新A</button>
 	</div>
 </template>
@@ -2527,7 +2645,25 @@ function sendToy(){
 </script>
 ```
 
+
+
+如何在子组件中使用attrs
+
+![image-20240111230619321](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111230619321.png)
+
+useSlots更多的是用在jsx/tsx的写法上
+
+![image-20240111230857444](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240111230857444.png)
+
+
+
 ## 6.6. 【$refs、$parent】
+
+**就是绑定ref在子组件上(只能拿到一个子组件实例) 更多使用的是操作ui库的时候**
+
+**$refs可以拿到所有子组件实例**
+
+![image-20240112145332279](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240112145332279.png)
 
 1. 概述：
 
@@ -2541,14 +2677,93 @@ function sendToy(){
    | `$refs`   | 值为对象，包含所有被`ref`属性标识的`DOM`元素或组件实例。 |
    | `$parent` | 值为对象，当前组件的父组件实例对象。                     |
 
+
+
+例子
+
+APP
+
+```vue
+<script setup lang="ts">
+import testA from './components/testA.vue';
+import testB from './components/testB.vue';
+import { ref } from 'vue';
+
+let c1 = ref()
+let c2 = ref()
+let house = ref(6)
+
+// 使用索引签名来应对ts类型检查
+function changeChildBook(refs: {[ket:string]:any}) {
+  for(let key in refs){
+    refs[key].book += 3
+  }
+}
+
+defineExpose({house})
+</script>
+
+<template>
+  <p>父组件的房子: {{ house }}</p>
+  <button @click="changeChildBook($refs)">更改子组件图书数量</button>
+  <hr>
+  <testA ref="c1"></testA>
+  <testB ref="c2"></testB>
+</template>
+```
+
+testA
+
+```vue
+<script setup lang="ts">
+import {ref} from "vue"
+let book = ref(10)
+
+function changeFatherHouse(parent: any) {
+    parent.house -= 1
+}
+defineExpose({book})
+</script>
+
+<template>
+  <div class="content">testA有{{ book }} 本书</div>
+  <button @click="changeFatherHouse($parent)">在testA修改父组件房产</button>
+</template>
+```
+
+testB
+
+```vue
+<script setup lang="ts">
+import {ref} from "vue"
+let book = ref(11)
+defineExpose({book})
+</script>
+
+<template>
+  <div class="content">testB有{{ book }} 本书</div>
+</template>
+```
+
+
+
+## 6.6.1 ref的注意点
+
+当ref定义的变量包在一个响应式对象里面就不用.value
+
+![image-20240112195104992](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240112195104992.png)
+
+
+
 ## 6.7. 【provide、inject】
 
-1. 概述：实现**祖孙组件**直接通信
+1. 概述：实现**祖孙组件**直接通信 $attrs还得需要父组件中间通信
 
 2. 具体使用：
 
    * 在祖先组件中通过`provide`配置向后代组件提供数据
    * 在后代组件中通过`inject`配置来声明接收数据
+   * 所以这个也可以实现父子组件通信的，只不过一般不这样用
 
 4. 具体编码：
 
@@ -2612,6 +2827,8 @@ function sendToy(){
 
 参考之前`pinia`部分的讲解
 
+
+
 ## 6.9. 【slot】
 
 ### 1. 默认插槽
@@ -2659,9 +2876,13 @@ function sendToy(){
         </template>
 ```
 
+
+
 ### 3. 作用域插槽 
 
-1. 理解：<span style="color:red">数据在组件的自身，但根据数据生成的结构需要组件的使用者来决定。</span>（新闻数据在`News`组件中，但使用数据所遍历出来的结构由`App`组件决定）
+![image-20240112233239716](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240112233239716.png)
+
+1. 理解：<span style="color:red">数据在组件的自身，但根据数据生成的结构需要组件的使用者来决定。</span>（新闻数据在`News`组件中，但使用数据所遍历出来的结构由`App`组件决定）**一般都是通过作用域插槽来传参**
 
 3. 具体编码：
 
@@ -2669,7 +2890,7 @@ function sendToy(){
    父组件中：
          <Game v-slot="params">
          <!-- <Game v-slot:default="params"> -->
-         <!-- <Game #default="params"> -->
+         <!-- 简写 <Game #default="params"> -->
            <ul>
              <li v-for="g in params.games" :key="g.id">{{ g.name }}</li>
            </ul>
@@ -2694,6 +2915,10 @@ function sendToy(){
          </script>
    ```
 
+**命名插槽使用作用域插槽**
+
+![image-20240112233743231](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240112233743231.png)
+
 
 
 # 7. 其它 API
@@ -2701,6 +2926,8 @@ function sendToy(){
 ## 7.1.【shallowRef 与 shallowReactive 】
 
 ### `shallowRef`
+
+**就是关注整体替换,不关心里面的**
 
 1. 作用：创建一个响应式数据，但只对顶层属性进行响应式处理。
 
@@ -2711,6 +2938,10 @@ function sendToy(){
    ```
 
 3. 特点：只跟踪引用值的变化，不关心值内部的属性变化。
+
+![image-20240113004629257](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113004629257.png)
+
+
 
 ### `shallowReactive`
 
@@ -2727,6 +2958,8 @@ function sendToy(){
 ### 总结
 
 > 通过使用 [`shallowRef()`](https://cn.vuejs.org/api/reactivity-advanced.html#shallowref) 和 [`shallowReactive()`](https://cn.vuejs.org/api/reactivity-advanced.html#shallowreactive) 来绕开深度响应。浅层式 `API` 创建的状态只在其顶层是响应式的，对所有深层的对象不会做任何处理，避免了对每一个内部属性做响应式所带来的性能成本，这使得属性的访问变得更快，可提升性能。
+
+![image-20240113005314675](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113005314675.png)
 
 
 
@@ -2751,6 +2984,11 @@ function sendToy(){
 4. 应用场景：
    * 创建不可变的状态快照。
    * 保护全局状态或配置不被修改。
+   * 例如金额比较重要我们希望它是只读的。
+   
+5. 创建以后readOnlyCopy和original就建立了关联关系,original修改后会跟着变化。
+
+
 
 ### **`shallowReadonly`**
 
@@ -2770,6 +3008,35 @@ function sendToy(){
    * 适用于只需保护对象顶层属性的场景。
 
      
+
+使用shallowReadonly后,修改非顶层属性会影响原来的响应式对象
+
+```vue
+<script setup lang="ts">
+import { reactive, shallowReadonly } from 'vue';
+let count = reactive({
+    name: '李四',
+    obj: {
+        address: '北京'
+    }
+});
+let count2 = shallowReadonly(count);
+
+function changeFn(){
+    // 此时修改以后 count.obj.address也会变成上海了
+    count2.obj.address = '上海';
+}
+</script>
+
+<template>
+    {{ count }}
+    <hr>
+    {{ count2 }}
+    <button @click="changeFn">修改</button>
+</template>
+```
+
+
 
 ## 7.3.【toRaw 与 markRaw】
 
@@ -2828,6 +3095,8 @@ function sendToy(){
    let citys2 = reactive(citys)
    ```
 
+
+
 ## 7.4.【customRef】
 
 作用：创建一个自定义的`ref`，并对其依赖项跟踪和更新触发进行逻辑控制。
@@ -2838,14 +3107,16 @@ function sendToy(){
 import {customRef } from "vue";
 
 export default function(initValue:string,delay:number){
+  // track,trigger是vue提供的  
   let msg = customRef((track,trigger)=>{
     let timer:number
     return {
       get(){
-        track() // 告诉Vue数据msg很重要，要对msg持续关注，一旦变化就更新
+        track() // 告诉Vue数据msg很重要，要对msg持续关注，一旦变化就更新   跟踪
         return initValue
       },
       set(value){
+        // 这里是防抖  
         clearTimeout(timer)
         timer = setTimeout(() => {
           initValue = value
@@ -2853,20 +3124,21 @@ export default function(initValue:string,delay:number){
         }, delay);
       }
     }
-  }) 
+  })
+  // 函数返回值
   return {msg}
 }
 ```
 
 组件中使用：
 
-
+ ![image-20240113120451395](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113120451395.png)
 
 
 
 # 8. Vue3新组件
 
-## 8.1. 【Teleport】
+## 8.1. 【Teleport】传送
 
 - 什么是Teleport？—— Teleport 是一种能够将我们的**组件html结构**移动到指定位置的技术。
 
@@ -2880,7 +3152,103 @@ export default function(initValue:string,delay:number){
 </teleport>
 ```
 
+
+
+小知识,调整网站色彩 百分0为灰色
+
+![image-20240113123339548](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113123339548.png)
+
+例子 父组件
+
+```vue
+<script setup lang="ts">
+import testA from './components/testA.vue';
+
+</script>
+
+<template>
+  <div class="content">
+    我是父组件
+    <testA ></testA>
+  </div>
+</template>
+
+<style scoped>
+.content{
+  width: 500px;
+  height: 500px;
+  background-color: blueviolet;
+  /* 由于子组件是在父组件的盒子里
+     开启了滤镜就会影响子组件的fixed定位
+     不在参考视口，而是参考父组件
+     此时我们就可以在子组件中考虑使用teleport传送
+     将子组件的位置传送到body元素中 
+  */
+  filter: saturate(200%);
+}
+</style>
+```
+
+子组件
+
+```vue
+<script setup lang="ts">
+import { ref } from "vue"
+let isShow = ref(false)
+</script>
+
+<template>
+    <button @click="isShow = true">展示弹窗</button>
+	<!-- to里面可以写元素选择器 -->
+    <teleport to="body">
+        <div class="modal" v-show="isShow">
+        <h2>我是模态框标题</h2>
+        <p>我是模态框内容</p>
+        <button @click="isShow = false">关闭弹窗</button>
+    </div>
+    </teleport>
+</template>
+
+<style  scoped>
+    .modal{
+        width: 300px;
+        height: 200px;
+        background-color: skyblue;
+        border-radius: 5px;
+        box-shadow: 0 0 10px;
+        position: fixed;
+        left: 50%;
+        top: 20px;
+        margin-left: -150px;
+        text-align: center;
+    }
+</style>
+```
+
+![image-20240113124529225](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113124529225.png)
+
+设置0%的时候网页就变灰色了
+
+![image-20240113124555601](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113124555601.png)
+
+
+
 ## 8.2. 【Suspense】
+
+小知识补充： 在<script setup> 语法糖中直接使用await是可以的，setup内置了async
+
+例如这样是允许的
+
+```ts
+import axios from "axios";
+let { data } = await axios.get('地址')
+```
+
+
+
+**这个功能就是解决你在setup中写了异步任务的时候，不是点击某一个按钮才执行异步，而是加载的时候就是异步的，例如上面的例子**
+
+
 
 -  等待异步组件时渲染一些额外内容，让应用有更好的用户体验 
 -  使用步骤： 
@@ -2908,18 +3276,60 @@ const Child = defineAsyncComponent(()=>import('./Child.vue'))
 </template>
 ```
 
+例子
+
+![image-20240113125349902](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113125349902.png)
+
 
 
 ## 8.3.【全局API转移到应用对象】
 
-- `app.component`
-- `app.config`
-- `app.directive`
+- `app.component(注册全局组件)`
+- ![image-20240114000315829](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240114000315829.png)
+- `app.config(全局配置)  下面那个代码是解决ts类型检查的`
+- ![image-20240114000451579](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240114000451579.png)
+- `app.directive(组件全局指令)`
+- ![image-20240114001829345](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240114001829345.png)
+- ```ts
+  // main.js 
+  import { createApp } from 'vue';
+  import App from './App.vue';
+  const app = createApp(App);
+  
+  // 注册全局自定义指令 'v-custom'
+  app.directive('custom', {
+    // bind 钩子函数，在指令第一次绑定到元素时调用
+    bind(el, binding) {
+      // 在 bind 阶段进行初始化设置
+      el.style.color = binding.value;
+    },
+    // update 钩子函数，在组件的 VNode 更新时调用
+    update(el, binding) {
+      // 在 update 阶段根据新的值更新样式
+      el.style.color = binding.value;
+    },
+    // unbind 钩子函数，在指令与元素解绑时调用
+    unbind(el) {
+      // 在 unbind 阶段进行清理工作
+      // 例如移除事件监听器
+    }
+  });
+  
+  app.mount('#app');
+  ```
+
+  ![image-20240114001920964](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240114001920964.png)
 - `app.mount`
 - `app.unmount`
 - `app.use`
 
+
+
+
+
 ## 8.4.【其他】
+
+**vue2vue3区别  看官网的非兼容性改变(就是在vue3中只能那样写了)**
 
 - 过渡类名 `v-enter` 修改为 `v-enter-from`、过渡类名 `v-leave` 修改为 `v-leave-from`。
 

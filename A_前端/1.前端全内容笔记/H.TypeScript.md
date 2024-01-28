@@ -719,9 +719,8 @@ interface IFullName2 {
     firstName: string
     lastName: string
 }
-
 let info = {firstName: '黄',lastName: '宇', age: 18}
-let test2:IFullName2 = info
+let test2:IFullName2 = info 
 
 // 方案二: 使用类型断言
 // 原理是 类型断言加上以后ts编译器就不去校验了,因为是我们人为确定的

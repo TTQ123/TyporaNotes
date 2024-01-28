@@ -1574,7 +1574,7 @@ export default {
 </script>
 ```
 
-#### 3.非父子通信 provide和inject
+#### 3.非父子通信 (多层级)provide和inject
 
 ![image-20230829225712387](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230829225712387.png)
 
