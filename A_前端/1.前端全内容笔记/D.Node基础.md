@@ -1003,7 +1003,27 @@ console.log(hello)
 
 
 
-### 2.如何暴露内容
+### 2.如何暴露内容和访问内容
+
+![image-20240131201632998](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240131201632998.png)
+
+![image-20240131201715524](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240131201715524.png)
+
+注意点说明
+
+```js
+// 不能使用exports = value 的形式暴露数据
+console.log(moudle.exports === exports); // true
+console.log(moudle.exports, exports); // {} {}
+
+// require函数最后导入的是moudle.exports的值
+// 所以当你使用exports = '123' 它并没有修改moudle.exports 所以打印出来是一个 {}
+
+// 当你使用exports.str = '123' 相当于是往对象身上挂载了一个属性 这样moudle.exports也会被改变
+// 因为exports和moudle.exports引用是同一个对象  你exports = '123'这样就是改了引用地址 但是require引入的是moudle.exports的值
+```
+
+
 
 ```javascript
 /* 
@@ -1039,6 +1059,78 @@ module.exports = {
 }
 ```
 
+
+
+访问
+
+![image-20240131203127498](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240131203127498.png)
+
+**导入包管理工具时导入的就是文件夹**
+
+可以导入的方式1
+
+![image-20240131203934485](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240131203934485.png)
+
+导入的方式2
+
+![image-20240131204131697](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240131204131697.png)
+
+导入的方式3
+
+![image-20240131204242365](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240131204242365.png)
+
+
+
+### 补充:导入模块的基本流程
+
+![image-20240131204329507](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240131204329507.png)
+
+```js
+/**
+ * 伪代码
+ */
+
+function require(file){
+    //1. 将相对路径转为绝对路径，定位目标文件
+    let absolutePath = path.resolve(__dirname, file);
+
+    //2. 缓存检测（有导入过的直接从缓存中拿了返回）
+    if(caches[absolutePath]){
+      return caches[absolutePath];
+    }
+
+    //3. 读取文件的代码转为字符串
+    let code = fs.readFileSync(absolutePath).toString();
+
+    //4. 包裹为一个函数 然后执行
+    let module = {};
+    let exports = module.exports = {};
+    // 这是一个立即执行函数 小括号包裹的
+    (function (exports, require, module, __filename, __dirname) {
+      const test = {
+        name: '尚硅谷'
+      }
+      module.exports = test;
+    
+      //输出
+      console.log(arguments.callee.toString());
+    })(exports, require, module, __filename, __dirname)
+
+    //5. 缓存结果
+    caches[absolutePath] = module.exports;
+
+    //6. 返回 module.exports 的值
+    return module.exports;
+  }
+  
+// 当你导入了一个文件 就会发生上面函数的事情
+  const m = require('./me.js')
+```
+
+
+
+
+
 ### 3.commonjs的原理
 
 ```javascript
@@ -1058,6 +1150,8 @@ let b = 20
 
 console.log(__dirname) // 当前模块所在目录的路径
 ```
+
+![image-20240202020353424](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240202020353424.png)
 
 
 
@@ -1688,6 +1782,8 @@ console.log(path.basename(str)); // test.js
 
 ## 10.包管理器
 
+![image-20240202020759844](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240202020759844.png)
+
 ### 1.npm
 
 ```javascript
@@ -1727,6 +1823,12 @@ const _ = require("lodash")
 console.log(_)
 ```
 
+#### 1.补充:初始化注意事项
+
+![image-20240202021235499](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240202021235499.png)
+
+
+
 ### 2.npm镜像及json的script命令
 
 ```javascript
@@ -1750,6 +1852,97 @@ console.log(_)
                 npm config delete registry
 */
 ```
+
+#### 1.补充npm官网(如何搜索包)
+
+![image-20240202021451841](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240202021451841.png)
+
+`https://www.npmjs.com`
+
+支持中文搜索 比如你要轮播图就直接搜索轮播图
+
+
+
+#### 2.补充
+
+![image-20240205002424666](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205002424666.png)
+
+![image-20240205002604839](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205002604839.png)
+
+这个文件是确保依赖包的版本一致的(依赖声明文件)
+
+
+
+#### 3.补充：require导入npm包的流程
+
+![image-20240205002944253](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205002944253.png)
+
+![image-20240205003006819](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205003006819.png)
+
+这三行代码都是可以执行的，第三行的逻辑是，首先找到node_modules下的uniq文件夹，然后查看该文件的package.json找到项目入口文件，发现是uniq.js，于是就执行uniq.js
+
+
+
+#### 4.开发依赖和生产依赖
+
+![image-20240205003227847](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205003227847.png)
+
+当你安装一个包的时候，这个包大概率也依赖了其它包(没有这些包运行不了)，所以node_modules文件夹会有很多包。
+
+#### 
+
+#### 5.npm全局安装
+
+全局安装的包都会暴露命令让我们去操作包，而不是通过require直接导入在项目中
+
+![image-20240205003903137](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205003903137.png)
+
+#### 6.cjs和mjs
+
+![image-20240205004149949](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205004149949.png)
+
+
+
+#### 7.修改windows执行策略
+
+![image-20240205004544034](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205004544034.png)
+
+
+
+#### 8.环境变量补充
+
+![image-20240205004949256](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205004949256.png)
+
+windows的可执行文件后缀一般是exe和cmd
+
+#### 9.删除包和安装特定版本的包
+
+![image-20240205005345058](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205005345058.png)
+
+
+
+#### 10.npm配置命令别名
+
+![image-20240205005542619](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205005542619.png)
+
+
+
+#### 11.配置淘宝镜像
+
+镜像是加速npm的  cnpm是直接到淘宝镜像下载的
+
+![image-20240205005950009](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205005950009.png)
+
+**使用nrm的时候，当你要切换回官方地址的时候直接**
+
+```bash
+nrm ls  #查看npm支持的镜像地址
+nrm use npm #切换回官网地址
+```
+
+
+
+
 
 ### 3.其它包管理简介
 
@@ -1789,6 +1982,56 @@ console.log(_)
              
 */
 ```
+
+
+
+#### 1.cnpm
+
+![image-20240205005819432](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205005819432.png)
+
+
+
+#### 2.yarn
+
+![image-20240205010748749](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205010748749.png)
+
+全局安装没法使用是因为yarn是基于npm安装的
+
+我们配置node的环境变量时，系统只能找到node.exe和npm.cmd 找不到yarn全局安装的路径
+
+**解决**
+
+![image-20240205011305357](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205011305357.png)
+
+
+
+### 4.发布一个npm包
+
+![image-20240205011434008](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205011434008.png)
+
+![image-20240205011911654](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205011911654.png)
+
+npm unpublish --force  删除
+
+
+
+### 5.扩展 软件包管理工具
+
+![image-20240205012124751](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205012124751.png)
+
+
+
+### 6.nvm
+
+介绍
+
+![image-20240205012208586](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205012208586.png)
+
+安装nvm的时候最后默认安装地址，不要改到d盘里
+
+![image-20240205012517454](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240205012517454.png)
+
+地址 [Releases · coreybutler/nvm-windows (github.com)](https://github.com/coreybutler/nvm-windows/releases)
 
 
 
@@ -2173,6 +2416,12 @@ server.listen(3000, () => {
 
 新版本
 
+![image-20240129014538764](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129014538764.png)
+
+![image-20240129014549998](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129014549998.png)
+
+![image-20240129014459727](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129014459727.png)
+
 ```js
 const http = require('http');
 
@@ -2228,6 +2477,462 @@ server.listen(3000, () => {
 ### 7.设置响应报文
 
 ![image-20240124013950190](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240124013950190.png)
+
+```js
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+    // 1.设置响应状态码
+    res.statusCode = 203
+    // 2.设置响应状态描述(一般是不需要的，会根据状态码自动匹配)
+    res.statusMessage = 'Forbidden'
+    // 3.设置响应头(响应头可以设置多次,可以自定义响应头,可以设置同名的响应头)
+    res.setHeader('Content-Type', 'text/html; charset=utf-8')
+    res.setHeader('Server', 'Node.js')
+    // 自定义的响应头
+    res.setHeader('name', 'zs')
+    // 设置同名响应体用一个数组
+    res.setHeader('Set-Cookie', ['name=zs', 'age=18'])
+    // 4.设置响应体(可以通过write方法或end方法设置,但end有且只能有一个,且每次请求必须有一个)
+    res.write('你好')
+    res.end(', 我是黄宇哥哥')
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+#### 1.http响应练习
+
+最原始的方法
+
+```js
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+    res.end(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>表格页面</title>
+            <style>
+                td {
+                    width: 100px;
+                    height: 100px;
+                }
+                table,td{
+                    border-collapse: collapse;
+                }
+                table tr:nth-child(odd){
+                    background-color: red;
+                }
+                table tr:nth-child(even){
+                    background-color: yellow;
+                }
+            </style>
+        </head>
+        <body>
+            <table border="1">
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+            </table>
+        
+            <script>
+                let tds = document.querySelectorAll('td');
+                tds.forEach(item => {
+                    item.onclick = function(){
+                        item.style.backgroundColor = 'blue';
+                        console.log(this);
+                    }
+                })
+            </script>
+        </body>
+        </html>
+    `)
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+**进行优化**
+
+```js
+const http = require('http');
+const fs = require('fs');
+
+const server = http.createServer((req, res) => {
+    // 读取html文件
+    let html = fs.readFileSync(__dirname + '/index.html')
+    // 设置响应体  end可以接收字符串或者是Buffer
+    res.end(html)
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+
+
+#### 2.网页如何请求资料
+
+首先请求html页面，然后同时并发多个请求加载css、img、js等资源。
+
+
+
+#### 3.实现网页引入外部资源
+
+**每一次请求(请求网页、请求资源这些都在向服务器发请求)的时候，我们设置的回调函数都会执行，所以请求css等资源的时候，我们依旧返回html就会造成样式不生效的情况。**
+
+服务器情况
+
+![image-20240129014843282](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129014843282.png)
+
+```js
+const http = require('http');
+const fs = require('fs');
+
+const server = http.createServer((req, res) => {
+    // 参数1必填 完整 URL 或唯一路径
+    // 参数2选填 可选的基本 URL：如果设置和url参数只有路径，则相对于 生成 URL base。
+    let { pathname } = new URL(req.url, 'http://127.0.0.1:3000')
+    if (pathname === '/') {
+        let html = fs.readFileSync(__dirname + '/index.html')
+        res.end(html)
+    }else if (pathname === '/index1.js') {
+        let js = fs.readFileSync(__dirname + '/index1.js')
+        res.end(js)
+    }else if(pathname === '/index.css'){
+        let css = fs.readFileSync(__dirname + '/index.css')
+        res.end(css)
+    }else{
+        res.statusCode = 404
+        res.end('404 not found')
+    }
+
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+
+
+这样做还是很麻烦，才三个路径要写一堆
+
+引入概念
+
+![image-20240129015031352](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129015031352.png)
+
+#### 4.静态资源服务
+
+对第三小节的代码进行优化
+
+项目结构
+
+![image-20240129021316618](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129021316618.png)
+
+代码
+
+```js
+const http = require('http');
+const fs = require('fs');
+
+const server = http.createServer((req, res) => {
+    // 获取请求url的路径
+    let { pathname } = new URL(req.url, 'http://127.0.0.1')
+    // 拼接文件路径
+    let filePath = __dirname + '/page' + pathname;
+    // 读取文件
+    fs.readFile(filePath, (err, data) => {
+        if(err){
+            res.statusCode = 500;
+            res.end('文件读取失败');
+            return
+        }
+         // 响应文件内容
+         res.end(data);
+    })
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+访问127.0.0.1:3000/index.html  就可以访问了
+
+
+
+#### 5.网站根目录或静态资源目录
+
+![image-20240129021801284](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129021801284.png)
+
+思考题的答案就是打开的当前文件夹
+
+
+
+#### 6.绝对路径补充
+
+![image-20240129022236827](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129022236827.png)
+
+```html
+    <!-- 完整外链 -->
+    <a href="https://www.baidu.com">百度</a>
+
+    <!-- /与页面的协议进行拼接在发送请求 -->
+    <a href="//jd.com">京东</a>
+    
+    <!-- 与页面协议、主机名、端口拼接在发送请求(有点是前面的主机名等变了也不影响) -->
+    <!-- 跳转到http://127.0.0.1:5500/serach -->
+    <a href="/serach">搜索</a>
+```
+
+
+
+#### 7.相对路径补充
+
+![image-20240129022902023](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129022902023.png)
+
+根据url得到根目录为/course
+
+
+
+#### 8.网页中url的使用小结
+
+![image-20240129023140081](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129023140081.png)
+
+相对路径不可靠，我们还是要用绝对路径，这点就像前端工程中的@
+
+![image-20240129023412444](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129023412444.png)
+
+这三种方式都可以跳转，但是我们还是选择第二种绝对路径。
+
+
+
+#### 9.设置MIME类型(资源类型)
+
+![image-20240129023540987](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129023540987.png)
+
+```js
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+let mimes = {
+    html: 'text/html',
+    css: 'text/css',
+    js: 'text/javascript',
+    jpg: 'image/jpeg',
+    png: 'image/png',
+    json: 'application/json',
+    gif: 'image/gif'
+}
+
+
+const server = http.createServer((req, res) => {
+    // 获取请求url的路径
+    let { pathname } = new URL(req.url, 'http://127.0.0.1')
+    // 拼接文件路径
+    let filePath = __dirname + '/page' + pathname;
+
+    // 读取文件
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            res.statusCode = 500;
+            res.end('文件读取失败');
+            return
+        }
+
+        // 获取文件类型的后缀名
+        let ext = path.extname(filePath).slice(1)
+        let type = mimes[ext]
+        if(type){
+            res.setHeader('content-type', type)
+        }else{
+            // 未知的资源类型(会进行下载)
+            res.setHeader('content-type', 'application/octet-stream')
+        }
+        
+        res.end(data);
+
+    })
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+
+
+#### 10.乱码解决和错误处理
+
+乱码
+
+```js
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+let mimes = {
+    html: 'text/html',
+    css: 'text/css',
+    js: 'text/javascript',
+    jpg: 'image/jpeg',
+    png: 'image/png',
+    json: 'application/json',
+    gif: 'image/gif'
+}
+
+
+const server = http.createServer((req, res) => {
+    // 获取请求url的路径
+    let { pathname } = new URL(req.url, 'http://127.0.0.1')
+    // 拼接文件路径
+    let filePath = __dirname + '/page' + pathname;
+
+    // 读取文件
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            res.statusCode = 500;
+            res.end('文件读取失败');
+            return
+        }
+
+        // 获取文件类型的后缀名
+        let ext = path.extname(filePath).slice(1)
+        let type = mimes[ext]
+        if (type) {
+            if (ext === 'html') {
+                // 这里设置的字符集优先级比html的meta标签优先级高
+                res.setHeader('content-type', type + ';charset=utf-8') // 解决乱码
+            } else {
+                res.setHeader('content-type', type)  // 除了html页面 其它资源没必要设置字符集，让他根据网页的字符集解析(这样还不会暴露js等资源)
+            }
+        } else {
+            // 未知的资源类型(会进行下载)
+            res.setHeader('content-type', 'application/octet-stream')
+        }
+
+        res.end(data);
+
+    })
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+错误处理
+
+```js
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+let mimes = {
+    html: 'text/html',
+    css: 'text/css',
+    js: 'text/javascript',
+    jpg: 'image/jpeg',
+    png: 'image/png',
+    json: 'application/json',
+    gif: 'image/gif'
+}
+
+
+const server = http.createServer((req, res) => {
+    // 请求方法判断
+    if (req.method !== 'GET') {
+        res.statusCode = 405;
+        res.end('405 Method Not Allowed');
+        return
+    }
+    // 获取请求url的路径
+    let { pathname } = new URL(req.url, 'http://127.0.0.1')
+    // 拼接文件路径
+    let filePath = __dirname + '/page' + pathname;
+
+    // 读取文件
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            // 设置字符集
+            res.setHeader('content-type', type + ';charset=utf-8')
+            //  错误的类型
+            switch(err.code){
+                case 'ENOENT':
+                    res.statusCode = 404;
+                    res.end('404 Not Found');
+                case 'EPERM':
+                    res.statusCode = 403
+                    res.end('403 Forbidden')
+                default:
+                    res.setHeader = 500
+                    res.end('500 Internal Server Error')        
+            }
+            return
+        }
+
+        // 获取文件类型的后缀名
+        let ext = path.extname(filePath).slice(1)
+        let type = mimes[ext]
+        if (type) {
+            if (ext === 'html') {
+                // 这里设置的字符集优先级比html的meta标签优先级高
+                res.setHeader('content-type', type + ';charset=utf-8') // 解决乱码
+            } else {
+                res.setHeader('content-type', type)  // 除了html页面 其它资源没必要设置字符集，让他根据网页的字符集解析(这样还不会暴露js等资源)
+            }
+        } else {
+            // 未知的资源类型(会进行下载)
+            res.setHeader('content-type', 'application/octet-stream')
+        }
+        res.end(data);
+
+    })
+})
+
+server.listen(3000, () => {
+    console.log('服务已经启动了');
+})
+```
+
+
+
+#### 11.GET和POST请求
+
+![image-20240129030822503](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129030822503.png)
+
+![image-20240129030847828](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129030847828.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
