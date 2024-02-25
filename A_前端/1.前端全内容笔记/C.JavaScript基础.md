@@ -126,7 +126,7 @@
 
 ![uTools_1669710562534](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1669710562534.png)
 
-**Js区分大小写**
+**Js严格区分大小写**
 
 # 二、数据类型(Js中变量没有类型,值才有类型)
 
@@ -154,6 +154,8 @@
           - 所以在JS中进行一些精度比较高的运算时要十分注意
           - NaN 也是一个特殊的数值，表示非法的数值
 		 - 计算机无法计算十进制的十分之一大小,计算0.1+0.2的时候程序会出问题,得到一个0.30000000000000004的值,所以我们对计算精度有要求时不能直接在js里运算
+
+		 解决: let x = (0.1+0.2).toFixed(1)
 */
 ```
 
@@ -554,8 +556,7 @@ let  a = 10
                     !!就是还是取到自己本身
                     true --> false
         			false -- > true
-            	- 如果对一个非布尔值进行取反，它会先将其转换为布尔值然后再取反
-        可以利用这个特点将其他类型转换为布尔值
+            	- 如果对一个非布尔值进行取反，它会先将其转换为布尔值然后再取反,可以利用这个特点将其他类型转换为布尔值
 			- let str = "suwukong"   
 */
 ```
@@ -1707,7 +1708,7 @@ if( isPrime){
             ArrowRight: "ArrowLeft",
         }
 
-		reObj[ArrowUp] //此时取到的值为ArrowDown,这个用法在键盘事件中很常用
+		reObj.ArrowUp 或 reObj["ArrowUp"] //此时取到的值为ArrowDown,这个用法在键盘事件中很常用
 ```
 
 
@@ -7008,6 +7009,8 @@ class MyClass{
 </html>
 ```
 
+
+
 ## 24.事件的委派
 
 ```html
@@ -7167,6 +7170,28 @@ class MyClass{
 
 </html>
 ```
+
+![image-20240221160435321](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240221160435321.png)
+
+## 26.总结
+
+2.事件委托(事件代理)
+
+解释这个问题之前首先要明白什么是事件冒泡
+
+事件冒泡就是一种向上传递的机制，子元素的事件会向上传递至父元素直到根元素，在冒泡的时，父元素如果和子元素绑定了一样的事件，那么父元素的事件也会触发。如果子元素不想冒泡可以使用event.stopPropgation()或者是把addEvenListner 的第三个参数设置为true，此时会发生事件的捕获。
+
+
+
+当我们需要一种场景，列表中的子元素都需要绑定一个点击事件，一个个设置过于麻烦，所以我们可以给列表项的父元素绑定该点击事件，这样当我们点击列表项时，会发生冒泡，传递至父元素，此时事件就被触发了。
+
+事件委托的优点包括减少了事件处理程序的数量，节省了内存，提高了性能，并且使得代码更加简洁和易于维护。它特别适用于处理大量相似元素的情况，如列表、表格、菜单等。
+
+
+
+事件的捕获是一种向下传递的机制，事件从根节点出发直到元素。
+
+
 
 # 十一、BOM对象
 
@@ -9121,11 +9146,125 @@ alert("run():"+run());//带括号，获取方法返回值
 
 ![uTools_1675617972480](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1675617972480.png)
 
-# 7.Promise异步
 
-**Node.js中介绍了,前端默认都是全栈开发工程师**
 
-# 8.Vue和React
+# 7.面试题
 
-**次要掌握的先学,先学React再来学Vue(react是大公司用的多)**
+1. ![image-20240221161326286](C:\Users\ttq\AppData\Roaming\Typora\typora-user-images\image-20240221161326286.png)
+
+2. 原型链
+
+   一张图理解原型链
+
+   ![image-20240221162531215](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240221162531215.png)
+
+   原型是一个普通对象，为构造函数共享属性和方法，可以理解为原型为一个类，在实例过后，原型上的方法都可以去使用。
+
+   所有实例引用的原型都是同一个对象。
+
+   使用prototype可以把属性和方法挂载到原型上，实例对象可以通过__proto__指向构造函数的原型。
+
+   
+
+   一个实例对象在调用方法和属性时，会依次从实例本身、构造函数原型、原型的原型、null上去查找，没有找到才会返回undefined。
+
+   原型的存在节约了内存空间，如果实例需要同一个方法和属性，就可以挂载到原型上，这样在内存中只占用一份，不用占据多份空间。
+
+3.call、bind、apply
+
+![image-20240222195302415](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240222195302415.png)
+
+![image-20240222195316630](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240222195316630.png)
+
+4.js的四种继承方式
+
+```js
+// 1.原型链继承
+        /* 
+            优点:写法简洁
+            缺点:所有实例对象都会继承所有属性和方法,且无法向父类构造函数传参
+        */
+
+        // 让一个构造函数的原型对象等于另一个构造函数的实例对象，那么这个构造函数就具有该实例对象的所有属性和方法
+        function Person() {
+            this.name = 'zs'
+            this.say = function () {
+                console.log('say')
+            }
+        }
+
+        function Child() {
+            this.name = 'ls'
+        }
+        Child.prototype = new Person()
+        let child = new Child()
+        child.say()
+
+        // 2.借用构造函数继承
+        /* 
+            优点:可以向父类构造函数传参
+            缺点:写法复杂,无法继承父类原型对象上的属性和方法
+        */
+        function Person1(gender){
+            this.info = {
+                name: 'zs',
+                age: 18,
+                gender: gender
+            }
+        }
+
+        function Child1(gender){
+            // 把Person的this指向Child1的this
+            // 相当于把Person改变this指向，改为Child1
+            Person1.call(this, gender)
+        }
+
+        let child1 = new Child1('男')
+        console.log(child1.info)
+
+        // 3.将这俩种继承方式结合
+        /*
+            优点:可以继承父类原型对象上的属性和方法,可以向父类构造函数传参
+            缺点:写法复杂
+        */
+        function Person2(gender) {
+            console.log('Person2执行了');
+            this.info = {
+                name: 'zs',
+                age: 18,
+                gender: gender
+            }
+        }
+
+        function Child2(gender){
+            Person2.call(this, gender)
+        }
+
+        Child2.prototype = new Person2()
+
+        let child2 = new Child2('男')
+        console.log(child2.info)
+
+        // 4.类继承
+        class Animal {
+            constructor(name) {
+                this.name = name
+            }
+            say() {
+                console.log('say')
+            }
+        }
+
+        class Dog extends Animal {
+            constructor(name) {
+                super(name)
+            }
+            say() {
+                console.log('say')
+            }
+        }
+
+        let dog = new Dog('小黑')
+        dog.say()
+```
 

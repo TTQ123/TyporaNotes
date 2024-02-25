@@ -240,7 +240,7 @@ components就是一样的组件文件夹
 
 换算就是 750*100/设计稿宽度
 
-#### 1.注意事项 nvue中不支持一些vue中支持的文件
+#### 1.注意事项 nvue中不支持一些vue中支持的单位
 
 ![image-20231125153346526](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231125153346526.png)
 
@@ -276,7 +276,7 @@ nvue走的就是weex的原生渲染
 
 ![image-20231125224537658](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231125224537658.png)
 
-默认页面就是pages数组的第一个页面
+**默认启动的页面就是pages数组的第一个页面**
 
 ####  2.在pages添加新页面
 
@@ -325,6 +325,12 @@ index.vue
 </script>
 
 <style>
+    .status_bar {
+        /* 这个是uniapp封装好的一个变量，根据不同手机决定占位元素的高度 */
+		height: var(--status-bar-height);
+		width: 100%;
+		background-color: orange;
+	}
 	.top {
 		width: 100%;
 		height: 80rpx;
@@ -334,12 +340,7 @@ index.vue
 		font-size: 30rpx;
 	}
 
-	.status_bar {
-        /* 这个是uniapp封装好的一个变量，根据不同手机决定占位元素的高度 */
-		height: var(--status-bar-height);
-		width: 100%;
-		background-color: orange;
-	}
+
 </style>
 ```
 
@@ -373,6 +374,8 @@ index.vue
 
 但是uniapp中无法进行属性的传递，只能用props传值
 
+uniapp中内置组件是无法直接修改样式的，可以通过传props的方式来修改，或者用穿透选择器
+
 例子：
 
 父组件
@@ -390,7 +393,7 @@ index.vue
 		这是我的主页面
 	</view>
 	<view class="button">
-		<!-- 这样设置是没有用的 -->
+		<!-- 这样设置是没有用的，会关键词冲突，要用classxx或者abcd -->
 		<uni-button class="btn"></uni-button>
 		<uni-button classValue="btn"></uni-button>
 	</view>
@@ -418,7 +421,7 @@ index.vue
 	}
 
 	/* 因为在uni-app不能像vue一样进行属性的传递 */
-	/* 在uniapp里没办法直接给组件定义样式 只能通过props传值 */
+	/* 在uniapp里没办法直接给内置组件定义样式 只能通过props传值 */
 	/* 定制按钮组件的样式 */
 	.btn {
 		margin-top: 20rpx;
@@ -566,7 +569,7 @@ url支持绝对路径和相对路径
 
 #### 4.跳转至底部tabBar
 
-如果是tabBar的页面，必须用switchTab方式来跳转，用其它方式无法现视跳转。
+如果是tabBar的页面，必须用switchTab方式来跳转，用其它方式无法跳转。
 
 这种跳转方式没有返回键和home键。
 
@@ -914,7 +917,9 @@ tabBar能看到的页面只有本身就是tabBar的那几个。但是大部分�
 </style>
 ```
 
-页面使用(每个页面要使用都可以，但是要提供页面栈给封装的子组件)
+
+
+页面使用(每个页面要使用都可以，但是父组件要提供页面栈给封装的子组件)
 
 ```vue
 <template>
@@ -1085,6 +1090,8 @@ export default{
 vue文件中使用全局变量来判断目前处于什么环境
 
 ![image-20231128172619737](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231128172619737.png)
+
+
 
 ### 2.自定义环境
 
@@ -1939,7 +1946,7 @@ vue3里面已经没有了这个修饰符
 
 ## 12.补充
 
-### 1.ubiapp拦截器
+### 1.uniapp拦截器
 
 经典案例:路由拦截
 

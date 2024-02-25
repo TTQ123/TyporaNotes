@@ -82,7 +82,7 @@
 
 #### 1.vue2和vue3中this的区别
 
-**VUE3中已经没有了this，因为他用的是组合式API，想要this可以用ref去代替获取到数据的值，或者是getCurrentInstance（）方法，这个方法返回了ctx和proxy**
+**VUE3中使用setup函数时已经没有了this，想要实现之前this的功能可以用ref去代替获取到数据的值，或者是getCurrentInstance（）方法，这个方法返回了ctx和proxy**
 
 ![image-20231130104853515](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231130104853515.png)
 
@@ -1226,7 +1226,7 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
         async del(id){
           // 删除的方法参数直接在path上传递
           if(confirm('你确定删除吗')){
-          const res = await axios.delete(`https://applet-base-api-t.itheima.net/bill/${id}`)
+          const res = await axios.delete(`https://applet-base-api-t.itheima.neta/bill/${id}`)
           }
           this.getList()
         }
@@ -1277,7 +1277,7 @@ vue2:webpack -> vue-cli -> vuex
 
 ![image-20230818010217040](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230818010217040.png)
 
-**vue2的template不能有多个，template里中也只能有一个根元素**
+**vue2的template不能有多个，template里中也只能有一个根元素,vue3可以有多个**
 
 ![image-20230818010449274](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230818010449274.png)
 
@@ -1622,6 +1622,7 @@ export default{
   }
 }
 </script>
+
 A1
 <template>
   <div>
@@ -1746,6 +1747,8 @@ vue3中使用
 
 #### 4.sync修饰符
 
+sync 相当于vue3的v-model可以自定义props名称 非固定为value的效果
+
 ![image-20230830041942369](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230830041942369.png)
 
 ```VUE
@@ -1869,6 +1872,12 @@ methods:{
 ![image-20230903213415092](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230903213415092.png)
 
 ![image-20230903213507354](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230903213507354.png)
+
+##### 1.vue3中的异步更新
+
+![image-20240220180115525](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240220180115525.png)
+
+
 
 ##### 1.vue3获取DOM元素
 
@@ -2587,7 +2596,6 @@ import router from './router/index.js'
 
 Vue.config.productionTip = false
 
-
 new Vue({
   render: h => h(App),
   router:router
@@ -2688,7 +2696,7 @@ new Vue({
 
 ##### 2.编程式导航路由传参
 
-###### 1.path的路径跳转传参 --> 查询参数传参
+###### 1.路径跳转传参  path + query
 
 **不用配置路径/id,params时需要**
 
@@ -2698,7 +2706,7 @@ new Vue({
 
 
 
-###### 2.path的路径跳转传参:动态路由传参
+###### 2.路径跳转传参 path + params
 
 ![image-20230906215235414](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906215235414.png)
 
@@ -2708,25 +2716,13 @@ new Vue({
 
 
 
-实际操作
-
-查询参数传参query
-
-![image-20230906215545185](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906215545185.png)
-
-动态路由传参params
-
-![image-20231006185439924](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231006185439924.png)
-
-
-
-###### 3.name命名路由跳转传参查询参数传参
+###### 3.命名路由跳转传参 name + query
 
 ![image-20230906220202157](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230906220202157.png)
 
 
 
-###### 4.name命名路由跳转传参动态路由传参
+###### 4.命名路由跳转传参 name + params
 
 特殊:因为动态路由传参是直接在路径中传参，而name跳转的方式没有书写路径，所以我们通过params来同时接收和发送
 
@@ -2751,6 +2747,22 @@ new Vue({
 ![image-20231106113255713](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231106113255713.png)
 
 
+
+#### 8.路由的props配置
+
+params参数
+
+路由配置文件,开启props: true，跳转的路由正常传参，被跳转路由props接收
+
+![image-20240220232851812](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240220232851812.png)
+
+query参数
+
+![image-20240220233133658](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240220233133658.png)
+
+传递固定值的参数
+
+![image-20240220233551035](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240220233551035.png)
 
 
 
@@ -3768,6 +3780,16 @@ export default {
 
 
 
+##### 6.订阅store变化
+
+Vuex 的 [subscribe 方法](https://vuex.vuejs.org/zh/api/index.html#subscribe)
+
+如何订阅
+
+![image-20240221001558620](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240221001558620.png)
+
+
+
 #### 5.综合案例购物车 练习Vuex
 
 ##### 1.分析项目
@@ -4603,7 +4625,7 @@ vscode支持的vue3插件,vue2是vetur
 
 ![image-20231011204815629](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231011204815629.png)
 
-
+在模板函数执行时，会自动帮我们return message
 
 **总结**
 
@@ -6269,7 +6291,7 @@ setup语法糖访问
 
 # 补充2：minxis混入
 
-在vue2中用混入复用一些组件的公共逻辑，但是在vue3中用组合式函数去封装更推荐
+在vue2中用混入复用一些组件的公共逻辑，但是在vue3中用组合式函数去封装更推荐 useXXX
 
 vue3封装
 
@@ -6277,4 +6299,4 @@ vue3封装
 
 ![image-20231127130126103](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127130126103.png)
 
-![](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127130105294.png)
+![](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231127130105294.png) 

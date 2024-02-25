@@ -88,6 +88,21 @@ npm run serve
 - 真正的按需编译，不再等待整个应用编译完成。
 - `webpack`构建 与 `vite`构建对比图如下：
 ![image-20240102205115559](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240102205115559.png)
+
+打包原理对比
+
+![image-20240220074058418](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240220074058418.png)
+
+![image-20240220074753564](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240220074753564.png)
+
+![image-20240220074321576](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240220074321576.png)
+
+webpack 首先识别入口文件，然后逐层去分析各个模块的依赖，然后进行打包，热更新时还要重新执行一次这个过程
+
+vite先启动服务器，当你请求该模块时在自动向依赖的模块发出请求
+
+
+
 * 具体操作如下（点击查看[官方文档](https://cn.vuejs.org/guide/quick-start.html#creating-a-vue-application)）
 
 ```powershell
@@ -515,6 +530,8 @@ function test(){
 > 2. `reactive`重新分配一个新对象，会**失去**响应式（可以使用`Object.assign去整体替换` ref是可以直接赋值一个新对象的）。
 >
 > ![](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240102220337133.png)
+>
+> object.assign()主要用于对象合并，将源对象中的[属性复制](https://so.csdn.net/so/search?q=属性复制&spm=1001.2101.3001.7020)到目标对象中，他将返回目标对象。
 
 ![image-20240102225347447](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240102225347447.png)
 
@@ -534,7 +551,7 @@ function test(){
 
 ## 3.7. 【toRefs 与 toRef】
 
-为什么会失去响应性
+为什么会失去响应性，相当于把响应式对象的某个值单独取出来赋值给别人，肯定失去了响应式
 
 ![image-20240102221003447](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240102221003447.png)
 
@@ -577,6 +594,8 @@ function test(){
   }
 </script>
 ```
+ref丢失响应性的情况
+
 ![image-20240102222602149](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240102222602149.png)
 
 
@@ -666,6 +685,7 @@ computed其实也是一个ref对象
   const stopWatch = watch(sum,(newValue,oldValue)=>{
     console.log('sum变化了',newValue,oldValue)
     if(newValue >= 10){
+      // 结束监视
       stopWatch()
     }
   })
@@ -1495,20 +1515,22 @@ person.vue
 
    ![image-20240103224407146](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103224407146.png)
 
-2. `hash`模式
+![image-20240221012444844](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240221012444844.png)
 
-   > 优点：兼容性更好，因为不需要服务器端处理路径。
-   >
-   > 缺点：`URL`带有`#`不太美观，且在`SEO`优化方面相对较差。
-   >
-   > 后台管理项目追求稳定一般用这个
-   >
-   > ```js
-   > const router = createRouter({
-   > 	history:createWebHashHistory(), //hash模式
-   > 	/******/
-   > })
-   > ```
+2. hash`模式
+
+> 优点：兼容性更好，因为不需要服务器端处理路径。
+>
+> 缺点：`URL`带有`#`不太美观，且在`SEO`优化方面相对较差。
+>
+> 后台管理项目追求稳定一般用这个
+>
+> ```js
+> const router = createRouter({
+> 	history:createWebHashHistory(), //hash模式
+> 	/******/
+> })
+> ```
 
 
 
@@ -1712,7 +1734,7 @@ route对象也是响应式的,解构的时候要注意套个toRefs
 >
 > 备注3: 不能传递数组对象这些七七八八的参数,严格意义上query是可以的(但是不建议这样去做,很呆)。
 
-**占位**
+**如何占位**
 
 ![image-20240103232458080](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240103232458080.png)
 
@@ -1726,9 +1748,13 @@ route对象也是响应式的,解构的时候要注意套个toRefs
 
 **因为路由组件的本质也是一个组件,所以也可以使用props**
 
+**在路由配置规则中开启props传递配置**
+
 ![image-20240104210517508](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240104210517508.png)
 
 作用：让路由组件更方便的收到参数（可以将路由参数作为`props`传给组件）
+
+**实现的原理就是vue会把收到的路由参数作为props属性传给组件，这样我们通过defineProps就可以收到参数，不用route.xxx.xxx去拿参数了**
 
 ```js
 {
@@ -1925,7 +1951,7 @@ app.mount('#app')
        return {
          talkList:[
            {id:'yuysada01',content:'你今天有点怪，哪里怪？怪好看的！'},
-        		{id:'yuysada02',content:'草莓、蓝莓、蔓越莓，你想我了没？'},
+        	{id:'yuysada02',content:'草莓、蓝莓、蔓越莓，你想我了没？'},
            {id:'yuysada03',content:'心里给你留了一块地，我的死心塌地'}
          ]
        }
@@ -2008,7 +2034,7 @@ app.mount('#app')
 
 3. 第三种修改方式：借助`action`修改（`action`中可以编写一些业务逻辑）
 
-   这里写法是optionsAPI  访问state需要用this.xxx
+   **这里写法是optionsAPI  访问state需要用this.xxx**
 
    ```js
    import { defineStore } from 'pinia'
@@ -2071,7 +2097,7 @@ app.mount('#app')
 
 ```
 
-当你用了toRefs以后,整个仓库所有东西都变成了对象，代价太大了
+当你用了toRefs以后,整个仓库所有东西都变成了对象，代价太大了，storeToRefs只会把你想要的别称响应式的
 
 ![image-20240105122309128](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240105122309128.png)
 
@@ -2116,7 +2142,7 @@ toRefs是在vue里的
 
      ```js
      const {increment,decrement} = countStore
-     let {sum,school,bigSum,upperSchool} = storeToRefs(countStore)
+     let { sum, school, bigSum, upperSchool } = storeToRefs(countStore)
      ```
 
 
@@ -2613,7 +2639,10 @@ attrs就是父组件传给子组件时,子组件没有主动接收的对象(没�
 <template>
 	<div class="child">
 		<h3>子组件</h3>
-        <!-- 整个$attrs都传给孙组件,这是固定写法 -->
+        <!-- 
+		我们这里什么都没有接收
+		整个$attrs都传给孙组件,这是固定写法
+		-->
 		<GrandChild v-bind="$attrs"/>
 	</div>
 </template>
@@ -2866,6 +2895,7 @@ defineExpose({book})
             <a href="">更多</a>
           </template>
         </Category>
+
 子组件中：
         <template>
           <div class="item">
@@ -2945,7 +2975,7 @@ defineExpose({book})
 
 ### `shallowReactive`
 
-1. 作用：创建一个浅层响应式对象，只会使对象的最顶层属性变成响应式的，对象内部的嵌套属性则不会变成响应式的
+1. 作用：**创建一个浅层响应式对象，只会使对象的最顶层属性变成响应式的，对象内部的嵌套属性则不会变成响应式的**
 
 2. 用法：
 
@@ -2986,7 +3016,7 @@ defineExpose({book})
    * 保护全局状态或配置不被修改。
    * 例如金额比较重要我们希望它是只读的。
    
-5. 创建以后readOnlyCopy和original就建立了关联关系,original修改后会跟着变化。
+5. 创建以后readOnlyCopy和original就建立了关联关系,original修改后readOnlyCopy会跟着变化。
 
 
 
@@ -3054,9 +3084,9 @@ function changeFn(){
    import { reactive,toRaw,markRaw,isReactive } from "vue";
    
    /* toRaw */
-   // 响应式对象
+   // 传递响应式对象
    let person = reactive({name:'tony',age:18})
-   // 原始对象
+   // 床底原始对象
    let rawPerson = toRaw(person)
    
    
@@ -3154,7 +3184,7 @@ export default function(initValue:string,delay:number){
 
 
 
-小知识,调整网站色彩 百分0为灰色
+小知识,调整网站色彩 把这个css属性设置为百分0  整个网站变为灰色
 
 ![image-20240113123339548](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240113123339548.png)
 
@@ -3163,7 +3193,6 @@ export default function(initValue:string,delay:number){
 ```vue
 <script setup lang="ts">
 import testA from './components/testA.vue';
-
 </script>
 
 <template>
@@ -3235,7 +3264,7 @@ let isShow = ref(false)
 
 ## 8.2. 【Suspense】
 
-小知识补充： 在<script setup> 语法糖中直接使用await是可以的，setup内置了async
+小知识补充： 在<script setup> 语法糖中直接使用await是可以的，setup内置了async语法
 
 例如这样是允许的
 
@@ -3246,7 +3275,7 @@ let { data } = await axios.get('地址')
 
 
 
-**这个功能就是解决你在setup中写了异步任务的时候，不是点击某一个按钮才执行异步，而是加载的时候就是异步的，例如上面的例子**
+**这个功能就是解决你在setup中写了异步任务的时候，不是点击某一个按钮才执行异步，而是在开始加载的时候就是异步的，例如上面的例子发的就是异步请求**
 
 
 
@@ -3286,7 +3315,7 @@ const Child = defineAsyncComponent(()=>import('./Child.vue'))
 
 - `app.component(注册全局组件)`
 - ![image-20240114000315829](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240114000315829.png)
-- `app.config(全局配置)  下面那个代码是解决ts类型检查的`
+- `app.config(全局配置变量)  下面那个代码是解决ts类型检查的`
 - ![image-20240114000451579](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240114000451579.png)
 - `app.directive(组件全局指令)`
 - ![image-20240114001829345](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240114001829345.png)

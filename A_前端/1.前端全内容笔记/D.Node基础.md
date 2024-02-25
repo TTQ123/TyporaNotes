@@ -1440,6 +1440,18 @@ fs.writeFileSync('D:/index4.html', 'love') // D: 表示访问D盘根目录
 
 ![image-20240115141801231](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240115141801231.png)
 
+#### 2.补充 __dirname和path.resolve
+
+__dirname提供了当前执行脚本所在目录的路径信息(绝对路径)
+
+![image-20240206034234138](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240206034234138.png)
+
+
+
+path.resolve用于将路径解析为绝对路径
+
+![image-20240206034359769](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240206034359769.png)
+
 
 
 
@@ -2632,6 +2644,8 @@ server.listen(3000, () => {
 
 ![image-20240129015031352](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240129015031352.png)
 
+
+
 #### 4.静态资源服务
 
 对第三小节的代码进行优化
@@ -3046,6 +3060,487 @@ app.get("/",(req,res)=>{
 
 
 
+### 补充: 路由
+
+![image-20240206024549992](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240206024549992.png)
+
+#### 1.第一个服务
+
+```js
+const express = require('express')
+
+const app = express()
+
+app.get('/home',(req,res)=>{
+    res.end('我是home路由')
+})
+
+app.post('/test', (req, res) => {
+    res.end('我是test路由,我是post方法')
+})
+
+// all方法可以匹配所有方法  *可以匹配所有路径
+app.all('*', (req, res) => {
+    res.send('404 NOT FOUND')
+})
+
+// 启动服务
+app.listen(3000, () => {
+    console.log('服务已经启动,端口3000');
+})
+```
+
+#### 2.获取请求参数
+
+![image-20240206025620733](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240206025620733.png)
+
+
+
+#### 3.获取路由参数
+
+获取路由参数(params) 根据参数返回不同的页面
+
+![image-20240206030848019](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240206030848019.png)
+
+？前面的是路由参数，？后边的是查询字符串参数
+
+练习:根据路由参数响应歌手的信息
+
+```js
+const express = require('express')
+const { singer } = require('./singer.json')
+const app = express()
+
+app.get('/singer/:id.html', (req, res) => {
+    // 获取路由参数
+    let id = req.params.id
+
+    // 在json中寻找对应的数据
+    let data = singer.find(item => {
+        if (item.id === Number(id)) {
+            // id正确放行
+            return true
+        }
+    })
+
+    // 确保数据存在
+    if (!data) {
+        res.end('404')
+    }
+
+    res.end(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <h2>id:${data.id}</h2>
+        <h2>name:${data.name}</h2>
+    </body>
+    </html>
+    `)
+})
+
+// 启动服务
+app.listen(3000, () => {
+    console.log('服务已经启动,端口3000');
+})
+```
+
+
+
+#### 4.express响应设置
+
+![image-20240206032806050](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240206032806050.png)
+
+**express的send方法会自动在响应头上设置字符集方法，解决中文乱码**
+
+设置响应文件内容
+
+```js
+app.get('/test', (req, res) => {
+    // let result = path.resolve(__dirname, './singer.json')
+    // res.sendFile(result)
+
+    // 可以简便设置
+    res.sendFile(path.resolve(__dirname, 'singer.json'))
+    // 或者使用拼接 拼接时不能用./
+    // res.sendFile(__dirname + '/singer.json')
+})
+```
+
+#### 5.中间件
+
+![image-20240206150115481](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240206150115481.png)
+
+
+
+##### 1.全局中间件案例
+
+记录每一次访问服务器的ip和路径
+
+```js
+const express = require('express')
+const path = require('path')
+const fs = require('fs')
+const app = express()
+
+
+// 声明中间件函数
+function recordMiddleware(req, res, next) {
+    let {url, ip} = req
+    fs.appendFileSync(path.resolve(__dirname, 'log.txt'), `${url}, ${ip}\r\n`)
+    // 调用下一个路由回调函数
+    next()
+}
+
+// 使用中间件
+app.use(recordMiddleware)
+ 
+app.get('/test', (req, res) => {
+    res.send('前台页面')
+})
+
+app.get('/admin', (req, res) => {
+    res.send('后台页面')
+})
+
+// 启动服务
+app.listen(3000, () => {
+    console.log('服务已经启动,端口3000');
+})
+```
+
+
+
+##### 2.中间件实践(局部中间件)
+
+**这个功能常常用于需要授权的访问的路径时**
+
+![image-20240208015112923](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208015112923.png)
+
+```js
+const express = require('express')
+const app = express()
+
+// 声明中间件函数
+function checkMiddleware(req, res, next) {
+    if(req.query.code === '521'){
+        // 调用下一个回调函数(访问什么路径调什么)
+        next()
+    }else{
+        res.send('无权限访问,安号错误')
+    }
+}
+ 
+//  需要授权的路径都调用这个中间件(抽取公共代码)
+app.get('/setting', checkMiddleware, (req, res) => {
+    res.send('设置页面')
+})
+
+app.get('/admin', checkMiddleware, (req, res) => {
+    res.send('后台页面')
+})
+
+// 启动服务
+app.listen(3000, () => {
+    console.log('服务已经启动,端口3000');
+})
+```
+
+
+
+##### 3.静态资源中间件
+
+在express框架中只需要一行代码就可以解决请求静态资源的处理(没有框架时很麻烦)
+
+框架会帮我们寻找到文件并自动设置MIME类型
+
+![image-20240208020716152](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208020716152.png)
+
+**注意点**
+
+当设置了静态路由中间件时，/ 路径是谁写前面先访问谁。
+
+![image-20240208021101077](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208021101077.png)
+
+
+
+#### 6.解析请求体数据body-parser
+
+```js
+const express = require('express')
+// 引入express请求体解析的包
+const bodyParser = require('body-parser')
+const app = express()
+
+// 解析querystring格式请求体的中间件函数
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
+// 解析json格式请求体的中间件函数
+const json = bodyParser.json()
+
+// 登录页
+app.get('/login', (req, res) => {
+    res.sendFile(__dirname + '/login.html')
+})
+
+// 提交后跳转进行处理
+app.post('/login', urlencodedParser, (req, res) => {
+    let {username, password} = req.body
+    console.log(username, password);
+    res.send('登录成功')
+})
+
+app.listen(3000, () => {
+    console.log('服务已经启动,端口3000');
+})
+```
+
+登录页
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login页面</h2>
+    <hr>
+    <form action="/login" method="post">
+        用户名: <input type="text" name="username"> <br>
+        密码: <input type="text" name="password">
+        <button>提交</button>
+    </form>
+</body>
+</html>
+```
+
+
+
+#### 7.防盗链实现
+
+**防盗链就是为了防止外部网站盗用本网站资源，依靠refer请求头来实现**
+
+**referer请求头会自动携带当前网页的协议、域名、端口号向服务器发送请求，我们可以拿到域名来做限制，非本服务器发送的静态资源请求返回404**
+
+![image-20240208023222007](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208023222007.png)
+
+例子(简单实现)
+
+```js
+const express = require('express')
+const app = express()
+
+// 声明中间件判断有无referer
+app.use((req, res, next) => {
+    // 检测请求头中的 referer是否为127.0.0.1
+    let referer = req.get('referer')
+
+    // 如果referer存在
+    if (referer) {
+        let url = new URL(referer)
+        // 获取域名
+        let hostname = url.hostname
+        // 进行限制 非127.0.0.1访问时返回404
+        if (hostname !== '127.0.0.1') {
+            res.status(404).send('404 not found')
+            return
+        }
+    }
+    next()
+})
+
+// 静态资源中间件设置
+app.use(express.static(__dirname + '/public'))
+
+// 启动服务
+app.listen(3000, () => {
+    console.log('服务已经启动,端口3000');
+})
+```
+
+html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源页面</title>
+</head>
+<body>
+    <p>资源页面</p>
+    <!-- 向本网站服务器发送请求获取图片 -->
+    <img src="http://127.0.0.1:3000/images/w.png">
+</body>
+</html>
+```
+
+严谨一点的 https://juejin.cn/post/7321964344397152256
+
+
+
+#### 8.路由模块化
+
+拆分路由，每个子路由管理部分路由规则
+
+入口文件
+
+```js
+const express = require('express')
+const app = express()
+
+// 导入路由
+const homeRouter = require('./routes/useHomeRoute')
+
+// 使用路由规则
+app.use(homeRouter)
+
+// 启动服务
+app.listen(3000, () => {
+    console.log('服务已经启动,端口3000');
+})
+```
+
+路由文件
+
+```js
+// 1.导入express
+const express = require('express')
+
+// 2.创建路由对象
+const router = express.Router()
+
+// 创建全局中间件函数
+const fn = (req, res, next) => {
+    console.log('我是/home路由规则的全局中间件函数');
+    next()
+}
+// 使用中间件
+router.use(fn)
+
+// 创建局部中间件函数
+const fn1 = (req, res, next) => {
+    console.log('我是/home路由规则的局部中间件函数');
+    next()
+}
+
+
+// 3.创建路由规则
+router.get('/home', (req, res) => {
+    res.send('首页')
+})
+
+router.get('/test', fn1, (req, res) => {
+    res.send('测试')
+})
+
+// 4.暴露路由
+module.exports = router
+```
+
+**路由可以设置前缀**
+
+![image-20240208225305125](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208225305125.png)
+
+indexRouter下的每个路由都会在前面补/
+
+usersRouter下的每个路由都会在前面补/users
+
+![image-20240208225646889](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208225646889.png)
+
+
+
+#### 9.express-generator
+
+可以快速创建一个express应用的骨架
+
+```bash
+npm i -g express-generator
+
+# 创建 -e命令 generator表示文件夹名称
+express -e generator
+```
+
+
+
+#### 10.文件上传
+
+##### 1.文件上传的报文
+
+也是一段http报文，但是分成了多段的报文。
+
+##### 2.express处理文件上传
+
+准备工作
+
+![image-20240218233524194](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240218233524194.png)
+
+![image-20240218233539774](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240218233539774.png)
+
+![image-20240218233602852](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240218233602852.png)
+
+安装formidable库  这个库可以处理文件上传
+
+```js
+var express = require('express');
+var router = express.Router();
+var { formidable } = require('formidable');
+
+// 文件上传表单网页
+router.get('/', function (req, res, next) {
+  res.render('portrait');
+})
+
+// 文件处理
+router.post('/', function (req, res, next) {
+  // 创建form对象
+  const form = formidable({
+    multiples: true, // 支持多文件上传
+    keepExtensions: true, // 保持文件的后缀
+    uploadDir: __dirname + '/../public/images' // 文件上传目录
+  });
+
+  // 解析请求报文
+  // fields存放的是radio select这些简单的
+  // files存放的就是图片这些file类型的
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    }
+    
+    // 在服务器中保存文件的访问URL 便于之后用户请求
+    // 例如/images/1.png
+    let url = '/images/' + files.portrait[0].newFilename; // 将来保存在数据库中
+    res.send(url)
+  });
+})
+
+module.exports = router;
+```
+
+
+
+##### 3.项目案例
+
+###### 1.lowdb数据管理
+
+通过一个JSON文件来实现数据的管理
+
+npm i lowdb@1.0.0
+
+![image-20240219032402093](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219032402093.png)
+
+
+
 ### 2.*nodemon*自动监视代码修改
 
 ```css
@@ -3345,141 +3840,155 @@ app.listen(3000, () => {
 
 ### 5.模板引擎
 
-**ejs就是一种模板引擎,可以在前端页面动态显示数据**
+![image-20240208031007984](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208031007984.png)
 
-**代码**
+**ejs就是一种模板引擎,可以在前端页面动态显示数据，比如java的(jsp、Thymeleaf)**
 
-```javascript
-const express = require("express")
-const path = require("path")
+**ejs的优势是内容通过服务器返回，网站的SEO排名更高，毕竟是前后端混合的。**
+
+#### 1.初体验
+
+语法
+
+```ejs
+<%= %> 在ejs中输出内容时，它会自动对字符串中的特殊符号进行转义 &lt;这个设计主要是为了避免 xss 攻击
+<%- %> 会直接将内容输出(容易造成XSS攻击)
+<% %>  可以在其中直接编写js代码，js代码会在服务器中执行
+```
+
+服务端
+
+```js
+// 导入ejs
+const ejs = require('ejs')
+
+// 定义西游记数组
+const xiyou = ['唐三藏', '孙悟空', '猪八戒', '沙僧', '白龙马']
+
+// 导入fs
+const fs = require('fs')
+
+// 导入html
+const html = fs.readFileSync('./03.html').toString() // 读取html并转化为字符串格式
+
+// ejs模板渲染
+// 第一个参数是html字符串,第二个参数是数据
+const result = ejs.render(html, {xiyou})
+
+console.log(result);
+```
+
+模板引擎
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西游记</title>
+</head>
+
+<body>
+    <ul>
+        <% xiyou.forEach(item=> { %>
+            <li>
+                <%= item %>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+
+</html>
+```
+
+#### 2.ejs条件渲染
+
+```js
+// 导入ejs
+const ejs = require('ejs')
+
+let isLogin = true
+
+// 导入fs
+const fs = require('fs')
+
+// 导入html
+const html = fs.readFileSync('./03.html').toString() // 读取html并转化为字符串格式
+
+// ejs模板渲染
+// 第一个参数是html字符串,第二个参数是数据
+const result = ejs.render(html, {isLogin})
+console.log(result);
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西游记</title>
+</head>
+
+<body>
+    <% if(isLogin){ %>
+        <span>欢迎回来</span>
+    <% }else{ %>
+        <p>未登录状态</p>
+    <% } %>
+</body>
+
+</html>
+```
+
+#### 3.express中使用ejs模板引擎
+
+```js
+const express = require('express')
 const app = express()
+const path = require('path')
 
-const STUDENT_ARR = [
-    {
-        name: "孙悟空",
-        age: 18,
-        gender: "男",
-        address: "火锅山"
-    },
-    {
-        name: "猪八戒",
-        age: 28,
-        gender: "男",
-        address: "高老庄"
-    },
-    {
-        name: "沙和尚",
-        age: 38,
-        gender: "男",
-        address: "流沙河"
-    }
-]
+// 1.设置nodejs的模板引擎为ejs(安装后才能设置,会自动导入)
+app.set('view engine', 'ejs')
+// 2.设置模板引擎文件存放的位置 (模板文件:具有模板语法内容的文件)
+// 参数1固定的 参数2表示路径地址
+app.set('views', path.resolve(__dirname, './views'))
 
-//全局名称
-let name = "猪八戒"
-
-// 将ejs设置为默认的模板引擎
-app.set("view engine", "ejs")
-// 配置模板的路径
-app.set("views", path.resolve(__dirname, "views"))
-
-// 配置静态资源路径
-app.use(express.static(path.resolve(__dirname, "public")))
-// 配置请求体解析
-app.use(express.urlencoded({ extended: true }))//无所谓true false 一个配置的东西
-// app.use(express.json())
-
-
-app.get("/hello", (req, res) => {
-    res.send("hello")
-})
-
-    // 希望用户在访问students路由时，可以给用户返回一个显示有学生信息的页面
-    /* 
-        html页面属于静态页面，创建的时候什么样子，用户看到的就是什么样子
-            不会自动跟随服务器中数据的变化而变化
-
-        希望有这么一个东西，他呢长的像是个网页，但是他里边可以嵌入变量，这个东西在node中被称为 模板(格式定好了)
-            ——在node中存在有很多个模板引擎，都各具特色，ejs是这之中比较好
-            ——前后端分离时就不用考虑这个了
-
-        ejs是node中的一款模板引擎，使用步骤：
-            1.安装ejs
-            2.配置express的模板引擎为ejs
-                app.set("view engine", "ejs")
-            3.配置模板路径
-                app.set("views", path.resolve(__dirname, "views"))
-
-            注意，模板引擎需要被express渲染后才能使用
-    */
-
-    //  res.render() 用来渲染一个模板引擎，并将其返回给浏览器
-    // 可以将一个对象作为render的第二个参数传递，这样在模板中可以访问到对象中的数据
-    // res.render("students", { name: "孙悟空", age: 18, gender: "男" })
-    // <%= %>在ejs中输出内容时，它会自动对字符串中的特殊符号进行转义 &lt;
-    //  这个设计主要是为了避免 xss 攻击
-    // <%- %> 会直接将内容输出(容易造成XSS攻击)
-    // <% %>  可以在其中直接编写js代码，js代码会在服务器中执行
-
-//使用模板引擎渲染页面
-app.get("/students", (req, res) => {
-    res.render("students", { name })
-})
-
-
-app.get("/set_name", (req, res) => {
-    //传入的值来替换全局的name
-    name = req.query.name
-    res.send("修改成功")
-})
-
-// 可以在所有路由的后边配置错误路由
-app.use((req, res) => {
-    // 只要这个中间件一执行，说明上边的地址都没有匹配到
-    res.status(404)//设置响应状态码
-    res.send("<h1>您访问的地址已被外星人劫持！</h1>")
+// 创建路由
+app.get('/home', (req, res) => {
+    // 3. render响应并创建模板文件
+    let msg = '我是一条消息'
+    // res.render('模板文件名', '传入的数据')
+    res.render('home', {msg})
 })
 
 app.listen(3000, () => {
-    console.log("服务器已经启动！")
+  console.log('服务启动');  
 })
 ```
 
-**ejs模板  在服务器端中渲染的打印语句输出在服务器端(后端渲染)   react vue 是在浏览器端渲染的**
+ejs文件
 
 ```ejs
 <!DOCTYPE html>
-<html lang="zh">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>这是ejs模板</title>
-    </head>
-    <body>
-        <h1>Hello EJS 哈哈</h1>
-
-        <!-- 
-            通过它可以将render传递进来的数据直接在网页中显示出来
-        -->
-        
-        <%=name %>
-
-        <form action="/set_name">
-            <input type="text" name="name" placeholder="请输入你的名字" />
-            <button>提交</button>
-        </form>
-
-        <!-- 分开写和一起写是一样的 -->
-        <!-- 分开写是为了嵌套模板字符串 -->
-        <% if(name === "孙悟空"){ %>
-        <h2>大师兄来了</h2>
-        <%}else{%>
-        <h2>二师兄来了</h2>
-        <%}%>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模板文件后缀名ejs</title>
+</head>
+<body>
+    <h2>输出:<%= msg %></h2>
+</body>
 </html>
 ```
+
+![image-20240208224412217](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240208224412217.png)
+
+
 
 **练习 模板引擎动态显示页面**
 
@@ -3814,11 +4323,9 @@ app.listen(3000, () => {
 [{"id":2,"name":"黄宇","age":11,"gender":"男","address":"仙游"},{"id":3,"name":"1","age":1,"gender":"男","address":"1"},{"id":4,"name":"1","age":1,"gender":"男","address":"1"}]
 ```
 
-### 6.补充 bodyParser.json() 
 
-```css
-是一个中间件函数，用于解析 HTTP 请求体中的 JSON 数据。它会将请求体中的 JSON 数据解析成 JavaScript 对象，并将其作为 req.body 属性的值存储，以便后续的处理程序可以使用它。这个方法通常用于处理 POST、PUT 和 DELETE 请求中的 JSON 数据。
-```
+
+
 
 
 
@@ -5258,8 +5765,279 @@ module.exports = router
 
 
 
+## 19.MongoDB
+
+![image-20240219032913053](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219032913053.png)
+
+![image-20240219033123701](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219033123701.png)
+
+
+
+### 1.安装
+
+![image-20240219034435554](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219034435554.png)
+
+![image-20240219034454128](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219034454128.png)
+
+mongo启动交互  mongod启动服务
+
+
+
+### 2.语法
+
+![image-20240219034637124](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219034637124.png)
+
+![image-20240219034847305](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219034847305.png)
+
+#### 1.增删改查
+
+![image-20240219034918218](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219034918218.png)
+
+**1.find不加条件时默认查询整个集合**
+
+**2.更新时默认是将整个对象重新赋值更新，所以我们不想覆盖时需要加上$set**
+
+#### 2.字段类型(属性值类型)
+
+![image-20240219042802020](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219042802020.png)
+
+ObjectId必须是文档ID，就是一个数组去查另一个数组(相当于表的外键)
+
+#### 3.字段校验和验证
+
+![image-20240219131105866](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219131105866.png)
+
+
+
+### 3.mongoose
+
+**我们这里没有用promise的写法**
+
+![image-20240219040313880](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219040313880.png)
+
+![image-20240219040426245](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219040426245.png)
+
+具体操作
+
+```js
+// 1.导入mongoose
+const mongoose = require('mongoose');
+
+// 设置strictQuery为true(规避一些提醒)
+mongoose.set('strictQuery', true);
+
+// 2.连接服务器
+mongoose.connect('mongodb://127.0.0.1:27017/bilibili');
+
+// 3.设置回调处理业务  once一次,事件回调函数执行一次(on如果服务断了连回来还会执行)
+// 所以官方建议open事件用once 其它用on
+// 连接成功
+mongoose.connection.once('open', () => {
+    // 开始执行业务
+    // 4.创建文档的结构对象(设置集合中文档的属性及属性值的类型)
+    let userSchema = new mongoose.Schema({
+      name: String,
+      age: 18  
+    })
+    // 5.创建模型对象(对文档操作的封装对象,可以增删改查文档)
+    let userModel = mongoose.model('users', userSchema);
+})
+// 连接失败
+mongoose.connection.on('error', () => {
+    console.log('连接失败了');
+})
+// 连接关闭
+mongoose.connection.on('close', () => {
+    console.log('连接已关闭');
+})
+
+// 延时关闭mongodb的连接
+// setTimeout(() => {
+//     mongoose.disconnect();
+// })
+```
+
+#### 1.增删改查
+
+增
+
+![image-20240219131747571](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219131747571.png)
+
+删
+
+![image-20240219131727688](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219131727688.png)
+
+![image-20240219134741775](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219134741775.png)
+
+改
+
+![image-20240219134606457](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219134606457.png)
+
+![image-20240219134834138](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219134834138.png)
+
+查
+
+![image-20240219135043546](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219135043546.png)
+
+![image-20240219135023909](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219135023909.png)
+
+**获取所有  BookModel.find()**
+
+
+
+#### 2.条件控制
+
+分为三种
+
+![image-20240219141803612](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219141803612.png)
+
+![image-20240219141844096](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219141844096.png)
+
+普通条件
+
+![image-20240219141559642](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219141559642.png)
+
+正则
+
+![image-20240219141702543](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219141702543.png)
+
+![image-20240219141728060](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219141728060.png)
+
+
+
+#### 3.个性化读取(带条件)
+
+![image-20240219142040848](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219142040848.png)
+
+![image-20240219142313341](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219142313341.png)
+
+**skip是跳过,比如你要取4-6条   就可以写成.find().skip(3).limit(3)**
+
+**实例**
+
+![image-20240219142423149](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219142423149.png)
+
+![image-20240219142443012](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219142443012.png)
+
+![image-20240219142504211](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219142504211.png)
+
+#### 4.mongoose模块化
+
+![image-20240219153605017](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219153605017.png)
+
+
+
+入口文件index.js
+
+```js
+// 导入mongoose
+const mongoose = require('mongoose');
+
+// 导入db(数据库连接文件)
+const db = require('./db/db');
+
+// 导入user模型
+const userModel = require('./models/UserModel');
+
+// 调用db的函数 执行success步骤
+db(() => {
+    // 新增
+    userModel.create({
+        name: '李四',
+        age: 19
+    }, (err, data) => {
+        if (err) {
+            console.log(err);
+            return
+        }
+        console.log(data);
+        mongoose.disconnect();
+    })
+})
+```
+
+数据库地址配置文件config.js
+
+```json
+module.exports = {
+    DBHOST: '127.0.0.1',
+    DBPORT: '27017',
+    DBNAME: 'bilibili'
+}
+```
+
+数据库基础操作文件 db.js
+
+```js
+// mongoose入口文件
+/**
+ * @param {*} success 数据库连接成功回调
+ * @param {*} error 数据连接失败的回调  
+ **/
+// 导入数据库地址配置文件
+const {DBHOST, DBPORT, DBNAME} = require('../config/config');
+
+module.exports = (success, error) => {
+    // 连接错误时进行默认值赋值
+    if (typeof error !== 'function') {
+        error = () => {
+            console.log('连接失败');
+         }
+    }
+
+    // 导入mongoose
+    const mongoose = require('mongoose');
+    mongoose.set('strictQuery', true);
+    mongoose.connect(`mongodb://${DBHOST}:${DBPORT}/${DBNAME}`);
+    
+    // open时调用success()
+    mongoose.connection.once('open', () => {
+        success()
+    })
+
+    // 失败时调用error()
+    mongoose.connection.on('error', () => {
+        error()
+    })
+
+    mongoose.connection.on('close', () => {
+        console.log('连接已关闭');
+    })
+}
+```
+
+数据库模型对象 UserModel.js
+
+```js
+const mongoose = require('mongoose');
+
+// 创建文档结构规范
+let userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        default: '匿名'
+    },
+    age: Number
+})
+// 创建集合
+let userModel = mongoose.model('users', userSchema);
+
+// 暴露模型对象
+module.exports = userModel;
+```
+
+
+
+
+
 
 
 
 
 ![uTools_1676104912967](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1676104912967.png)
+
+
+
+
+
