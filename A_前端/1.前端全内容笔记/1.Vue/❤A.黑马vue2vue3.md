@@ -1749,6 +1749,8 @@ vue3中使用
 
 sync 相当于vue3的v-model可以自定义props名称 非固定为value的效果
 
+**为什么要有这个修饰符: 原因就是如果我们使用v-model进行父子通信的时候，props的值只能固定为value，而.sync修饰符可以自定义props值**
+
 ![image-20230830041942369](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230830041942369.png)
 
 ```VUE
@@ -1849,15 +1851,228 @@ methods:{
 
 
 
+
+
+#### 4.1 补充 原始父子通信、v-model通信、sync通信
+
+原始写法
+
+```vue
+父组件
+<template>
+  <div>
+    <ChB :msg="msg" @change="msgChange"></ChB>
+  </div>
+</template>
+
+<script>
+import ChB from "./components/ChB.vue";
+
+export default {
+  components: {
+    ChB,
+  },
+  data() {
+    return {
+      msg: "123",
+    };
+  },
+  methods: {
+    msgChange(newValue) {
+		this.msg = newValue
+	},
+  },
+};
+</script>
+
+子组件
+<template>
+  <div>
+    <input :value="msg" @input="changeMsgInp" />
+    <hr>
+    {{ msg }}
+  </div>
+</template>
+
+<script>
+export default {
+    props:{
+        msg: {
+            type: String,
+        }
+    },
+    methods: {
+        changeMsgInp(e) {
+            this.$emit('change', e.target.value)
+        }
+    }
+}
+</script>
+```
+
+
+
+v-model
+
+```vue
+父组件
+<template>
+  <div>
+    <ChB v-model="msg"></ChB>
+  </div>
+</template>
+
+<script>
+import ChB from "./components/ChB.vue";
+
+export default {
+  components: {
+    // ele,
+    // EchartsDemo,
+    EleSelect,
+    ChA,
+    ChB,
+  },
+  data() {
+    return {
+      msg: "123",
+    };
+  }
+};
+</script>
+
+子组件
+<template>
+  <div>
+    <input :value="value" @input="changeMsgInp" />
+    <hr>
+    {{ value }}
+  </div>
+</template>
+
+<script>
+export default {
+    props:{
+        value: {
+            type: String,
+        }
+    },
+    methods: {
+        changeMsgInp(e) {
+            this.$emit('input', e.target.value)
+        }
+    }
+}
+</script>
+```
+
+
+
+sync
+
+```vue
+app
+<template>
+    <div>
+      <button @click="isShow = true;is = false" v-show="is">退出</button>
+      <!-- 相当于绑定了 :visible + @update:visible -->
+      <A1Components :visible.sync="isShow"></A1Components>
+    </div>
+</template>
+
+<script>
+import A1Components from './components/A1Components.vue';
+
+export default{
+  components:{
+    A1Components
+  },
+  data(){
+    return{
+      is:true,
+      isShow:false//父组件传递过去的props
+    }
+  }
+}
+</script>
+
+A1
+<template>
+  <div class="top">
+    <div class="show" v-show="visible">
+      <p>温馨提示 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button @click="close">x</button></p>
+      <br>
+      <p>你确认退出系统吗!</p>
+      <button @click="close">确认</button>
+      <button @click="noClose">取消</button>
+    </div>
+    <div v-show="isShow2" class="top1">
+      <p>退出成功</p>
+    </div>
+    <div v-show="isShow3" class="top2">
+      <p>取消成功,刷新返回页面</p>
+    </div>
+  </div>
+</template>
+
+<script >
+export default {
+  data(){
+    return{
+      isShow1:true,
+      isShow2:false,
+      isShow3:false
+    }
+  },
+props:{
+  visible:Boolean
+},
+methods:{
+ close(){
+  this.$emit('update:visible',false)
+  this.isShow2 = true
+ },
+ noClose(){
+  this.$emit('update:visible',false)
+  this.isShow3 = true
+  },
+ }
+}
+</script>
+
+<style scoped>
+.show{
+  z-index:999;
+  width: 500px;
+  height: 300px;
+  background:rgb(120, 119, 119);
+}
+.top1{
+  z-index: 1000;
+  width: 500px;
+  height: 300px;
+  background:rgb(120, 119, 119);
+}
+.top2{
+  z-index: 1000;
+  width: 500px;
+  height: 300px;
+  background:rgb(120, 119, 119);
+}
+</style>
+```
+
+
+
 #### 5.ref和$ref
 
-1.获取DOM元素
+1.获取页面DOM元素
 
 ![image-20230903212042625](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230903212042625.png)
 
 2.获取组件实例
 
-**vue2不用像vue3那样子组件还要暴露出去父组件才能用，这是vue**
+**vue2不用像vue3那样子组件还要暴露出去父组件才能用，在vue3需要defineExpose出去**
 
 ![image-20230903212533972](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230903212533972.png)
 
@@ -2218,6 +2433,60 @@ export default {
   margin-left: 5px;
 }
 </style>
+```
+
+##### 2.俩种写法
+
+![image-20240301111005900](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240301111005900.png)
+
+```vue
+子组件
+<template>
+  <div>
+    <slot :id="id"></slot>
+    <slot :id="id" name="header"></slot>
+    <slot :id="id" name="footer"></slot>
+  </div>
+</template>
+
+<script>
+export default {
+    data(){
+        return {
+            id: 10
+        }
+    }
+}
+</script>
+
+父组件
+<template>
+  <div>
+    <ChA>
+      <template slot="default" slot-scope="id">
+        我是默认插槽 -- {{ id }}
+      </template>
+      <br />
+      <template slot="header" slot-scope="id"> 我是头部 -- {{ id }} </template>
+      <br />
+      <template slot="footer" slot-scope="id"> 我是尾部 -- {{ id }} </template>
+      <br />
+      <!-- ----新版写法--- -->
+      <!-- <template #default="id"> 我是默认插槽 -- {{ id }} </template>
+      <template #header="id"> 我是头部---{{ id }} </template>
+      <template #footer="id"> 我是尾部---{{ id }} </template> -->
+    </ChA>
+  </div>
+</template>
+
+<script>
+import ChA from "./components/ChA.vue";
+export default {
+  components: {
+    ChA,
+  },
+};
+</script>
 ```
 
 
@@ -4507,6 +4776,70 @@ export default {
 
 
 
+### 2.vue2强制修改element
+
+```
+>>>  样式穿透
+```
+
+
+
+
+
+##### 3.native修饰符和.sync修饰符
+
+native  可以让父组件直接给子组件绑定原生事件
+
+```vue
+子组件
+<template>
+  <div>
+    <button @click="onClick">child子组件</button>
+  </div>
+</template>
+
+<script>
+export default {
+    methods: {
+        onClick() {
+            this.$emit('change', '参数: 123')
+      }
+    }
+}
+</script>
+
+父组件
+<template>
+  <div>
+	<ChB @change="change" @click.native="onClick($event)"></ChB>
+  </div>
+</template>
+
+<script>
+import ChB from "./components/ChB.vue";
+
+export default {
+  components: {
+    ChB
+  },
+  methods: {
+	onClick(e){
+		console.log('原生点击事件触发了', e);
+	},
+	change(value){
+		console.log('传递给子组件的事件触发了---', value);
+	}
+  }
+};
+</script>
+```
+
+
+
+.sync 相当于vue3中v-model可以不用锁定value这个名字 可以自由命名
+
+
+
 
 
 # vue3
@@ -5069,7 +5402,9 @@ vue2中父子组件绑v-model时是 :value和@input组合  在vue3改为 ：mode
 
 
 
+### 11.vue3自定义组件
 
+![image-20240227162123310](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240227162123310.png)
 
 ## 4.pinia
 

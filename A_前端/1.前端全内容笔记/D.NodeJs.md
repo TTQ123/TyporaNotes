@@ -383,6 +383,8 @@ promise1.then((result 数据) => {
 })
 ```
 
+![image-20240227000935204](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240227000935204.png)
+
 
 
 ## 4.Promise详解
@@ -538,6 +540,10 @@ Promise.any([//返回执行最快的完成的Promise(都报错才会跳出错误
 //vscode调试控制台不能直接点击查看 会报错
 //需要在代码上打上断点才能查看
 ```
+
+![image-20240226123536275](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240226123536275.png)
+
+
 
 
 
@@ -2930,7 +2936,9 @@ server.listen(3000, () => {
 
 
 
+##### 1.区别
 
+![image-20240226235929408](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240226235929408.png)
 
 
 

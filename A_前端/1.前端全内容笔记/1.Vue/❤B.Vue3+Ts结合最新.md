@@ -3376,3 +3376,11 @@ const Child = defineAsyncComponent(()=>import('./Child.vue'))
 - 移除了`$children` 实例 `propert`。
 
   ......
+
+
+
+# 9.补充
+
+## 9.1. 动态路由
+
+![image-20240227161522854](C:\Users\ttq\AppData\Roaming\Typora\typora-user-images\image-20240227161522854.png)
