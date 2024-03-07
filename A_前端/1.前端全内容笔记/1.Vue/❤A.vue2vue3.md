@@ -4840,6 +4840,8 @@ export default {
 
 
 
+### 3.补充 vue2所有通信方式
+
 
 
 # vue3

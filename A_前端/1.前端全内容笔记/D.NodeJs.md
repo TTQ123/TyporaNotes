@@ -834,7 +834,7 @@ async function fn3() {
     // 当我们通过await去调用异步函数时，它会暂停代码的运行
     // 直到异步代码执行有结果时，才会将结果返回
     // 注意:await只能用于async声明的异步函数中，或es模块的顶级作用域中
-    // await阻塞的知识异步函数内部的代码，不会影响外部代码
+    // await阻塞的只是异步函数内部的代码，不会影响外部代码
     // 通过await调用异步代码时，需要通过try-catch来处理异常
 
     //这就解决了链式调用多次不好看的情况
@@ -846,7 +846,6 @@ async function fn3() {
     } catch (e) {
         console.log("出错了~~")
     }
-
 }
 
 fn3()
@@ -3549,6 +3548,24 @@ npm i lowdb@1.0.0
 
 ![image-20240219032402093](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240219032402093.png)
 
+##### 4.文件上传的各种格式
+
+[前端的你真的了解请求方式和数据格式吗 - 掘金 (juejin.cn)](https://juejin.cn/post/6917143120048029704#heading-1)
+
+a=100&b=200  这种格式就是查询字符串也是表单提交数据的格式
+
+![image-20240307093704623](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240307093704623.png)
+
+
+
+
+
+![image-20240307093819262](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240307093819262.png)
+
+
+
+![image-20240307093838554](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240307093838554.png)
+
 
 
 ### 2.*nodemon*自动监视代码修改
@@ -3574,6 +3591,8 @@ npm i lowdb@1.0.0
             3. 如何启动
                     npx nodemon
 ```
+
+
 
 
 
@@ -6038,6 +6057,18 @@ module.exports = userModel;
 ```
 
 
+
+## 20.json-serve
+
+![image-20240307092355555](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240307092355555.png)
+
+
+
+## 21.cors解决
+
+![image-20240307174110001](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240307174110001.png)
+
+![image-20240307174310066](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240307174310066.png)
 
 
 
