@@ -1,3 +1,33 @@
+# 类型
+
+## 1.get请求
+
+浏览器回车时默认发送get请求
+
+![image-20240311113557627](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240311113557627.png)
+
+## 2.post请求
+
+![image-20240311113646654](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240311113646654.png)
+
+![image-20240311113704397](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240311113704397.png)
+
+**文件上传时默认类型为multipart/form-data**
+
+**表单上传时默认类型为application/x-www-form-urlencoded**
+
+## 3.例子
+
+**原生html发送上传表单的post请求**
+
+![image-20240311113806157](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240311113806157.png)
+
+**原生页面发送文件上传的post请求**
+
+![image-20240311114001687](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240311114001687.png)
+
+
+
 # 1.axios
 
 ![image-20231026123628076](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231026123628076.png)
@@ -172,6 +202,165 @@ const getNumber = async () => {
     })
     console.log(res2.data);
 }
+```
+
+公司用过的 
+
+## 1.实例1
+
+```js
+import axios from 'axios'
+import Cookies from 'js-cookie'
+import router from '@/router'
+import qs from 'qs'
+import { clearLoginInfo } from '@/utils'
+import isPlainObject from 'lodash/isPlainObject'
+
+const http = axios.create({
+  baseURL: window.SITE_CONFIG['apiURL'],
+  timeout: 1000 * 180,
+  withCredentials: true
+})
+
+/**
+ * 请求拦截
+ */
+http.interceptors.request.use(config => {
+  config.headers['Accept-Language'] = Cookies.get('language') || 'zh-CN'
+  config.headers['token'] = Cookies.get('token') || ''
+  // 默认参数
+  var defaults = {}
+  // 防止缓存，GET请求默认带_t参数
+  if (config.method === 'get') {
+    config.params = {
+      ...config.params,
+      ...{ '_t': new Date().getTime() }
+    }
+  }
+  if (isPlainObject(config.params)) {
+    config.params = {
+      ...defaults,
+      ...config.params
+    }
+  }
+  if (isPlainObject(config.data)) {
+    config.data = {
+      ...defaults,
+      ...config.data
+    }
+    if (/^application\/x-www-form-urlencoded/.test(config.headers['content-type'])) {
+      config.data = qs.stringify(config.data)
+    }
+  }
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
+/**
+ * 响应拦截
+ */
+// const whiteList = ['/meeting-real-time-meeting'] //这里设置了免登录白名单
+http.interceptors.response.use(response => {
+
+  if (response.data.code === 401 || response.data.code === 10001) {
+    clearLoginInfo()
+
+    // 在免登录白名单，直接进入
+    let fullPath = route.history.current.fullPath
+
+    // if(whiteList.indexOf(fullPath.slice(0, fullPath.lastIndexOf('/'))) === -1){
+    //   router.replace({ name: 'login' })
+    //  }
+    //router.replace({ name: 'login' })
+    return Promise.reject(response.data.msg)
+  }
+  return response
+}, error => {
+  console.error(error)
+  return Promise.reject(error)
+})
+
+export default http
+```
+
+## 2.实例2
+
+```js
+import axios from 'axios'
+import Cookies from 'js-cookie'
+import router from '@/router'
+import qs from 'qs'
+import { clearLoginInfo } from '@/utils'
+import isPlainObject from 'lodash/isPlainObject'
+
+const httpRR = axios.create({
+    baseURL: window.SITE_CONFIG['apiURLRR'],
+    timeout: 1000 * 180,
+    withCredentials: true
+})
+
+/**
+ * 请求拦截
+ */
+httpRR.interceptors.request.use(config => {
+    config.headers['Accept-Language'] = Cookies.get('language') || 'zh-CN'
+    config.headers['token'] = Cookies.get('token') || ''
+    // 默认参数
+    var defaults = {}
+    // 防止缓存，GET请求默认带_t参数
+    if (config.method === 'get') {
+        config.params = {
+            ...config.params,
+            ...{ '_t': new Date().getTime() }
+        }
+    }
+    if (isPlainObject(config.params)) {
+        config.params = {
+            ...defaults,
+            ...config.params
+        }
+    }
+    if (isPlainObject(config.data)) {
+        config.data = {
+            ...defaults,
+            ...config.data
+        }
+        if (/^application\/x-www-form-urlencoded/.test(config.headers['content-type'])) {
+            config.data = qs.stringify(config.data)
+        }
+    }
+    return config
+}, error => {
+    return Promise.reject(error)
+})
+
+/**
+ * 响应拦截
+ */
+// const whiteList = ['/meeting-real-time-meeting'] //这里设置了免登录白名单
+httpRR.interceptors.response.use(response => {
+
+    if (response.data.code === 401 || response.data.code === 10001) {
+        clearLoginInfo()
+
+        // 在免登录白名单，直接进入
+        let fullPath = route.history.current.fullPath
+
+        // if(whiteList.indexOf(fullPath.slice(0, fullPath.lastIndexOf('/'))) === -1){
+        //   router.replace({ name: 'login' })
+        //  }
+        //router.replace({ name: 'login' })
+        return Promise.reject(response.data.msg)
+    }
+    return response
+}, error => {
+    console.error(error)
+    return Promise.reject(error)
+})
+
+export default httpRR
+
 ```
 
 

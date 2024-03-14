@@ -1588,7 +1588,11 @@ export default {
 
 #### 1.v-model应用于模板的原理
 
-`在vue的模板中，不能直接用e拿到事件对象，要用$event才能拿到事件形参 -> e`
+`在vue的模板中，不能直接用e拿到事件对象，要用$event才能拿到事件形参 -> e, 只能在js代码中用e拿到事件形参`
+
+![image-20240308092447885](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240308092447885.png)
+
+![image-20240308092504875](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240308092504875.png)
 
 ![image-20230829233644426](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230829233644426.png)
 
@@ -4841,6 +4845,126 @@ export default {
 
 
 ### 3.补充 vue2所有通信方式
+
+
+
+### 4.compoent组件 keep-alive
+
+鼠标移入移出事件
+
+```vue
+<template>
+  <div>
+    <div
+      class="component"
+      @mouseleave="onMouseleave"
+      @mouseenter="onMouseenter"
+    >
+      component动态组件
+      <keep-alive>
+        <component :is="isShowChild4"></component>
+        <component :is="isShowChild5"></component>
+      </keep-alive>
+    </div>
+  </div>
+</template>
+
+<script>
+import Child4 from "./components/Child4.vue";
+import Child5 from "./components/Child5.vue";
+export default {
+  components: {
+    Child4,
+    Child5,
+  },
+  data() {
+    return {
+      isShowChild4: false,
+      isShowChild5: false,
+    };
+  },
+  methods: {
+    onMouseenter() {
+      this.isShowChild4 = false;
+      this.isShowChild5 = require("./components/Child5.vue").default;
+    },
+    onMouseleave() {
+      this.isShowChild5 = false;
+      this.isShowChild4 = require("./components/Child4.vue").default;
+    },
+  },
+};
+</script>
+
+<style scoped>
+.component {
+  width: 100px;
+  height: 100px;
+  border: 1px solid red;
+}
+</style>
+```
+
+### 5.滚动事件
+
+```vue
+<template>
+  <div>
+    <div class="scroll-fa" @scroll="onScroll">
+      <div class="scroll-box" :class="{ scrollBlue: isScrollBlue }">
+        我是一块滚动区域
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      isScrollBlue: false
+    };
+  },
+  methods: {
+    onScroll(e) {
+      if (e.target.scrollTop > 400) {
+        this.isScrollBlue = true;
+      } else {
+        this.isScrollBlue = false;
+      }
+    },
+  },
+  mounted() {
+    window.addEventListener("scroll", function () {
+      let htmlDom = document.documentElement;
+      if (htmlDom.scrollTop > 1000) {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+          time: '1000'
+        });
+      }
+    });
+  },
+  beforeDestroy() {
+    // 在组件销毁之前执行的清理工作
+    window.removeEventListener('scroll')
+  },
+};
+</script>
+
+<style scoped>
+.scroll-box {
+  height: 1000px;
+  width: 100px;
+  background: red;
+}
+
+.scrollBlue {
+  background: blue;
+}
+</style>
+```
 
 
 
