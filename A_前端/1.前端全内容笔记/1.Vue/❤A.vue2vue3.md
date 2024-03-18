@@ -3671,6 +3671,16 @@ export default {
 
 ![image-20230910211617254](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20230910211617254.png)
 
+##### 补充: actions处理异步操作
+
+**假设actions是一个发送请求的方法  我们要使用.then来接收**
+
+![image-20240317201621452](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240317201621452.png)
+
+![image-20240317201736774](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240317201736774.png)
+
+
+
 
 
 ##### 8.mapActions辅助函数
@@ -4965,6 +4975,230 @@ export default {
 }
 </style>
 ```
+
+
+
+### 6.watch监听router跳转
+
+直接监听$route
+
+![image-20240317205053417](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240317205053417.png)
+
+
+
+### 7.组件内的导航守卫
+
+![image-20240317205202494](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240317205202494.png)
+
+![image-20240317205225377](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240317205225377.png)
+
+![image-20240317205415568](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240317205415568.png)
+
+```vue
+<template>
+   <div class="test_box">
+       组件内部导航守卫钩子  
+   </div>
+</template>
+ 
+<script>
+ 
+let map, needReload = false; // 需要重新加载页面
+export default {
+  data() {
+    return {
+        mapfromlng: 0，
+        mapfromlat: 0,
+        mapFromcity: '北京'
+    }
+  },
+  methods: {
+      initData(){
+        console.log('initData');
+      },
+      initmap(){
+          if(needReload) {
+                window.location.reload()
+            }
+            map = new AMap.Map("container", {
+                resizeEnable: true,
+                zoom: 11,
+                center: [this.mapfromlng, this.mapfromlat],
+                mapStyle: "amap://styles/macaron"
+            });
+            // 通过插件获取LEAST_TIME
+            AMap.plugin(["AMap.Transfer"], () => {
+ 
+                let transOptions = {
+                    city: this.mapFromcity, //公交城市
+                    policy: AMap.TransferPolicy.LEAST_TIME //乘车策略
+                };
+                transfer = new AMap.Transfer(transOptions); //构造公交换乘类
+                //根据起点、终点坐标查询公交换乘路线
+                transfer.search(new AMap.LngLat(this.mapfromlng, this.mapfromlat), new AMap.LngLat(this.maptolng, this.maptolat), (s, res) => {
+                    if (res.plans && res.plans.length > 0) {
+                       // to do ...
+                    }
+                });
+            });
+      }    
+  },
+  // 路由访问时
+  beforeRouteEnter(to, from, next) {
+    // 1.在meta中，存储refresh字段，用来判断是否需要重新加载数据   
+    if(from.name === 'refund' || from.query.fromDetail === 1){
+        to.meta.refresh = true;
+    }
+     
+    // 2.重置缓存
+    window.sessionStorage.setItem('fromPhaseOne',0);
+     
+    // 3.需要刷新当前页面
+    if (from.fullPath.indexOf('index') != -1 && from.fullPath.indexOf('source') != -1) {
+            needReload = true;
+        }
+    next();
+    // 或者，在next()回调里访问this
+    // next(vm => {
+          // vm 就是当前组件的实例相当于this，所以在 next 方法里可以把 vm 当 this 来用了。     
+          // console.log('beforeRouteEnter-this',vm);
+    //  });
+  },
+   
+  // 路由更新时
+  beforeRouteUpdate(to, from, next) {
+    // 以动态路由的方式（如`/foo/:id`），再次访问到当前组件时，调用beforeRouteUpdate
+    // 可以访问组件实例 `this` 
+     next();
+  },
+   
+  // 路由离开时
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用   
+    // 可以访问组件实例 `this` 
+     
+    // 1.回滚样式
+    document.querySelector(".router-bg").style.cssText = "";
+     
+    // 2.重置缓存
+    window.sessionStorage.setItem('fromPhaseTwo',0);
+ 
+    // 3.显示离开当前页面的确认框
+    this.$confirm({title:'订单尚未支付，确定离开？'});
+     
+    // 4.跳转到指定路由或页面
+    if (["/pay"].indexOf(to.path) > -1 && this.$env.isMiniProgram) {
+        next(false);
+        // 跳转到小程序的某个页面
+        wx.miniProgram && wx.miniProgram.redirectTo({
+            url: "/page/mine/mine"
+        });
+    } else {
+         // 跳转到指定页面
+         this.$router.push({
+             path: "/detail",
+             query: {status:2}
+         });
+         next(true);
+     }
+    // next();
+  },
+  mounted () {
+        this.initmap();
+  },
+  activated () {
+      // 需要刷新页面
+      if (this.$route.meta.refresh) {
+          this.$route.meta.refresh = false;
+          this.initData();
+      }
+   },
+}
+</script>
+```
+
+
+
+### 8.组件递归调用自身
+
+```vue
+<template>
+  <div>
+    <h2>Parent Component</h2>
+    <TestDG :items="treeData" />
+  </div>
+</template>
+
+<script>
+import TestDG from './components/TestDG.vue';
+
+export default {
+  components: {
+    TestDG
+  },
+  data() {
+    return {
+      treeData: [
+        {
+          id: 1,
+          name: 'Node 1',
+          children: [
+            {
+              id: 2,
+              name: 'Node 1.1',
+              children: [
+                {
+                  id: 3,
+                  name: 'Node 1.1.1',
+                  children: []
+                }
+              ]
+            },
+            {
+              id: 4,
+              name: 'Node 1.2',
+              children: []
+            }
+          ]
+        }
+      ]
+    };
+  }
+};
+</script>
+```
+
+```vue
+<template>
+  <ul>
+    <li v-for="item in items" :key="item.id">
+      {{ item.name }}
+      <!-- 递归调用自己  传递的参数就是children -->
+      <TestDG :items="item.children" v-if="item.children && item.children.length > 0"></TestDG>
+    </li>
+  </ul>
+</template>
+
+<script>
+
+export default {
+    // 要调用自己必须进行命名
+  name: 'TestDG',
+  props: {
+    items: {
+      type: Array,
+      default: () => []
+    }
+  }
+};
+</script>
+```
+
+**高级用法(如果children存在就是多级级菜单,不存在就是一级,然后在多级菜单中还需要判断其是否多级)**
+
+![image-20240317212059521](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240317212059521.png)
+
+
 
 
 

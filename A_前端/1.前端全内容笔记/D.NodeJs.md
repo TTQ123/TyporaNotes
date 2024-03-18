@@ -543,7 +543,217 @@ Promise.any([//返回执行最快的完成的Promise(都报错才会跳出错误
 
 ![image-20240226123536275](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240226123536275.png)
 
+## 补充：
 
+### 1.all方法适用场景
+
+同时发起多个请求
+
+```js
+const urls = [
+  'https://jsonplaceholder.typicode.com/posts/1',
+  'https://jsonplaceholder.typicode.com/posts/2'
+];
+
+const promises = urls.map(url => fetch(url));
+
+Promise.all(promises)
+  .then(responses => {
+    return Promise.all(responses.map(response => response.json()));
+  })
+  .then(dataArray => {
+    // dataArray 包含了每个请求的返回数据
+    console.log(dataArray);
+  })
+  .catch(error => {
+    console.error('Error during the requests', error);
+  });
+```
+
+同时处理多个数据
+
+```js
+const promise1 = getData1();
+const promise2 = getData2();
+
+Promise.all([promise1, promise2]).then((data) => {
+  const data1 = data[0];
+  const data2 = data[1];
+  // 对两个数据进行处理
+}).catch((error) => {
+  // 处理任何错误
+});
+```
+
+同时处理多张图片等资源
+
+```js
+const loadImage1 = new Promise((resolve) => {
+  const img = new Image();
+  img.onload = () => resolve(img);
+  img.src = 'image1.jpg';
+});
+
+const loadImage2 = new Promise((resolve) => {
+  const img = new Image();
+  img.onload = () => resolve(img);
+  img.src = 'image2.jpg';
+});
+
+Promise.all([loadImage1, loadImage2]).then((images) => {
+  // 所有图片加载完成后的操作
+}).catch((error) => {
+  // 处理加载中的任何错误
+});
+```
+
+### 2.promise的resolve和reject方法
+
+![image-20240318104611846](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318104611846.png)
+
+![image-20240318104644599](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318104644599.png)
+
+### 3.catch方法
+
+**其实就是和then的第二个参数都是一样的，但是catch可以进行异常穿透统一处理**
+
+![image-20240318105103320](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318105103320.png)
+
+![image-20240318105211316](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318105211316.png)
+
+实例  catch处理
+
+```js
+        const p1 = new Promise((resolve, reject) => {
+            reject('p1失败了')
+        })
+        // catch和then一样都是有返回值的
+        // 1.失败的回调中没有返回值，返回一个成功promise实例化对象，结果为undefined
+        // 2.失败的回调中有返回值，返回一个成功promise实例化对象，结果为返回值
+        // 3.失败的回调中返回一个Promise对象,则返回这个Promise对象的结果(取决于这个Promise对象的结果和状态)
+        const c1 = p1.catch(err => {
+            // console.log('我是失败');   情况1
+
+            // return '我失败了'     情况2
+
+            // return new Promise((resolve, reject) => {
+            //   resolve('我在失败里返回成功')  
+            // })   情况3返回成功
+
+            // return new Promise((resolve, reject) => {
+            //     reject('我在失败里返回失败')  情况3返回失败
+            // })
+        })
+        console.log(c1);
+```
+
+实例 then处理  **then的第一个参数也是和第二个一样的**
+
+```js
+ const p1 = new Promise((resolve, reject) => {
+            reject('p1失败了')
+        })
+
+        let result = p1.then(value => {
+            console.log('成功走这里');
+        }, reason => {
+            // catch和then一样都是有返回值的
+            // 1.失败的回调中没有返回值，返回一个成功promise实例化对象，结果为undefined
+            // 2.失败的回调中有返回值，返回一个成功promise实例化对象，结果为返回值
+            // 3.失败的回调中返回一个Promise对象,则返回这个Promise对象的结果(取决于这个Promise对象的结果和状态)
+            // console.log('111'); 情况1
+            // return 222 情况2
+            // return new Promise((resolve, reject) => {
+            //   resolve(111)   情况3的成功
+            // })
+            return new Promise((resolve, reject) => {
+              reject(111)   // 情况3的失败
+            })
+        })
+        
+        console.log(result);
+```
+
+
+
+### 4.终止Promise链条
+
+思想：通过返回一个pendding状态的Promise实例化对象来终止promise链条
+
+![image-20240318113949077](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318113949077.png)
+
+
+
+![image-20240318114709449](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318114709449.png)
+
+
+
+### 5.指定回调与改变状态先后顺序问题
+
+![image-20240318115300543](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318115300543.png)
+
+### 6.通过async和await优化代码逻辑
+
+套完async返回的都是promise
+
+![image-20240318141430207](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318141430207.png)
+
+#### 1.概念
+
+![image-20240318144523603](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318144523603.png)
+
+```js
+        async function main() {
+            // await右侧为非promise数据，直接返回其值
+            // let res = await 'hello world'
+            // console.log(res);
+
+            // await右侧为promise对象，await返回promise成功的结果，如果有错误需要try-catch
+            // let res1 = await new Promise((resolve, reject) => {
+            //   resolve('已成功')  
+            // })
+            // console.log(res1);
+            // let res1 = await Promise.resolve('hello world')
+            // console.log(res1);
+
+            // try {
+            //     let res2 = await new Promise((resolve, reject) => {
+            //       reject('出错了')  
+            //     })
+            // } catch (error) {
+            //     console.log('接收到出错数据:', error);
+            // }
+
+            try {
+                let res2 = await Promise.reject('出错啦')
+            } catch (error) {
+                console.log('接收到出错数据:', error);
+            }
+        }
+        main()
+```
+
+#### 2.代码执行顺序
+
+![image-20240318145435216](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318145435216.png)
+
+```js
+1111
+5555
+ok
+2222
+3333
+44444
+okk
+6666
+7777
+```
+
+#### 3.宏任务微任务补充 
+
+![image-20240318145738466](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318145738466.png)
+
+**同 微 宏**
 
 
 
@@ -908,7 +1118,6 @@ fn6()
 ;(async () => {
     await console.log("哈哈")
 })()
-
 ```
 
 
@@ -918,39 +1127,47 @@ fn6()
 调用栈和消息队列(事件队列)
 
 ```css
-        调用栈
+        调用栈(同步)
         tick队列
         微任务队列
         宏任务队列
-        特殊情况:await 后的代码会放入微任务队列中(await这一行会立即执行,有时候比调用栈还快)
+        特殊情况:await 后的代码会放入微任务队列中(await这一行会立即执行,有时候比调用栈还快[谁快看谁写在前面])
 ```
 
 **例子**
 
+![image-20240318150852378](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240318150852378.png)
+
 ```javascript
 ;(async () => {
     await console.log(1)//第一,被放入调用栈中立即执行
-    console.log(4);//第四,被放入微任务队列中,先排队
+    console.log(4);//第6,被放入微任务队列中,先排队
 })()
 
-process.nextTick(() => {
-    console.log(3) // 第三,tick队列(在微任务之前执行)
-})
+async function async1() {
+  await console.log('ok');  
+}
+async1(); // 第2,被放入调用栈中立即执行
 
 queueMicrotask(() => {
-    console.log(5)// 第5,微任务队列,后排队
+    console.log(5)// 第7,微任务队列,后排队
 }) 
 
-setTimeout(() => {
-    console.log(6) // 第6,宏任务队列，最后执行
+process.nextTick(() => {
+    console.log(3) // 第5,tick队列(在微任务之前执行)
 })
 
-console.log(2);//第二,调用栈中的代码
+
+setTimeout(() => {
+    console.log(6) // 第8,宏任务队列，最后执行
+})
+
+console.log(2);//第3,调用栈中的代码
+
+async1(); // 第4,被放入调用栈立刻执行
 ```
 
-**执行顺序**
 
-![uTools_1679289264250](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1679289264250.png)
 
 
 
