@@ -1058,7 +1058,7 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
 
         <!-- 添加资产 -->
         <form class="my-form">
-          <input type="text" class="form-control" placeholder="消费名称" v-model.trim="name" />
+          <input type="text" class="form-control" placeholder="消费名称" v-model.trim="name"/>
           <input type="text" class="form-control" placeholder="消费价格"  v-model.number="price"/>
           <button type="button" class="btn btn-primary" @click="add">添加账单</button>
         </form>
@@ -1118,7 +1118,7 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
        * 4. 饼图渲染
        *    (1) 初始化一个饼图 echarts.init(dom)(官方文档看一下就都会了)  mounted钩子实现
        *    (2) 根据数据实时更新饼图 echarts.setOption({ ... })
-     */
+     **/
     const app = new Vue({
       el: '#app',
       data: {
@@ -1198,10 +1198,7 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
             }
           ]
         })
-
         },
-
-
         async add(){
           if (!this.name) {
             alert('请输入消费名称')
@@ -1231,8 +1228,6 @@ v-bind绑定了双向数据,这样完成第一步 数据变化-->视图更新
           this.getList()
         }
       },
-
-
     })
   </script>
 </body>

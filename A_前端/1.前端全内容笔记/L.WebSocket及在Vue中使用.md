@@ -1,3 +1,5 @@
+# 基本概念
+
 ## WebSocket之前的实时通信如何解决
 
 ![image-20231119140433591](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231119140433591.png)
@@ -128,3 +130,115 @@ server.listen(3000, () => {
 ## 5.websocket的限制
 
 ![image-20231119140337775](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20231119140337775.png)
+
+
+
+
+
+# 在Vue中使用
+
+假设有以下一种场景，我们有一个大屏的Echarts页面，它的数据需要实时刷新，此时如果使用传统的方法，是前端设置一个定时器，一段时间内就像服务端请求数据，但是这种方法对服务器端的性能要求太高了。
+
+以下是例子
+
+```vue
+<script setup>
+import { tryOnUnmounted } from "@vueuse/core";
+
+// 进入页面后这里会自动执行创建连接(setup钩子执行)
+const uid = "ttq123";
+let isHandle = false; // 标记是否为手动关闭
+let ws = new WebSocket(`ws://localhost:3000/ws?uid=${uid}`);
+let timer = null;
+ws.addEventListener("open", openHandle);
+ws.addEventListener("close", closeHandle);
+ws.addEventListener("message", messageHandle);
+ws.addEventListener("error", errorHandle);
+
+const openHandle = () => {
+  console.log("连接成功");
+};
+
+const closeHandle = () => {
+  console.log("连接关闭");
+  // 如果不是认为的关闭，则需要自动重新建立连接
+  if (!isHandle) {
+    restart();
+  }
+  isHandle = false;
+};
+
+const messageHandle = ({ data }) => {
+  // 接口中提供数据的方法 假设的(会更新页面图表数据)
+  changeXisDta();
+  //可以从事件对象中结构出data
+  console.log("收到消息", data);
+};
+
+const errorHandle = (e) => {
+  console.log("连接错误", e);
+};
+
+const changeXisDta = () => {
+  // 假设的(会更新页面图表数据)
+  console.log("图表数据更新");
+};
+
+const sendMsg = () => {
+  // 主动像服务器发送数据
+  ws.send("hello, 服务器,我是客户端");
+};
+
+const closeWs = () => {
+  isHandle = true;
+  // 手动关闭
+  ws.close();
+};
+
+// 保持长连接的心跳机制
+// 实现方法有俩种
+// 方式1:  setInterval 持续给websocket发送心跳包
+// const heartBeat = () => {
+//   console.log("客户端与服务端断开，正在准备重连");
+//   if (ws.readyState === 1) {
+//     ws.send("heartBeat");
+//   }
+// };
+// timer = setInterval(heartBeat, 3000);
+
+// 方式2:  自动重新连接服务器
+const restart = () => {
+  console.log("客户端与服务端断开，正在准备重连");
+
+  timer = setInterval(() => {
+    console.log("重连中");
+    // ws提供的这个方法可以判断当前连接是否为正常状态
+    // 如果当前连接状态为0，则说明连接已经关闭，需要重新建立连接
+    // 如果当前连接状态为1，则说明连接正常，不需要重新建立连接
+    if (ws.readyState === 0) {
+      clearInterval(timer);
+      timer = null;
+      ws = new WebSocket(`ws://localhost:3000/ws?uid=${uid}`);
+      ws.addEventListener("open", openHandle);
+      ws.addEventListener("close", closeHandle);
+      ws.addEventListener("message", messageHandle);
+      ws.addEventListener("error", errorHandle);
+    }
+  }, 3000);
+};
+
+// 组件卸载时需要卸载ws  正常是用onUnMounted 但是可以用vueuse库中的tryOnUnmounted(安全的onUnMounted)更好
+tryOnUnmounted(() => {
+  closeWs();
+});
+</script>
+
+<template>
+  <div class="main">
+    <!-- 图表区域 -->
+    <button @click="sendMsg">给服务器发消息</button>
+    <button @click="closeWs">手动关闭连接</button>
+  </div>
+</template>
+```
+
