@@ -297,7 +297,7 @@ console.log(typeof c)
 
 ![uTools_1678282182097](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/uTools_1678282182097.png)
 
-
+![image-20240617234915783](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240617234915783.png)
 
 ## 2.数据类型转换(显性转换)
 
@@ -469,6 +469,8 @@ let  a = 10
 
     </script>
 ```
+
+![image-20240617235258540](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240617235258540.png)
 
 ## 3.一元的±(元就是未知数,通过这个进行非数值转换为数值(隐式类型转换))
 
@@ -727,7 +729,7 @@ let  a = 10
                 - 会自动的进行类型转换
             !==
                 - 不全等，比较两个值是否不全等
-                - 不和自动的类型转换
+                - 不会自动的类型转换
         */
         let result = 1 == 1 // true
         result = 1 == 2 // false
@@ -1447,7 +1449,7 @@ if( isPrime){
 					        let mySymbol = Symbol()//符号
                               mySymbol.name="hhh"//这样是添加不进去的
         					// 使用symbol作为属性名
-    						//要用对象名[符号名(钥匙名)]="添加的属性"才能添加进去
+    						//要用对象名[符号名]="添加的属性"才能添加进去
         					obj[mySymbol] = "通过symbol添加的属性"
         					console.log(obj[mySymbol])//访问时也要用  对象名[符号名(钥匙名)]
     
@@ -3006,7 +3008,7 @@ let可以直接加上代码块{}来创建块作用域。var用立即执行函数
                             2. 修改原型先得创建实例，麻烦
                             3. 危险
 
-                处理通过__proto__能访问对象的原型外，
+              除了通过__proto__能访问对象的原型外，
                     还可以通过类的prototype属性，来访问实例的原型
                     修改原型时，最好通过通过类去修改
                     好处：
@@ -3029,7 +3031,7 @@ let可以直接加上代码块{}来创建块作用域。var用立即执行函数
                     console.log("Hello，我是", this.name)
                 }
             }
-           	//修改原型添加fly方法
+           	//修改原型添加fly方法(推荐方法)
             Person.prototype.fly = () => {
                 console.log("我在飞！")
             }
@@ -3048,7 +3050,7 @@ let可以直接加上代码块{}来创建块作用域。var用立即执行函数
         </script>
 ```
 
-**Person.prototype===p.__ proto__ //true**
+**❤Person.prototype===p.__ proto__ //true**
 
 **区别是一个通过类访问,一个通过实例访问**
 
@@ -4052,8 +4054,7 @@ fn4存储的就是一个函数，也就是fn4函数,加()进行函数的调用
                    2. 在内部函数丢失时销毁（内部函数被垃圾回收了，闭包才会消失）
 
                注意事项：
-                   闭包主要用来隐藏一些不希望被外部访问的内容，
-                       这就意味着闭包需要占用一定的内存空间
+                   闭包主要用来隐藏一些不希望被外部访问的内容,这就意味着闭包需要占用一定的内存空间
 
                    相较于类来说，闭包比较浪费内存空间（类可以使用原型(原型就不会重复创建)而闭包不能），
                        需要执行次数较少时，使用闭包(js一般使用习惯是用闭包)
@@ -4501,6 +4502,7 @@ array有的是数组专用(只能Array.方法)   还有一些是创建的对象�
 
 ```javascript
 class MyClass{
+    name = 'zs'  添加到自身
     fc(){
         //这种方式会直接添加到原型中
         //性能好,但是this不固定

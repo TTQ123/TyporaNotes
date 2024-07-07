@@ -1,0 +1,55 @@
+          <el-select
+            v-model="search.community"
+            clearable
+            placeholder="选择社区名称"
+            style="width: 180px; margin-right: 10px"
+            @change="handleCommunityChange"
+          >
+            <!-- 添加占位符选项 -->
+            <el-option
+              v-if="!loading && options1.length === 0"
+              :key="'placeholder'"
+              :label="'加载中...'"
+              :value="'placeholder'"
+              disabled
+            >
+            </el-option>
+            <!-- 渲染 options1 数组中的选项 -->
+            <el-option
+              v-for="item in options1"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+
+ // 获取社区下拉框
+    async handleCommunityChange(value) {
+      // 当社区选择发生变化时触发
+      if (value === "placeholder") return; // 如果是占位符选项，不执行后续操作
+      try {
+        this.loading = true; // 显示加载状态
+        const { data: res } = await this.$http.post("/smallScatteredEngineering/community");
+        if (res.code !== 0) {
+          this.$message.error(res.msg);
+          return;
+        }
+        // 异步加载数据完成后更新 options1 数组
+
+        const uniqueLocationTypes = [
+          ...new Set(res.data.map((item) => item.community)),
+        ];
+
+        this.options1 = uniqueLocationTypes.map((item) => {
+          return {
+            label: item,
+            value: item,
+          };
+        });
+      } catch (error) {
+        this.loading = false; // 隐藏加载状态
+      } finally {
+        this.loading = false; // 隐藏加载状态
+      }
+    },

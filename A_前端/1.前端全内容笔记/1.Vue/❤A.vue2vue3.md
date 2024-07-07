@@ -2436,6 +2436,54 @@ export default {
 
 ##### 2.俩种写法
 
+###### 1.老版本写法
+
+![image-20240430101356365](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240430101356365.png)
+
+```vue
+子组件
+<template>  
+  <div>  
+    <slot name="list" :items="myItems"></slot>  
+  </div>  
+</template>  
+  
+<script>  
+export default {  
+  data() {  
+    return {  
+      myItems: ['Item 1', 'Item 2', 'Item 3']  
+    };  
+  }  
+};  
+</script>
+
+父组件
+<template>  
+  <ChildComponent>  
+    <template slot="list" slot-scope="scope">  
+      <ul>  
+        <li v-for="item in scope.items" :key="item">{{ item }}</li>  
+      </ul>  
+    </template>  
+  </ChildComponent>  
+</template>  
+  
+<script>  
+import ChildComponent from './ChildComponent.vue';  
+  
+export default {  
+  components: {  
+    ChildComponent  
+  }  
+};  
+</script>
+```
+
+![image-20240430101443547](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240430101443547.png)
+
+
+
 ![image-20240301111005900](https://ttqblogimg.oss-cn-beijing.aliyuncs.com/image-20240301111005900.png)
 
 ```vue
@@ -5629,6 +5677,7 @@ const getCom = () => {
   <TestCom ref="testRef"></TestCom>
   <button @click="getCom">获取组件</button>
 </template>
+18144499298
 ```
 
 test-con

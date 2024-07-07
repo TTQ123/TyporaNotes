@@ -352,7 +352,7 @@ let strArr : Array<string> = ['1','2','3','4'];
 let unionArr : (string | number)[] = ['1','2','3','4',1,2,3,4];
 let unionArr2 : Array<string | number> = ['1','2','3','4',1,2,3,4];
 
-// 04.any定义任何类型 这样ts就没意义了
+// 04.any定义任何类型的数组 这样ts就没意义了
 let anyArr: any[] = ['1','2','3','4',1,2,3,4];
 ```
 
@@ -450,7 +450,7 @@ str = y
 
 ```js
 // never类型的使用场景 
-// 01 抛出异常时
+// 01 抛出异常时❤❤
 function error(msg:string) : never {
     throw new Error(msg)
 }
@@ -460,7 +460,7 @@ function fail() {
     return error('异常报错')
 } 
 
-// 02 函数存在永远无法返回的情况
+// 02 函数存在永远无法返回的情况❤❤
 function infiniteLoop(): never {
     while (true) {
 
@@ -512,7 +512,7 @@ console.log(Gender1.Female); // 200
 
 // 2.字符串枚举
 /*
-    1.如果采用字面量对第一个成员赋值,下面的成员必须赋值
+    1.如果采用字面量对第一个成员赋值,下面的成员必须赋值(❤重要)
     2.采用[index]不能获取值,需要传入[key]
     3.字符串枚举不能使用计算结果给枚举值赋值
     4.它可以使用内部其它枚举值来赋值
